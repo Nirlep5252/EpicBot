@@ -156,6 +156,20 @@ class Fun(commands.Cog):
             return
         user = ctx.author
         await ctx.send(f"{user.mention} has gone to get Chicken Nuggets! We will miss them! ok bye:tm:")
+   
+    @commands.command()
+    async def mock(self, ctx, text=None):
+        if text == None:
+            await ctx.send("um so idk how to get the prev msg so yea coming soon:tm:")
+        else:
+            res = ""
+            for c in text:
+                chance = random.randint(0,1)
+                if chance:
+                    res += c.upper()
+                else:
+                    res += c.lower()
+            await ctx.send(res)
 
 def setup(client):
     client.add_cog(Fun(client))
