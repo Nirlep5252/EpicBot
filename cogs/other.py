@@ -84,20 +84,17 @@ class Other(commands.Cog):
     async def embed(self, ctx, *, arg=None):
         async def send_error_msg():
             await ctx.send("Invalid args! Correct usage is `e!embed <#hexcolor> | <title> | <description>`")
-        
+
         if arg == None:
-            send_error_msg()
+            await send_error_msg()
             return
         if arg.count(" | ") != 2:
-            send_error_msg()
+            await send_error_msg()
             return
-        
+
         try:
             args = arg.split(" | ")
-            col = int(args[0], 16)
-        except:
-            send_error_msg()
-        else:
+            col = int(args[0][1:], 16)
             title = args[1]
             desc = args[2]
             e = discord.Embed(
@@ -106,6 +103,8 @@ class Other(commands.Cog):
                 color=col
             )
             await ctx.send(embed=e)
+        except:
+            await send_error_msg() # thank you bowman <3
             
 def setup(client):
     client.add_cog(Other(client))
