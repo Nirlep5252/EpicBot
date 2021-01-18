@@ -160,7 +160,7 @@ class Fun(commands.Cog):
     @commands.command()
     async def mock(self, ctx, text=None):
         if text == None:
-            await ctx.send("um so idk how to get the prev msg so yea coming soon:tm:")
+            await ctx.send("Please enter some text!")
         else:
             res = ""
             for c in text:
