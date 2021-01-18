@@ -13,14 +13,33 @@ class Fun(commands.Cog):
 
     @commands.command(aliases = ['bait', 'freenitro', 'nitrobait', 'keknitro'])
     async def jebait(self, ctx):
-        embed = discord.Embed(title = "FREE NITRO", description = f"[https://discord.gift/NBnj8bySBWr63Q99](https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO)", color = 0x00FFFF)
-
+        embed = discord.Embed(title = "FREE NITRO", description = f"[https://discord.gift/NBnj8bySBWr63Q99](https://www.youtube.com/watch?v=dQw4w9WgXcQ)", color = 0x00FFFF)
         try:
             await ctx.message.delete()
         except:
             pass
-
         await ctx.send(embed = embed)
+    
+    @commands.command()
+    async def number(self, ctx, digits=10):
+        num = "("
+        if digits == 10:
+            for i in range(10):
+                num += str(random.randint(0,9)
+                if i == 2:
+                    num += ") "
+                elif i == 5:
+                    num += "-"
+        else:
+            for i in range(digits):
+                num += str(random.randint(0,9)
+        e = discord.Embed(
+            title="Your Phone Number",
+            description=num,
+            color=0x7289da
+        )
+        await ctx.send(embed=e)
+        
 
     @commands.command(aliases = ['howcute'])
     async def how_cute(self, ctx, user: discord.Member = None):
