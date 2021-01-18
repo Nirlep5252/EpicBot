@@ -41,43 +41,71 @@ class Other(commands.Cog):
                 await msg.add_reaction(emoji)
 
     @commands.command(aliases = ['covid-19', 'covid19'])
-    async def covid(self, ctx, *, countryName = None):
+    async def covid(self, ctx, *, country = None):
         try:
-            if countryName is None:
+            if country == None:
                 await ctx.send(f"You didn't enter a country name, use the command like this - `e!covid [country]`")
-            else:
-                url = f"https://coronavirus-19-api.herokuapp.com/countries/{countryName.lower()}"
-                stats = requests.get(url)
-                json_stats = stats.json()
-                country = json_stats["country"]
-                totalCases = json_stats["cases"]
-                todayCases = json_stats["todayCases"]
-                totalDeaths = json_stats["deaths"]
-                todayDeaths = json_stats["todayDeaths"]
-                recovered = json_stats["recovered"]
-                active = json_stats["active"]
-                critical = json_stats["critical"]
-                casesPerOneMillion = json_stats["casesPerOneMillion"]
-                deathsPerOneMillion = json_stats["deathsPerOneMillion"]
-                totalTests = json_stats["totalTests"]
-                testsPerOneMillion = json_stats["testsPerOneMillion"]
+                return
+            
+            url = f"https://coronavirus-19-api.herokuapp.com/countries/{countryName.lower()}"
+            stats = requests.get(url)
+            json_stats = stats.json()
+            country = json_stats["country"]
+            totalCases = json_stats["cases"]
+            todayCases = json_stats["todayCases"]
+            totalDeaths = json_stats["deaths"]
+            todayDeaths = json_stats["todayDeaths"]
+            recovered = json_stats["recovered"]
+            active = json_stats["active"]
+            critical = json_stats["critical"]
+            casesPerOneMillion = json_stats["casesPerOneMillion"]
+            deathsPerOneMillion = json_stats["deathsPerOneMillion"]
+            totalTests = json_stats["totalTests"]
+            testsPerOneMillion = json_stats["testsPerOneMillion"]
 
-                embed2 = discord.Embed(title = f"**COVID - 19 Status of {country}**", description = f"This information isn't always live, so it may not be accurate.", color =  0xFFA500)
-                embed2.add_field(name = f"Total Cases", value = f"{totalCases}", inline = True)
-                embed2.add_field(name = f"Today Cases", value = f"{todayCases}", inline = True)
-                embed2.add_field(name = f"Total Deaths", value = f"{totalDeaths}", inline = True)
-                embed2.add_field(name = f"Today Deaths", value = f"{todayDeaths}", inline = True)
-                embed2.add_field(name = f"Recovered", value = f"{recovered}", inline = True)
-                embed2.add_field(name = f"Active", value = f"{active}", inline = True)
-                embed2.add_field(name = f"Critical", value = f"{critical}", inline = True)
-                embed2.add_field(name = f"Cases Per One Million", value = f"{casesPerOneMillion}", inline = True)
-                embed2.add_field(name = f"Deaths Per One Million", value = f"{deathsPerOneMillion}", inline = True)
-                embed2.add_field(name = f"Total Tests", value = f"{totalTests}", inline = True)
-                embed2.add_field(name = f"Tests Per One Million", value = f"{testsPerOneMillion}", inline = True)
-                embed2.set_thumbnail(url = "https://cdn.discordapp.com/attachments/564520348821749766/701422183217365052/2Q.png")
-                await ctx.send(embed = embed2)
+            embed2 = discord.Embed(title = f"**COVID - 19 Status of {country}**", description = f"This information isn't always live, so it may not be accurate.", color =  0xFFA500)
+            embed2.add_field(name = f"Total Cases", value = f"{totalCases}", inline = True)
+            embed2.add_field(name = f"Today Cases", value = f"{todayCases}", inline = True)
+            embed2.add_field(name = f"Total Deaths", value = f"{totalDeaths}", inline = True)
+            embed2.add_field(name = f"Today Deaths", value = f"{todayDeaths}", inline = True)
+            embed2.add_field(name = f"Recovered", value = f"{recovered}", inline = True)
+            embed2.add_field(name = f"Active", value = f"{active}", inline = True)
+            embed2.add_field(name = f"Critical", value = f"{critical}", inline = True)
+            embed2.add_field(name = f"Cases Per One Million", value = f"{casesPerOneMillion}", inline = True)
+            embed2.add_field(name = f"Deaths Per One Million", value = f"{deathsPerOneMillion}", inline = True)
+            embed2.add_field(name = f"Total Tests", value = f"{totalTests}", inline = True)
+            embed2.add_field(name = f"Tests Per One Million", value = f"{testsPerOneMillion}", inline = True)
+            embed2.set_thumbnail(url = "https://cdn.discordapp.com/attachments/564520348821749766/701422183217365052/2Q.png")
+            await ctx.send(embed = embed2)
         except:
             await ctx.send("Invalid country name or API error. Please try again.")
 
+    @commands.command()
+    async def embed(self, ctx, *, arg=None):
+        async def send_error_msg():
+            await ctx.send("Invalid args! Correct usage is `e!embed <#hexcolor> | <title> | <description>`")
+        
+        if arg == None:
+            send_error_msg()
+            return
+        if arg.count(" | ") != 2:
+            send_error_msg()
+            return
+        
+        try:
+            args = arg.split(" | ")
+            col = int(args[0], 16)
+        except:
+            send_error_msg()
+        else:
+            title = args[1]
+            desc = args[2]
+            e = discord.Embed(
+                title=title,
+                description=desc,
+                color=col
+            )
+            await ctx.send(embed=e)
+            
 def setup(client):
     client.add_cog(Other(client))
