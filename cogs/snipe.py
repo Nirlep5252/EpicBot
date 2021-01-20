@@ -14,7 +14,7 @@ class Snipe(commands.Cog):
             return
         self.client.sniped_messages[message.guild.id, message.channel.id] = (
             message.content, message.author, message.channel.name,
-            message.created_at)
+            message.created_at, message.attachments)
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
@@ -30,14 +30,21 @@ class Snipe(commands.Cog):
     @commands.command(aliases=['s'])
     async def snipe(self, ctx):
         try:
-            contents, author, channel_name, time = self.client.sniped_messages[
+            contents, author, channel_name, time, attachments = self.client.sniped_messages[
                 ctx.guild.id, ctx.channel.id]
-
+            
+            files = ""
+            for file in attachments:
+                files += file + "\n"
             embed = discord.Embed(
                 description=contents, color=0x00FFFF, timestamp=time)
             embed.set_author(
                 name=f"{author.name}#{author.discriminator}",
                 icon_url=author.avatar_url)
+            embed.add_field(
+                name="Attachments",
+                value=files[:-1] if len(attachments) != 0 else "None"
+            )
             embed.set_footer(text=f"Deleted in #{channel_name}")
 
             await ctx.send(embed=embed)
