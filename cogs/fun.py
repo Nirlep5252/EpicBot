@@ -148,14 +148,6 @@ class Fun(commands.Cog):
         embed = discord.Embed(color = 0x00FFFF)
         embed.set_image(url = fox['image'])
         await ctx.send(embed = embed)
-
-    @commands.command()
-    async def lurk(self, ctx):
-        if ctx.guild.id != 719157704467152977:
-            await ctx.send(f"This is private command you can't use it here.")
-            return
-        user = ctx.author
-        await ctx.send(f"{user.mention} has gone to get Chicken Nuggets! We will miss them! ok bye:tm:")
    
     @commands.command()
     async def mock(self, ctx, *,text=None):
@@ -170,6 +162,35 @@ class Fun(commands.Cog):
                 else:
                     res += c.lower()
             await ctx.send(res)
+            
+    @commands.command(aliases=["atc"])
+    async def aesthetic(self, ctx, *, args=None):
+        if args == None:
+            await ctx.send("Invalid args. Correct usage: `e!atc <msg> | [mode]`. Mode can be b (bold), i (italic), or n (none).")
+            return
+
+        if args.count(" | ") == 0:
+            m = "n"
+        else:
+            m = args[-1]
+
+        s = ""
+        if m == "b":
+            s += "**"
+        elif m == "i":
+            s += "_"
+
+        msg = "".join(args.split(" | ")[0])
+        args = args.split(" | ")[:-1]
+        for c in msg:
+            s += c + " "
+        if m == "b":
+            s += "**"
+        elif m == "i":
+            s += "_"
+
+        await ctx.send(s)
+        
 
 def setup(client):
     client.add_cog(Fun(client))
