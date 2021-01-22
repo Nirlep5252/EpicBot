@@ -170,6 +170,34 @@ class Fun(commands.Cog):
                 else:
                     res += c.lower()
             await ctx.send(res)
+            
+    @commands.command(aliases=["atc"])
+    async def aesthetic(self, ctx, *, args=None):
+        if args == None:
+            await ctx.send("Invalid args. Correct usage: `e!atc <msg> | [mode]`. Mode can be b (bold), i (italic), or n (none).")
+            return
+        
+        if args.count(" | ") == 0:
+            m = "n"
+        else:
+            m = args[-1]
+        
+        s = ""
+        if m == "b":
+            s += "**"
+        elif m == "i":
+            s += "_"
+        
+        m = "".join(args.split(" | "))
+        for c in m:
+            s += c + " "
+        if m == "b":
+            s += "**"
+        elif m == "i":
+            s += "_"
+        
+        await ctx.send(s)
+        
 
 def setup(client):
     client.add_cog(Fun(client))
