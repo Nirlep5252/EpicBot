@@ -15,7 +15,7 @@ class Actions(commands.Cog):
 
 		embed = discord.Embed(
 			title = "aww hugs uwu",
-			description = "this is so cute ><",
+			description = f"this is so cute >< {ctx.author.mention} just hugged {user.mention}",
 			color = 0xFFC0CB
 			)
 		embed.set_image(url=requests.get("https://nekos.life/api/hug").json()['url'])
@@ -47,7 +47,7 @@ class Actions(commands.Cog):
 
 		embed = discord.Embed(
 			title = "*cute pats*",
-			description = f"<a:uwuAYAYA:800611977247719424>",
+			description = f"<a:uwuAYAYA:800611977247719424> {ctx.author.mention} just patted {user.mention}",
 			color = 0xFFC0CB
 			)
 		embed.set_image(url=requests.get("https://nekos.life/api/pat").json()['url'])
