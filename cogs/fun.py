@@ -11,9 +11,10 @@ class Fun(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['bait', 'freenitro', 'nitrobait', 'keknitro'])
     async def jebait(self, ctx):
-        embed = discord.Embed(title = "FREE NITRO", description = f"[https://discord.gift/NBnj8bySBWr63Q99](https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO)", color = 0x00FFFF)
+        embed = discord.Embed(title = "FREE NITRO", description = f"[https://discord.gift/NBnj8bySBWr63Q99](https://discord.gg/Zj7h8Fp)", color = 0x00FFFF)
 
         try:
             await ctx.message.delete()
@@ -22,6 +23,7 @@ class Fun(commands.Cog):
 
         await ctx.send(embed = embed)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['howcute'])
     async def how_cute(self, ctx, user: discord.Member = None):
         if user == None:
@@ -33,6 +35,7 @@ class Fun(commands.Cog):
         embed.set_thumbnail(url = user.avatar_url)
         await ctx.send(embed = embed)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['simpfor'])
     async def simp_for(self, ctx, user: discord.Member = None):
         if user == None:
@@ -43,6 +46,7 @@ class Fun(commands.Cog):
         embed.set_thumbnail(url = user.avatar_url)
         await ctx.send(embed = embed)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['dadjoke', 'joke', 'ramjoke', 'ram_joke'])
     async def dad_joke(self, ctx):
         url = "https://joke3.p.rapidapi.com/v1/joke"
@@ -57,6 +61,7 @@ class Fun(commands.Cog):
 
         await ctx.send(joke['content'])
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def quote(self, ctx):
         results = requests.get('https://type.fit/api/quotes').json()
@@ -64,23 +69,7 @@ class Fun(commands.Cog):
         content = results[num]['text']
         await ctx.send(content)
 
-    @commands.cooldown(1, 30, commands.BucketType.user)
-    @commands.command()
-    async def hug(self, ctx, user: discord.Member):
-        hugs = ['https://acegif.com/wp-content/gif/anime-hug-86.gif',
-                'https://acegif.com/wp-content/gif/anime-hug-19.gif',
-                'https://i.pinimg.com/originals/f2/80/5f/f2805f274471676c96aff2bc9fbedd70.gif',
-                'https://acegif.com/wp-content/uploads/anime-hug.gif',
-                'https://i.pinimg.com/originals/85/72/a1/8572a1d1ebaa45fae290e6760b59caac.gif',
-                'https://64.media.tumblr.com/296601d3c45ceea663f5d5dd052025c3/dad1de4967f02b18-56/s640x960/e77460ffb4d1900c59131faf08c448efe41f1d3e.gif']
-
-        embed = discord.Embed(title = "Incoming Hug... ", description = f"{ctx.author.mention} just gave a strong hug to {user.mention} <a:EpicHug:766549597493395457>", color = 0x00FF0C)
-        embed.set_image(url = random.choice(hugs))
-        embed.set_footer(text=f"{ctx.guild}", icon_url=f"{ctx.guild.icon_url}")
-        embed.timestamp = datetime.datetime.utcnow()
-
-        await ctx.send(embed = embed)
-
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def say(self, ctx, *, msg = None):
         filter = ['@here', '@everyone', '<@&', '<@!']
@@ -96,6 +85,7 @@ class Fun(commands.Cog):
             await ctx.send(msg)
         # await ctx.send("This command is temporarily unavailable. Join our discord server -> discord.gg/Zj7h8Fp")
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases=['meow', 'simba', 'cats'])
     async def cat(self, ctx):
         async with ctx.channel.typing():
@@ -108,6 +98,7 @@ class Fun(commands.Cog):
 
                     await ctx.send(embed=embed)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases=['dogs'])
     async def dog(self, ctx):
         async with ctx.channel.typing():
@@ -120,6 +111,7 @@ class Fun(commands.Cog):
 
                     await ctx.send(embed=embed)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def advice(self, ctx):
         url = "https://api.adviceslip.com/advice"
@@ -128,6 +120,7 @@ class Fun(commands.Cog):
         real_advice = advice['slip']['advice']
         await ctx.send(real_advice)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def ascii(self, ctx, *, text = None):
         if text == None:
@@ -139,6 +132,7 @@ class Fun(commands.Cog):
                 await ctx.send(f"```{pyfiglet.figlet_format(text)}```")
 
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def fox(self, ctx):
         url = "https://randomfox.ca/floof/"
@@ -148,12 +142,22 @@ class Fun(commands.Cog):
         embed = discord.Embed(color = 0x00FFFF)
         embed.set_image(url = fox['image'])
         await ctx.send(embed = embed)
-   
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def mock(self, ctx, *,text=None):
+
         if text == None:
             await ctx.send("Please enter some text!")
         else:
+
+            filter = ['@here', '@everyone', '<@&', '<@!']
+
+            for word in filter:
+                if text.count(word) > 0:
+                    await ctx.send(f"Sorry, I won't ping anyone. Try something else.")
+                    return
+
             res = ""
             for c in text:
                 chance = random.randint(0,1)
@@ -162,7 +166,8 @@ class Fun(commands.Cog):
                 else:
                     res += c.lower()
             await ctx.send(res)
-            
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases=["atc"])
     async def aesthetic(self, ctx, *, args=None):
         if args == None:
@@ -190,7 +195,14 @@ class Fun(commands.Cog):
             s += "_"
 
         await ctx.send(s)
-        
+
+    @commands.command()
+    async def lurk(self, ctx):
+        if ctx.guild.id != 719157704467152977:
+            await ctx.send(f"This is private command you can't use it here.")
+            return
+        user = ctx.author
+        await ctx.send(f"{user.mention} has gone to get Chicken Nuggets! We will miss them! ok bye:tm:")
 
 def setup(client):
     client.add_cog(Fun(client))

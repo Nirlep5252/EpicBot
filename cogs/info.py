@@ -10,6 +10,7 @@ class Info(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['guildinfo', 'server_info', 'guild_info'])
     async def serverinfo(self, ctx):
 
@@ -80,6 +81,7 @@ class Info(commands.Cog):
         #     embed.add_field(name=name, value=value, inline=inline)
         # await ctx.send(embed=embed)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['profile', 'pfp'])
     async def avatar(self, ctx, target: Optional[Member]):
         target = target or ctx.author
@@ -113,9 +115,10 @@ class Info(commands.Cog):
 
     #     await ctx.send(embed=embed)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def botinfo(self, ctx):
-        embed = discord.Embed(title = "**Bot Info**", description = f"I was built by `Nirlep_5252_` on 3rd September. My help command is `e!help`. I am currently in `{len(self.client.guilds)}` servers, and i have more than `{len(set(self.client.get_all_members()))}` users. I have a total of `76` commands.", color = 0x00FFFF)
+        embed = discord.Embed(title = "**Bot Info**", description = f"I was built by `Nirlep_5252_` on 3rd September. My help command is `e!help`. I am currently in `{len(self.client.guilds)}` servers, and i have more than `{len(set(self.client.get_all_members()))}` users. I have a total of `94` commands.", color = 0x00FFFF)
         embed.set_thumbnail(url='https://media.discordapp.net/attachments/757168151141285929/763336446328438784/bot_profile.png')
         embed.add_field(name = "**Invite EpicBot**",
                         value = f"[Click Here](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847)",
@@ -130,21 +133,25 @@ class Info(commands.Cog):
                         value = f"[Click Here](https://botrix.cc/vote/751100444188737617/)",
                         inline = True)
         embed.add_field(name = "**Our Website**",
-                        value = f"[Click Here](https://tinyurl.com/epicbotdiscord)",
+                        value = f"[Click Here](https://epicbot.gq)",
                         inline = True)
         embed.set_footer(text=f"{ctx.guild}", icon_url=f"{ctx.guild.icon_url}")
         embed.timestamp = datetime.datetime.utcnow()
 
         await ctx.send(embed = embed)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def vote(self, ctx):
-        url = "https://botrix.cc/api/v1/bot/751100444188737617"
+        try:
+            url = "https://botrix.cc/api/v1/bot/751100444188737617"
 
-        response = requests.get(url)
+            response = requests.get(url)
 
-        votes = response.json()
-        vote_count = votes['bot']['votes']
+            votes = response.json()
+            vote_count = votes['bot']['votes']
+        except:
+            pass
 
         embed = discord.Embed(title = "**<:EpicVote:779977591292952576>  Vote EpicBot**",
                                 description = f"Voting EpicBot supports us.\nThanks for voting us and bringing us where we are now.\n\n",
@@ -153,9 +160,14 @@ class Info(commands.Cog):
         embed.add_field(name = "**Vote**",
                         value = f"**[Click Here](https://botrix.cc/vote/751100444188737617/)** to vote.",
                         inline = False)
-        embed.add_field(name = "**Total Votes**",
-                        value = f"\> {vote_count}",
-                        inline = False)
+        try:
+            embed.add_field(name = "**Total Votes**",
+                            value = f"\> {vote_count}",
+                            inline = False)
+        except:
+            embed.add_field(name = "**Total Votes**",
+                            value = f"An error occured.",
+                            inline = False)
 
         embed.add_field(name = "‎",
                         value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
@@ -165,6 +177,7 @@ class Info(commands.Cog):
         embed.timestamp = datetime.datetime.utcnow()
         await ctx.send(embed = embed)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['role-info', 'role_info'])
     async def roleinfo(self, ctx, role: discord.Role):
         embed = discord.Embed(
@@ -182,6 +195,7 @@ class Info(commands.Cog):
 
         await ctx.send(embed = embed)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def invite(self, ctx):
         try:
@@ -220,6 +234,7 @@ class Info(commands.Cog):
 
             await ctx.send(embed=embed)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def bug_report(self, ctx):
         user = ctx.author
@@ -232,6 +247,7 @@ class Info(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['discord'])
     async def support(self, ctx):
         embed = discord.Embed(title = "<:EpicDiscord:770889292746194964>  Support Server", description = f"Hey {ctx.author.mention}! You can join our discord support server by [Clicking Here](https://discord.gg/Zj7h8Fp), OR by using this link - https://discord.gg/Zj7h8Fp", color = 0x008080)

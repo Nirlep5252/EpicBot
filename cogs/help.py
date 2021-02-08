@@ -1,53 +1,361 @@
 import discord
 import datetime
 from discord.ext import commands
+from discord.ext.commands import cooldown, BucketType
+from discord.ext.commands import (CommandOnCooldown)
+from disputils import BotEmbedPaginator, BotConfirmation, BotMultipleChoice
+
+# yes
 
 class Help(commands.Cog):
     def __init__(self, client):
-        self.client = client
+        self.client = client # e
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['test'])
     async def ping(self, ctx):
         await ctx.message.reply(f'Latency: {round(self.client.latency * 1000)}ms')
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def help(self, ctx, *, category = None):
         if category == None:
-            embed = discord.Embed(title = "**All Commands(76)**",
+            # embed = discord.Embed(title = "**All Commands(89)**",
+            #                         description = "To get detailed help for a command, do `e!help [command]`.",
+            #                         color = 0x00FFFF)
+            # embed.add_field(name = "🔧 • Utility(14)",
+            #                 value = f"Type `e!help utility` for more info.```\n😍-NQN\n❔-Prefix\n⛅-Weather\n😵-SelfDestruct\n📢-Announce\n🎉-Giveaway\n📑-Translate\n📊-Poll\n⏰-Countdown\n🔗-Create Invite\n🟠-Coin Flip\n🔢-Random Number\n🎲-Dice\n📨-Embed\n```",
+            #                 inline = True)
+            # embed.add_field(name = "🛠️ • Moderation(10)",
+            #                 value = f"Type `e!help moderation` for more info.```\n⚠️-Warn\n⚠ - Warnings\n🔨-Ban\n⛏️-Kick\n🍀-Unban\n🔴-Clear\n❌-Delete Channel\n✅-Create Channel\n➕-Add Role\n➖-Remove Role\n```",
+            #                 inline = True)
+            # embed.add_field(name = "😀 • Fun(16)",
+            #                 value = f"Type `e!help fun` for more info.```\n😂-Freenitro\n🔫-Snipe\n🔫-EditSnipe\n😊-Howcute\n😍-Simpfor\n😊-OWO\n💻-Hack\n😁-Mock\n💓-Aesthetic\n😂-Dad Joke\n🤣-Meme\n📜-Quote\n👩‍🏫-Advice\n🗣️-Say\n💬-Ascii\n🕵️‍♀️-Predict\n```",
+            #                 inline = True)
+            # embed.add_field(name = "💸 • Economy(10)",
+            #                 value = f"Type `e!help economy` for more info.```\n💰-Balance\n👜-Inventory\n🏪-Shop\n🎰-Slots\n🛒-Buy\n🛍️-Sell\n💱-Withdraw\n💱-Deposit\n🎁-Give\n🙏-Beg\n```",
+            #                 inline = True)
+            # embed.add_field(name = "🖼️ • Image(12)",
+            #                 value = f"Type `e!help image` for more info.```\n🐱-Cat\n🐶-Dog\n🦊-Fox\n🔥-Burn\n🚮-Trash\n😡-Angry\n📚-Fact\n🧠-Illness\n😱-Shock\n🗡️-Wanted\n🤗-Hug\n🥰-Anime\n```",
+            #                 inline = True)
+            # embed.add_field(name = "ℹ️ • Info(5)",
+            #                 value = f"Type `e!help info` for more info.```\n🦠-Covid-19\n👥-UserInfo\n📈-ServerInfo\n🤖-BotInfo\n🖼️-Avatar\n```",
+            #                 inline = True)
+            # embed.add_field(name = "🤖 • Bot(8)",
+            #                 value = f"Type `e!help bot` for more info.```\n✅-Help\n📈-Stats\n⬆️-Uptime\n❤️-Invite\n🔼-Vote\n🔗-Discord\n👤-Privacy\n🐞-Bug Report\n```",
+            #                 inline = True)
+            # embed.add_field(name = "🎮 • Games(2)",
+            #                 value = f"Type `e!help games` for more info.```\n✅-Tic-Tac-Toe\n📃-Rock-Paper-Scissors\n```",
+            #                 inline = True)
+            # embed.add_field(name = "🎶 • Music(9)",
+            #                 value = f"Type `e!help music` for more info.```\n🔊-Connect\n🎶-Play\n🎵-Nowplaying\n⏸-Pause\n▶-Resume\n🧾-Queue\n⏭-Skip\n⏹-Stop\n🔉-Volume```",
+            #                 inline = True)
+            # if ctx.channel.is_nsfw():
+            #     embed.add_field(name = "🔞 • NSFW(3)",
+            #                     value = "Type `e!help nsfw` for more info.```🤤-Hentai\n😋-Thighs\n🥰-Nekogif```",
+            #                     inline = True)
+            # else:
+            #     pass
+
+            # embed.add_field(name = "‎",
+            #                 value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+            #                 inline = False)
+            # # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            # embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            # embed.timestamp = datetime.datetime.utcnow()
+            # await ctx.send(embed = embed)
+
+            embeds = [
+                discord.Embed(
+                    title = "Help Menu (Page 1)",
+                    description = "React to this message to navigate the help menu.\nFor more info on commands or categories please use `e!help <cmd>`",
+                    color = 0x00FFFF
+                ),
+                discord.Embed(
+                    title=":wrench: • Utility Commands (Page 2)",
+                    description = "For more info please use `e!help utility`.",
+                    color = 0x00FFFF
+                ).add_field(
+                    name = "Commands(14)",
+                    value = """
+                        ```
+😍-NQN
+❔-Prefix
+⛅-Weather
+😵-SelfDestruct
+📢-Announce
+🎉-Giveaway
+📑-Translate
+📊-Poll
+⏰-Countdown
+🔗-Create Invite
+🟠-Coin Flip
+🔢-Random Number
+🎲-Dice
+📨-Embed```
+                    """
+                ),
+                discord.Embed(
+                    title=":tools: • Moderation Commands (Page 3)",
+                    description="For more info please use `e!help moderation`.",
+                    color=0x00FFFF
+                ).add_field(
+                    name="Commands(10)",
+                    value="""
+                        ```
+⚠️-Warn
+⚠️-Warnings
+🔨-Ban
+⛏️-Kick
+🍀-Unban
+🔴-Clear
+❌-Delete Channel
+✅-Create Channel
+➕-Add Role
+➖-Remove Role```
+                    """
+                ),
+                discord.Embed(
+                    title=":grinning: • Fun Commands(Page 4)",
+                    description="For more info please use `e!help fun`.",
+                    color = 0x00FFFF
+                ).add_field(
+                    name="Commands(16)",
+                    value="""
+                        ```
+😂-Freenitro
+🔫-Snipe
+🔫-EditSnipe
+😊-Howcute
+😍-Simpfor
+😊-OWO
+💻-Hack
+😁-Mock
+💓-Aesthetic
+😂-Dad Joke
+🤣-Meme
+📜-Quote
+👩‍🏫-Advice
+🗣️-Say
+💬-Ascii
+🕵️‍♀️-Predict```
+                    """
+                ),
+                discord.Embed(
+                    title=":notes: • Music Commands(Page 5)",
+                    description="For more info please use `e!help music`.",
+                    color=0x00FFFF
+                ).add_field(
+                    name="Commands(9)",
+                    value="""
+                        ```
+🔊-Connect
+🎶-Play
+🎵-Nowplaying
+⏸-Pause
+⏯-Resume
+🧾-Queue
+⏭-Skip
+⏹-Stop
+🔉-Volume```
+                    """
+                ),
+                discord.Embed(
+                    title=":money_with_wings: • Economy Commands(Page 6)",
+                    description="For more info please use `e!help economy`.",
+                    color=0x00FFFF
+                ).add_field(
+                    name="Commands(10)",
+                    value="""
+                        ```
+💰-Balance
+👜-Inventory
+🏪-Shop
+🎰-Slots
+🛒-Buy
+🛍️-Sell
+💱-Withdraw
+💱-Deposit
+🎁-Give
+🙏-Beg```
+                    """
+                ),
+                discord.Embed(
+                    title=":frame_photo: • Image Commands(Page 7)",
+                    description="For more info please use `e!help image`.",
+                    color=0x00FFFF
+                ).add_field(
+                    name="Commands(11)",
+                    value="""
+                        ```
+🐱-Cat
+🐶-Dog
+🦊-Fox
+🔥-Burn
+🚮-Trash
+😡-Angry
+📚-Fact
+🧠-Illness
+😱-Shock
+🗡️-Wanted
+🥰-Anime```
+                    """
+                ),
+                discord.Embed(
+                    title = "<:HugPlease:801710974117740554> • Action Commands(Page 8)",
+                    description="For more info please use `e!help action`.",
+                    color = 0x00FFFF
+                ).add_field(
+                    name = "Commands(3)",
+                    value = """
+```🤗-Hug
+💋-Kiss
+💞-Pat```
+                    """
+                ),
+
+                discord.Embed(
+                    title="<:EpicInfo:766498653753049109> • Info Commands(Page 9)",
+                    description="For more info please use `e!help info`.",
+                    color=0x00FFFF
+                ).add_field(
+                    name="Commands(5)",
+                    value="""
+                        ```
+🦠-Covid-19
+👥-UserInfo
+📈-ServerInfo
+🤖-BotInfo
+🖼️-Avatar```
+                    """
+                ),
+                discord.Embed(
+                    title="<a:PetEpicBot:797142108611280926> • Bot Commands(Page 10)",
+                    description="For more info please use `e!help bot`.",
+                    color=0x00FFFF
+                ).add_field(
+                    name="Commands(8)",
+                    value="""
+                        ```
+✅-Help
+📈-Stats
+⬆️-Uptime
+❤️-Invite
+🔼-Vote
+🔗-Discord
+👤-Privacy
+🐞-Bug Report```
+                    """
+                ),
+                discord.Embed(
+                    title=":video_game: • Game Commands(Page 11)",
+                    description="For more info please use `e!help games`.",
+                    color=0x00FFFF
+                ).add_field(
+                    name="Commands(2)",
+                    value="""
+                        ```
+✅-Tic-Tac-Toe
+📃-Rock-Paper-Scissors```
+                    """
+                )
+            ]
+
+            paginator = BotEmbedPaginator(ctx, embeds)
+            await paginator.run()
+
+        elif category.lower() == "music":
+            embed = discord.Embed(title = "**Music Commands(9)**",
                                     description = "To get detailed help for a command, do `e!help [command]`.",
                                     color = 0x00FFFF)
-            embed.add_field(name = "🔧 • Utility(12)",
-                            value = f"Type `e!help utility` for more info.```\n❔-Prefix\n⛅-Weather\n😵-SelfDestruct\n📢-Announce\n🎉-Giveaway\n📑-Translate\n📊-Poll\n⏰-Countdown\n🔗-Create Invite\n🟠-Coin Flip\n🔢-Random Number\n🎲-Dice\n```",
+            embed.add_field(name = "🔊 - Connect",
+                            value = "Usage: `e!connect`",
                             inline = True)
-            embed.add_field(name = "🛠️ • Moderation(10)",
-                            value = f"Type `e!help moderation` for more info.```\n⚠️-Warn\n⚠ - Warnings\n🔨-Ban\n⛏️-Kick\n🍀-Unban\n🔴-Clear\n❌-Delete Channel\n✅-Create Channel\n➕-Add Role\n➖-Remove Role\n```",
+            embed.add_field(name = "🎶 - Play",
+                            value = "Usage: `e!play <song/url>`",
                             inline = True)
-            embed.add_field(name = "😀 • Fun(14)",
-                            value = f"Type `e!help fun` for more info.```\n😂-Freenitro\n🔫-Snipe\n🔫-EditSnipe\n😊-Howcute\n😍-Simpfor\n😊-OWO\n💻-Hack\n😂-Dad Joke\n🤣-Meme\n📜-Quote\n👩‍🏫-Advice\n🗣️-Say\n💬-Ascii\n🕵️‍♀️-Predict\n```",
+            embed.add_field(name = "🎵 - Nowplaying",
+                            value = "Usage: `e!nowplaying`",
                             inline = True)
-            embed.add_field(name = "💸 • Economy(10)",
-                            value = f"Type `e!help economy` for more info.```\n💰-Balance\n👜-Inventory\n🏪-Shop\n🎰-Slots\n🛒-Buy\n🛍️-Sell\n💱-Withdraw\n💱-Deposit\n🎁-Give\n🙏-Beg\n```",
+            embed.add_field(name = "⏸ - Pause",
+                            value = "Usage: `e!pause`",
                             inline = True)
-            embed.add_field(name = "🖼️ • Image(12)",
-                            value = f"Type `e!help image` for more info.```\n🐱-Cat\n🐶-Dog\n🦊-Fox\n🔥-Burn\n🚮-Trash\n😡-Angry\n📚-Fact\n🧠-Illness\n😱-Shock\n🗡️-Wanted\n🤗-Hug\n🥰-Anime\n```",
+            embed.add_field(name = "▶ - Resume",
+                            value = "Usage: `e!resume`",
                             inline = True)
-            embed.add_field(name = "ℹ️ • Info(5)",
-                            value = f"Type `e!help info` for more info.```\n🦠-Covid-19\n👥-UserInfo\n📈-ServerInfo\n🤖-BotInfo\n🖼️-Avatar\n```",
+            embed.add_field(name = "🧾 - Queue",
+                            value = "Usage: `e!queue`",
                             inline = True)
-            embed.add_field(name = "🤖 • Bot(8)",
-                            value = f"Type `e!help bot` for more info.```\n✅-Help\n📈-Stats\n⬆️-Uptime\n❤️-Invite\n🔼-Vote\n🔗-Discord\n👤-Privacy\n🐞-Bug Report\n```",
+            embed.add_field(name = "⏭ - Skip",
+                            value = "Usage: `e!skip`",
                             inline = True)
-            embed.add_field(name = "🎮 • Games(2)",
-                            value = f"Type `e!help games` for more info.```\n✅-Tic-Tac-Toe\n📃-Rock-Paper-Scissors\n```",
+            embed.add_field(name = "⏹ - Stop",
+                            value = "Usage: `e!stop`",
                             inline = True)
-            if ctx.channel.is_nsfw():
-                embed.add_field(name = "🔞 • NSFW(3)",
-                                value = "Type `e!help nsfw` for more info.```🤤-Hentai\n😋-Thighs\n🥰-Nekogif```",
-                                inline = True)
-            else:
-                embed.add_field(name = "🔞 • NSFW(3)",
-                                value = "Type `e!help nsfw` for more info.```Will only be shown in a NSFW channel.```",
-                                inline = True)
+            embed.add_field(name = "🔉 - Volume",
+                            value = "Usage: `e!volume <amount>`",
+                            inline = True)
+
+            embed.add_field(name = "‎",
+                            value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                            inline = False)
+            # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed = embed)
+
+        elif category.lower() == "action" or category.lower() == "actions":
+            embed = discord.Embed(
+                    title = "**Action Commands(3)**",
+                    description = "To get detailed help for a command, do `e!help [command]`.",
+                    color = 0x00FFFF
+                )
+            embed.add_field(name = "🤗 - Hug",
+                            value = "Usage: `e!hug <user>`",
+                            inline = True)
+            embed.add_field(name = "💋 - Kiss",
+                            value = "Usage: `e!kiss <user>`",
+                            inline = True)
+            embed.add_field(name = "💞 - Pat",
+                            value = "Usage: `e!pat <user>`",
+                            inline = True)
+
+            embed.add_field(name = "‎",
+                            value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                            inline = False)
+            # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed = embed)
+
+        elif category.lower() == "utility" or category.lower() == "utils" or category.lower() == "util":
+            embed = discord.Embed(title = "**Utility Commands(14)**",
+                                    description = "To get detailed help for a command, do `e!help [command]`.",
+                                    color = 0x00FFFF)
+            embed.add_field(name = "😍 - NQN",
+                            value = "Usage: `e!nqn enable/disable`",
+                            inline = True)
+            embed.add_field(name = "❔ - Prefix",
+                            value = "Usage: `e!prefix [new prefix]`",
+                            inline = True)
+            embed.add_field(name = "⛅ - Weather", value = "Usage: `e!weather <location>`", inline = True)
+            embed.add_field(name = "📨 - Embed", value = "Usage: `e!embed <#hexcolor> | <title> | description`", inline = True)
+            embed.add_field(name = "🎉 - Giveaway", value = "Usage: `e!giveaway`", inline = True)
+            embed.add_field(name = "😵 - SelfDestruct", value = "Usage `e!selfdestruct <text channel> <time> <message>`", inline = True)
+            embed.add_field(name = "📢 - Announce", value = "Usage: `e!announce`", inline = True)
+            embed.add_field(name = "📑 - Translate", value = "Usage: `e!translate [language] [text]`", inline = True)
+            embed.add_field(name = "📊 - Poll", value = "Usage: `e!poll \"[topic]\" [option1] [option2] [option3]...`", inline = True)
+            embed.add_field(name = "⏰ - Countdown", value = "Usage: `e!countdown`", inline = True)
+            embed.add_field(name = "🔗 - Create Invite", value = "Usage: `e!create_invite`", inline = True)
+            embed.add_field(name = "🎲 - Dice",
+                            value = "Usage: `e!dice`",
+                            inline = True)
+            embed.add_field(name = ":coin: - CoinFlip",
+                            value = "Usage: `e!flip`",
+                            inline = True)
+            embed.add_field(name = "🔢 - Random Number",
+                            value = "Usage: `e!randomnumber [num1] [num2]`",
+                            inline = True)
 
             embed.add_field(name = "‎",
                             value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
@@ -60,27 +368,39 @@ class Help(commands.Cog):
         elif category.lower() == "nsfw":
             if ctx.channel.is_nsfw():
                 embed = discord.Embed(
-                    title = "**NSFW Commands(3)**",
+                    title = "**NSFW Commands(6)**",
                     description = "To get detailed help for a command, do `e!help [command]`.",
                     color = 0x00FFFF
                 )
-
                 embed.add_field(
                     name = "🤤 - Hentai",
-                    value = "Usage: `e!hentai`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                    inline = False
+                    value = "Usage: `e!hentai`",
+                    inline = True
                 )
-
                 embed.add_field(
                     name = "😋 - Thighs",
-                    value = "Usage: `e!thighs`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                    inline = False
+                    value = "Usage: `e!thighs`",
+                    inline = True
                 )
-
                 embed.add_field(
                     name = "🥰 - Nekogif",
-                    value = "Usage: `e!nekogif`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                    inline = False
+                    value = "Usage: `e!nekogif`",
+                    inline = True
+                )
+                embed.add_field(
+                    name = "😊 - Boobs",
+                    value = "Usage: `e!boobs`",
+                    inline = True
+                )
+                embed.add_field(
+                    name = "🍆 - Blowjob",
+                    value = "Usage: `e!blowjob`",
+                    inline = True
+                )
+                embed.add_field(
+                    name = "🍑 - Pussy",
+                    value = "Usage: `e!pussy`",
+                    inline = True
                 )
 
                 embed.add_field(name = "‎",
@@ -93,61 +413,40 @@ class Help(commands.Cog):
             else:
                 await ctx.send("This command can only be used in a NSFW channel.")
 
-        elif category.lower() == "utility" or category.lower() == "utils" or category.lower() == "util":
-            embed = discord.Embed(title = "**Utility Commands(8)**",
-                                    description = "To get detailed help for a command, do `e!help [command]`.",
-                                    color = 0x00FFFF)
-            embed.add_field(name = "⛅ - Weather", value = "Usage: `e!weather <location>`\nRequired User Permissions: `None`\nReqiured Bot Permissions: `Send Messages`", inline = False)
-            embed.add_field(name = "😵 - SelfDestruct", value = "Usage `e!selfdestruct <text channel> <time> <message>`\nRequired User Permissions: `Manage Server`\nRequired Bot Permissions: `Send Messages`", inline = False)
-            embed.add_field(name = "📢 - Announce", value = "Usage: `e!announce`\nRequired User Permissions: `Manage Server`\nRequired Bot Permissions: `Send Messages`", inline = False)
-            embed.add_field(name = "🎉 - Giveaway", value = "Usage: `e!giveaway`\nRequired User Permissions: `Manage Server`\nRequired Bot Permissions: `Send Messages`, `Add Reactions`", inline = False)
-            embed.add_field(name = "📑 - Translate", value = "Usage: `e!translate [language] [text]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`", inline = False)
-            embed.add_field(name = "📊 - Poll", value = "Usage: `e!poll [topic] [option1] [option2] [option3]...`\nRequired User Permissions: `Manage Server`\nRequired Bot Permissions: `Send Messages`, `Add Reactions`", inline = False)
-            embed.add_field(name = "⏰ - Countdown", value = "Usage: `e!countdown`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`", inline = False)
-            embed.add_field(name = "🔗 - Create Invite", value = "Usage: `e!create_invite`\nRequired User Permissions: `Create Invites`\nRequired Bot Permissions: `Create Invites`", inline = False)
-
-            embed.add_field(name = "‎",
-                            value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
-                            inline = False)
-            # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
-            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
-            embed.timestamp = datetime.datetime.utcnow()
-            await ctx.send(embed = embed)
-
         elif category.lower() == "moderation" or category.lower() == "mod" or category.lower() == "admin":
             embed = discord.Embed(title = "**Moderation Commands(10)**",
                                     description = "To get detailed help for a command, do `e!help [command]`.",
                                     color = 0x00FFFF)
             embed.add_field(name = "🔴 - Clear",
-                            value = "Usage: `e!clear [amount]`\nRequired User Permissions: `Manage Messages`\nRequired Bot Permissions: `Send Messages, Manage Messages`",
-                            inline = False)
+                            value = "Usage: `e!clear [amount]`",
+                            inline = True)
             embed.add_field(name = "⛏️ - Kick",
-                            value = "Usage: `e!kick [user] [reason(optional)]`\nRequired User Permissions: `Kick Members`\nRequired Bot Permissions: `Send Messages, Kick Members`",
-                            inline = False)
+                            value = "Usage: `e!kick [user] [reason(optional)]`",
+                            inline = True)
             embed.add_field(name = "🔨 - Ban",
-                            value = "Usage: `e!ban [user] [reason(optional)]`\nRequired User Permissions: `Ban Members`\nRequired Bot Permissions: `Send Messages, Ban Members`",
-                            inline = False)
+                            value = "Usage: `e!ban [user] [reason(optional)]`",
+                            inline = True)
             embed.add_field(name = "🍀 - Unban",
-                            value = "Usage: `e!unban [user]`\nRequired User Permissions: `Ban Members`\nRequired Bot Permissions: `Send Messages, Ban Members`",
-                            inline = False)
+                            value = "Usage: `e!unban [user]`",
+                            inline = True)
             embed.add_field(name = "⚠️ - Warn",
-                            value = "Usage: `e!warn [user] [reason]`\nRequired User Permissions: `Kick Members`\nRequired Bot Permissions: `Send Messages, Kick Members`",
-                            inline = False)
+                            value = "Usage: `e!warn [user] [reason]`",
+                            inline = True)
             embed.add_field(name = f"⚠  - Warnings",
-                            value = f"Usage: `e!warns [user]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = f"Usage: `e!warns [user]`",
+                            inline = True)
             embed.add_field(name = "✅ - Create Channel",
-                            value = "Usage: `e!createchannel [name]`\nRequired User Permissions: `Manage Channels`\nRequired Bot Permissions: `Send Messages, Manage Channels`",
-                            inline = False)
+                            value = "Usage: `e!createchannel [name]`",
+                            inline = True)
             embed.add_field(name = "❌ - Delete Channel",
-                            value = "Usage: `e!deletechannel [name]`\nRequired User Permissions: `Manage Channels`\nRequired Bot Permissions: `Send Messages, Manage Channels`",
-                            inline = False)
+                            value = "Usage: `e!deletechannel [name]`",
+                            inline = True)
             embed.add_field(name = "<:EpicRemove:771674521731989536> - Add Role",
-                            value = "Usage: `e!addrole [user] [role]`\nRequired User Permissions: `Manage Roles`\nRequired Bot Permissions: `Send Messages, Manage Roles`",
-                            inline = False)
+                            value = "Usage: `e!addrole [user] [role]`",
+                            inline = True)
             embed.add_field(name = "<:EpicAdd:771674521471549442> - Remove Role",
-                            value = "Usage: `e!removerole [user] [role]`\nRequired User Permissions: `Manage Roles`\nRequired Bot Permissions: `Send Messages, Manage Roles`",
-                            inline = False)
+                            value = "Usage: `e!removerole [user] [role]`",
+                            inline = True)
 
             embed.add_field(name = "‎",
                             value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
@@ -158,60 +457,57 @@ class Help(commands.Cog):
             await ctx.send(embed = embed)
 
         elif category.lower() == "fun":
-            embed = discord.Embed(title = "**Fun Commands(17)**",
+            embed = discord.Embed(title = "**Fun Commands(16)**",
                                     description = "To get detailed help for a command, do `e!help [command]`.",
                                     color = 0x00FFFF)
             embed.add_field(name = "😂 - Freenitro",
-                            value = "Usage: `e!freenitro`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!freenitro`",
+                            inline = True)
             embed.add_field(name = "🔫 - Snipe",
-                            value = "Usage: `e!snipe`\nRequired User Permissions: `None`\nReqiured Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!snipe`",
+                            inline = True)
             embed.add_field(name = "🔫 - EditSnipe",
-                            value = "Usage: `e!editsnipe`\nRequired User Permissions: `None`\nReqiured Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!editsnipe`",
+                            inline = True)
             embed.add_field(name = "😊 - Howcute",
-                            value = "Usage: `e!howcute [user]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!howcute [user]`",
+                            inline = True)
             embed.add_field(name = "😍 - Simpfor",
-                            value = "Usage: `e!simpfor <user>`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!simpfor <user>`",
+                            inline = True)
             embed.add_field(name = "💻 - Hack",
-                            value = "Usage: `e!hack [user]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!hack <user>`",
+                            inline = True)
             embed.add_field(name = "😊 - OWO",
-                            value = "Usage: `e!owo [text]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!owo <text>`",
+                            inline = True)
+            embed.add_field(name = "💓 - Aesthetic",
+                            value = "Usage: `e!aesthetic <text> | [type]`",
+                            inline = True)
             embed.add_field(name = "😂 - Dad Jokes",
-                            value = "Usage: `e!dadjoke`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!dadjoke`",
+                            inline = True)
             embed.add_field(name = "🤣 - Meme",
-                            value = "Usage: `e!meme`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!meme`",
+                            inline = True)
             embed.add_field(name = "👩‍🏫 - Advice",
-                            value = "Usage: `e!advice`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!advice`",
+                            inline = True)
             embed.add_field(name = "🗣️ - Say",
-                            value = "Usage: `e!say [text]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!say <text>`",
+                            inline = True)
             embed.add_field(name = "💬 - Ascii",
-                            value = "Usage: `e!ascii <text>`\nReqiured User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!ascii <text>`",
+                            inline = True)
             embed.add_field(name = "📜 - Quote",
-                            value = "Usage: `e!quote`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!quote`",
+                            inline = True)
             embed.add_field(name = "🕵️‍♀️ - Predict",
-                            value = "Usage: `e!predict [question]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
-            embed.add_field(name = "🎲 - Dice",
-                            value = "Usage: `e!dice`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
-            embed.add_field(name = ":coin: - CoinFlip",
-                            value = "Usage: `e!flip`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
-            embed.add_field(name = "🔢 - Random Number",
-                            value = "Usage: `e!randomnumber [num1] [num2]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!predict <question>`",
+                            inline = True)
+            embed.add_field(name = "😁 - Mock",
+                            value = "Usage: `e!mock <text>`",
+                            inline = True)
 
             embed.add_field(name = "‎",
                             value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
@@ -226,35 +522,35 @@ class Help(commands.Cog):
                                     description = "To get detailed help for a command, do `e!help [command]`.",
                                     color = 0x00FFFF)
             embed.add_field(name = "💰 - Balance",
-                            value = "Usage: `e!balance`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!balance`",
+                            inline = True)
             embed.add_field(name = "👜 - Inventory",
-                            value = "Usage: `e!bag`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!bag`",
+                            inline = True)
             embed.add_field(name = "🏪 - Shop",
-                            value = "Usage: `e!shop`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!shop`",
+                            inline = True)
             embed.add_field(name = "🎰 - Slots",
-                            value = "Usage: `e!slots [money]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!slots [money]`",
+                            inline = True)
             embed.add_field(name = "🛒 - Buy",
-                            value = "Usage: `e!buy [item]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!buy [item]`",
+                            inline = True)
             embed.add_field(name = "🛍️ - Sell",
-                            value = "Usage: `e!sell [item]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!sell [item]`",
+                            inline = True)
             embed.add_field(name = "💱 - Withdraw",
-                            value = "Usage: `e!withdraw [amount]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!withdraw [amount]`",
+                            inline = True)
             embed.add_field(name = "💱 - Deposit",
-                            value = "Usage: `e!deposit [amount]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!deposit [amount]`",
+                            inline = True)
             embed.add_field(name = "🎁 - Give",
-                            value = "Usage: `e!give [user] [amount]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!give [user] [amount]`",
+                            inline = True)
             embed.add_field(name = "🙏 - Beg",
-                            value = "Usage: `e!beg`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!beg`",
+                            inline = True)
 
             embed.add_field(name = "‎",
                             value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
@@ -269,41 +565,41 @@ class Help(commands.Cog):
                                     description = "To get detailed help for a command, do `e!help [command]`.",
                                     color = 0x00FFFF)
             embed.add_field(name = "🐱 - Cat",
-                            value = "Usage: `e!cat`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages, Attach Files`",
-                            inline = False)
+                            value = "Usage: `e!cat`",
+                            inline = True)
             embed.add_field(name = "🐶 - Dog",
-                            value = "Usage: `e!dog`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages, Attach Files`",
-                            inline = False)
+                            value = "Usage: `e!dog`",
+                            inline = True)
             embed.add_field(name = "🦊 - Fox",
-                            value = "Usage: `e!fox`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages, Attach Files`",
-                            inline = False)
+                            value = "Usage: `e!fox`",
+                            inline = True)
             embed.add_field(name = "🥰 - Anime",
-                            value = "Usage: `e!anime`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Message, Attach Files`",
-                            inline = False)
+                            value = "Usage: `e!anime`",
+                            inline = True)
             embed.add_field(name = "🤗 - Hug",
-                            value = "Usage: `e!hug [user]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages, Attach Files`",
-                            inline = False)
+                            value = "Usage: `e!hug [user]`",
+                            inline = True)
             embed.add_field(name = "🔥 - Burn",
-                            value = "Usage: `e!burn [user]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages, Attach Files`",
-                            inline = False)
+                            value = "Usage: `e!burn [user]`",
+                            inline = True)
             embed.add_field(name = "🚮 - Trash",
-                            value = "Usage: `e!trash [user]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages, Attach Files`",
-                            inline = False)
+                            value = "Usage: `e!trash [user]`",
+                            inline = True)
             embed.add_field(name = "😡 - Angry",
-                            value = "Usage: `e!angry [user]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages, Attach Files`",
-                            inline = False)
+                            value = "Usage: `e!angry [user]`",
+                            inline = True)
             embed.add_field(name = "📚 - Fact",
-                            value = "Usage: `e!fact [text]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages, Attach Files`",
-                            inline = False)
+                            value = "Usage: `e!fact [text]`",
+                            inline = True)
             embed.add_field(name = "🧠 - Illness",
-                            value = "Usage: `e!illness [text]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages, Attach Files`",
-                            inline = False)
+                            value = "Usage: `e!illness [text]`",
+                            inline = True)
             embed.add_field(name = "😱 - Shock",
-                            value = "Usage: `e!shock [text]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages, Attach Files`",
-                            inline = False)
+                            value = "Usage: `e!shock [text]`",
+                            inline = True)
             embed.add_field(name = "🗡️ - Wanted",
-                            value = "Usage: `e!wanted [user]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages, Attach Files`",
-                            inline = False)
+                            value = "Usage: `e!wanted [user]`",
+                            inline = True)
 
             embed.add_field(name = "‎",
                             value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
@@ -314,21 +610,24 @@ class Help(commands.Cog):
             await ctx.send(embed = embed)
 
         elif category.lower() == "info":
-            embed = discord.Embed(title = "**Info Commands(4)**",
+            embed = discord.Embed(title = "**Info Commands(5)**",
                                     description = "To get detailed help for a command, do `e!help [command]`.",
                                     color = 0x00FFFF)
             embed.add_field(name = "<:EpicCovid:768701899959697408> - Covid-19",
-                            value = "Usage: `e!covid [country]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!covid [country]`",
+                            inline = True)
             embed.add_field(name = "👥 - UserInfo",
-                            value = "Usage: `e!userinfo [user]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!userinfo [user]`",
+                            inline = True)
             embed.add_field(name = "📈 - ServerInfo",
-                            value = "Usage: `e!serverinfo`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages, Manage Server, View Audit Log, View Members List`",
-                            inline = False)
+                            value = "Usage: `e!serverinfo`",
+                            inline = True)
+            embed.add_field(name = "🤖 - BotInfo",
+                            value = "Usage: `e!botinfo`",
+                            inline = True)
             embed.add_field(name = "🖼️ - Avatar",
-                            value = "Usage: `e!avatar [user]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages, Attach Files`",
-                            inline = False)
+                            value = "Usage: `e!avatar [user]`",
+                            inline = True)
 
             embed.add_field(name = "‎",
                             value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
@@ -339,39 +638,33 @@ class Help(commands.Cog):
             await ctx.send(embed = embed)
 
         elif category.lower() == "bot" or category.lower() == "epicbot":
-            embed = discord.Embed(title = "**Bot Commands(10)**",
+            embed = discord.Embed(title = "**Bot Commands(8)**",
                                     description = "To get detailed help for a command, do `e!help [command]`.",
                                     color = 0x00FFFF)
             embed.add_field(name = "✅ - Help",
-                            value = "Usage: `e!help [category/cmd(optional)]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
-            embed.add_field(name = "❔ - Prefix",
-                            value = "Usage: `e!prefix [new prefix]`\nRequired User Permissions: `Administrator`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!help [cmd]`",
+                            inline = True)
             embed.add_field(name = "<:RamHeart:758103228058566656> - Invite",
-                            value = "Usage: `e!invite`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!invite`",
+                            inline = True)
             embed.add_field(name = "📈 - Stats",
-                            value = "Usage: `e!stats`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!stats`",
+                            inline = True)
             embed.add_field(name = "⬆️ - Uptime",
-                            value = "Usage: `e!uptime`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!uptime`",
+                            inline = True)
             embed.add_field(name = "⬆️ - Vote",
-                            value = f"Usage: `e!vote`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = f"Usage: `e!vote`",
+                            inline = True)
             embed.add_field(name = "<:EpicDiscord:770889292746194964> - Discord",
-                            value = "Usage: `e!discord`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
-            embed.add_field(name = "🤖 - BotInfo",
-                            value = "Usage: `e!botinfo`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!discord`",
+                            inline = True)
             embed.add_field(name = "👤 - Privacy",
-                            value = "Usage: `e!privacy`\nRequired User Permissions: `None`\nReqiured Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!privacy`",
+                            inline = True)
             embed.add_field(name = "🐞 - Bug Report",
-                            value = "Usage: `e!bug_report`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!bug_report`",
+                            inline = True)
 
             embed.add_field(name = "‎",
                             value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
@@ -386,27 +679,11 @@ class Help(commands.Cog):
                                     description = "To get detailed help for a command, do `e!help [command]`.",
                                     color = 0x00FFFF)
             embed.add_field(name = "📃 - Rock, Paper, Scissors",
-                            value = "Usage: `e!rps [rock/paper/scissors]`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`",
-                            inline = False)
+                            value = "Usage: `e!rps [rock/paper/scissors]`",
+                            inline = True)
             embed.add_field(name = "✅ - Tic-Tac-Toe",
-                            value = "Usage: `e!tictactoe`\nRequired User Permissions: `None`\nRequired Bot Permissions: `Send Messages`, `Add Reactions`, `Manage Messages`",
-                            inline = False)
-
-            embed.add_field(name = "‎",
-                            value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
-                            inline = False)
-            # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
-            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
-            embed.timestamp = datetime.datetime.utcnow()
-            await ctx.send(embed = embed)
-
-        elif category.lower() == "music":
-            embed = discord.Embed(title = "**Music Commands(0)**",
-                                    description = "To get detailed help for a command, do `e!help [command]`.",
-                                    color = 0x00FFFF)
-            embed.add_field(name = "No music commands are available right now, they will be added soon...",
-                            value = "For more info on when they will be added join our [Discord Server](https://discord.gg/Zj7h8Fp).",
-                            inline = False)
+                            value = "Usage: `e!tictactoe`",
+                            inline = True)
 
             embed.add_field(name = "‎",
                             value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
@@ -1401,6 +1678,175 @@ class Help(commands.Cog):
                 await ctx.send(embed=embed)
             else:
                 await ctx.send("This command can only be used in a NSFW channel.")
+
+        elif category.lower() == "mock":
+            embed = discord.Embed(title = "**Mock Command**",
+                                    description = "**Usage:** `e!mock <text>` \n- Mock someone.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "embed":
+            embed = discord.Embed(title = "**Embed Command**",
+                                    description = "**Usage:** `e!embed <#hexcolor> | <title> | <description>` \n- Make an embed from your message.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "aesthetic" or category.lower() == "atc":
+            embed = discord.Embed(title = "**Aesthetic Command**",
+                                    description = "**Usage:** `e!aesthetic <text> | [mode]` \n- Applies an awesome aesthetic filter to your text 😳.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "connect" or category.lower() == "join":
+            embed = discord.Embed(title = "**Connect Command**",
+                                    description = "**Usage:** `e!connect` \n- The bot will connect to your voice channel.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`, `Connect`, `Speak`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "play":
+            embed = discord.Embed(title = "**Play Command**",
+                                    description = "**Usage:** `e!play <song/url>` \n- The bot will play this song.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`, `Connect`, `Speak`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "nowplaying":
+            embed = discord.Embed(title = "**Nowplaying Command**",
+                                    description = "**Usage:** `e!nowplaying` \n- This bot will show the current playing song.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`, `Connect`, `Speak`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "pause":
+            embed = discord.Embed(title = "**Pause Command**",
+                                    description = "**Usage:** `e!pause` \n- This will pause the current playing song.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`, `Connect`, `Speak`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "resume":
+            embed = discord.Embed(title = "**Resume Command**",
+                                    description = "**Usage:** `e!resume` \n- This will resume the music if it's paused.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`, `Connect`, `Speak`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "queue":
+            embed = discord.Embed(title = "**Queue Command**",
+                                    description = "**Usage:** `e!queue` \n- This will show the current queue.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`, `Connect`, `Speak`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "skip":
+            embed = discord.Embed(title = "**Skip Command**",
+                                    description = "**Usage:** `e!skip` \n- This will skip the current song.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`, `Connect`, `Speak`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "stop":
+            embed = discord.Embed(title = "**Stop Command**",
+                                    description = "**Usage:** `e!stop` \n- This will stop the music and clear the queue.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`, `Connect`, `Speak`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "volume":
+            embed = discord.Embed(title = "**Volume Command**",
+                                    description = "**Usage:** `e!volume <amount>` \n- This will change the volume.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`, `Connect`, `Speak`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "nqn":
+            embed = discord.Embed(title = "**NQN Command**",
+                                    description = "**Usage:** `e!nqn enable/disable` \n- This will enable/disable NQN mode for your server.\n\n**Required User Permissions:** `Manage Server`\n**Required Bot Permissions:** `Send Messages`, `Manage Webhooks`, `Manage Messages`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
 
         else:
             await ctx.send("Couldn't find the command.")

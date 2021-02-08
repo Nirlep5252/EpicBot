@@ -16,15 +16,19 @@ class Stats(commands.Cog):
     async def on_command(self, ctx):
         self.api.command_run(ctx)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def stats(self, ctx):
         try:
-            url2 = "https://botrix.cc/api/v1/bot/751100444188737617"
+            try:
+                url2 = "https://botrix.cc/api/v1/bot/751100444188737617"
 
-            response2 = requests.get(url2)
+                response2 = requests.get(url2)
 
-            votes = response2.json()
-            vote_count = votes['bot']['votes']
+                votes = response2.json()
+                vote_count = votes['bot']['votes']
+            except:
+                pass
 
             url = "https://api.statcord.com/v3/751100444188737617"
             response = requests.get(url)
@@ -44,14 +48,17 @@ class Stats(commands.Cog):
                             value = f"{yes['data'][0]['commands']}",
                             inline = True)
             embed.add_field(name = "**Total cmds:**",
-                            value = f"76",
+                            value = f"94",
                             inline = True)
             embed.add_field(name = "**Most used cmd:**",
                             value = f"`e!{yes['data'][0]['popular'][0]['name']}` - {yes['data'][0]['popular'][0]['count']} uses",
                             inline = True)
-            embed.add_field(name = "**Total Votes:**",
-                            value = f"{vote_count}",
-                            inline = True)
+            try:
+                embed.add_field(name = "**Total Votes:**",
+                                value = f"{vote_count}",
+                                inline = True)
+            except:
+                pass
             embed.add_field(name = "**Ping:**",
                             value = f"{round(self.client.latency * 1000)}ms",
                             inline = True)
