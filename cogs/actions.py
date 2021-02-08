@@ -8,7 +8,7 @@ class Actions(commands.Cog):
 
 	@commands.cooldown(1, 5, commands.BucketType.user)
 	@commands.command()
-	async def hug(self, ctx, user: discord.User = None):
+	async def hug(self, ctx, user: discord.Member = None):
 		if user == None:
 			await ctx.message.reply(f"Why are you so lonely? Mention someone that you wanna hug, you can't hug yourself :(")
 			return
@@ -24,7 +24,7 @@ class Actions(commands.Cog):
 
 	@commands.cooldown(1, 5, commands.BucketType.user)
 	@commands.command()
-	async def kiss(self, ctx, user: discord.User = None):
+	async def kiss(self, ctx, user: discord.Member = None):
 		if user == None:
 			await ctx.message.reply(f"Why are you so lonely? Mention someone that you wanna kiss, you can't kiss yourself :(")
 			return
@@ -40,7 +40,7 @@ class Actions(commands.Cog):
 
 	@commands.cooldown(1, 5, commands.BucketType.user)
 	@commands.command()
-	async def pat(self, ctx, user: discord.User = None):
+	async def pat(self, ctx, user: discord.Member = None):
 		if user == None:
 			await ctx.message.reply(f"Why are you so lonely? Mention someone that you wanna pat, you can't pat yourself :(")
 			return
