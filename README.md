@@ -2,7 +2,7 @@
   <img src="https://cdn.discordapp.com/attachments/749996055369875459/808166922415636550/logo.png" height='100px' width='100px'>
 </h2>
 
-<h1 align="center">Epic<span style="color: #F1EC40;">Bot</span> 🏅</h1>
+<h1 align="center">EpicBot 🏅</h1>
 <h4 align="center">A simple, multipurpose Discord bot.</h4>
 
 <h2>Features</h2>
