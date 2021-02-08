@@ -220,7 +220,7 @@ async def wanted(ctx, user: discord.Member = None):
     if user == None:
         user = ctx.author
 
-    wanted = Image.open("wanted.jpg")
+    wanted = Image.open("images/wanted.jpg")
 
     asset = user.avatar_url_as(size = 4096)
     data = BytesIO(await asset.read())
@@ -236,7 +236,7 @@ async def wanted(ctx, user: discord.Member = None):
 @client.command(aliases = ['mental', 'illness', 'mentalillness', 'illness_mental', 'illnessmental'])
 async def mental_illness(ctx, *, text = "I didn't use to put any text in the mental illness command."):
 
-    img = Image.open("illness.jpg")
+    img = Image.open("images/illness.jpg")
 
     draw = ImageDraw.Draw(img)
     font = ImageFont.truetype("arial.ttf", 33)
@@ -247,7 +247,7 @@ async def mental_illness(ctx, *, text = "I didn't use to put any text in the men
 
 @client.command(aliases = ['fax', 'facts'])
 async def fact(ctx, *, text = "You didn't put any text here."):
-    img = Image.open("facts.jpg")
+    img = Image.open("images/facts.jpg")
     draw = ImageDraw.Draw(img)
     font = ImageFont.truetype("arial.ttf", 25)
     draw.text((55, 700), text, (0, 0, 0), font = font)
@@ -257,7 +257,7 @@ async def fact(ctx, *, text = "You didn't put any text here."):
 @client.command(aliases = ['shocked', 'ramshocked', 'ram_shocked'])
 async def shock(ctx, *, text = "You have to put some text here."):
 
-    img = Image.open("ram_shocked.jpg")
+    img = Image.open("images/ram_shocked.jpg")
 
     draw = ImageDraw.Draw(img)
     font = ImageFont.truetype("arial.ttf", 35)
@@ -269,7 +269,7 @@ async def shock(ctx, *, text = "You have to put some text here."):
 @client.command(aliases = ['trump', 'trumpsays', 'trumpsaid', 'trump_said'])
 async def trump_says(ctx, *, text = f"You didn't enter\nany text here."):
 
-    img = Image.open("trump.jpg")
+    img = Image.open("images/trump.jpg")
     draw = ImageDraw.Draw(img)
     font = ImageFont.truetype("arial.ttf", 38)
     draw.text((360, 286), text, (0, 0, 0), font = font)
@@ -281,7 +281,7 @@ async def burn(ctx, user: discord.Member = None):
     if user == None:
         user = ctx.author
 
-    burn = Image.open("burn.jpg")
+    burn = Image.open("images/burn.jpg")
 
     asset = user.avatar_url_as(size = 4096)
     data = BytesIO(await asset.read())
@@ -299,7 +299,7 @@ async def angry(ctx, user: discord.Member = None):
     if user == None:
         user = ctx.author
 
-    angry = Image.open("angry.jpg")
+    angry = Image.open("images/angry.jpg")
 
     asset = user.avatar_url_as(size = 4096)
     data = BytesIO(await asset.read())
@@ -317,7 +317,7 @@ async def trash(ctx, user: discord.Member = None):
     if user == None:
         user = ctx.author
 
-    trash = Image.open("trash.jpg")
+    trash = Image.open("images/trash.jpg")
 
     asset = user.avatar_url_as(size = 4096)
     data = BytesIO(await asset.read())
