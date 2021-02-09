@@ -70,7 +70,7 @@ def get_prefix(client, message):
     # return commands.when_mentioned_or(prefix)(client, message)
 intents = discord.Intents.default()
 intents.members = True
-client = commands.Bot(command_prefix = get_prefix, intents = intents)
+client = commands.Bot(command_prefix = get_prefix, intents = intents, case_insensitive = True)
 client.remove_command('help')
 # status = cycle(['e!help', 'A Bot by Nirlep_5252_'])
 
@@ -527,32 +527,32 @@ async def on_command_error(ctx, error):
         title='',
         color=discord.Color.red())
     if isinstance(error, commands.CommandOnCooldown):
-        msg = 'This command is on cooldown, please try again after {:.2f} seconds.'.format(error.retry_after)
-        await ctx.send(msg)
+        msg = 'This command is on cooldown, please try again after **{:.2f}** seconds.'.format(error.retry_after)
+        await ctx.message.reply(msg)
         return
 
     if isinstance(error, commands.MissingPermissions):
-        await ctx.send(f"You don't have sufficient permissions to execute this command.")
+        await ctx.message.reply(f"You don't have sufficient permissions to execute this command.")
         return
 
     if isinstance(error, commands.BotMissingPermissions):
-        await ctx.send(f"Looks like I don't have enough permissions to do that please try again after checking my permissions.")
+        await ctx.message.reply(f"Looks like I don't have enough permissions to do that please try again after checking my permissions.")
         return
 
     if isinstance(error, commands.errors.MemberNotFound):
-        await ctx.send(f"I wasn't able to find that user please try again.")
+        await ctx.message.reply(f"I wasn't able to find that user please try again.")
         return
 
     if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send(f"Please enter all the required arguments for the command. Type `e!help` for more info on the commands.")
+        await ctx.message.reply(f"Please enter all the required arguments for the command. Type `e!help` for more info on the commands.")
         return
 
     if isinstance(error, commands.BadArgument):
-        await ctx.send(f"One or more of the arguments is invalid please try again.")
+        await ctx.message.reply(f"One or more of the arguments is invalid please try again.")
         return
 
     if isinstance(error, commands.NotOwner):
-        await ctx.send(f"i see a cocksucker trying to use owner only commands")
+        await ctx.message.reply(f"i see a cocksucker trying to use owner only commands")
         return
     else:
         embed.add_field(name=f':x: Terminal Error', value=f"```{error}```")
@@ -933,7 +933,7 @@ async def update_bank(user, change = 0, mode = "wallet"):
 
 
 
-    
+
 
 # client.loop.create_task(ch_pr())
 client.run(os.environ.get("BOT_TOKEN"))
