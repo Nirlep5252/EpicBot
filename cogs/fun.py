@@ -24,6 +24,11 @@ class Fun(commands.Cog):
         await ctx.send(embed = embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command(aliases = ['randomname'])
+    async def random_name(self, ctx):
+        await ctx.message.reply(requests.get("https://nekos.life/api/v2/name").json()['name'])
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['howcute'])
     async def how_cute(self, ctx, user: discord.Member = None):
         if user == None:
@@ -33,7 +38,7 @@ class Fun(commands.Cog):
 
         embed = discord.Embed(title = "Cuteness Detector", description = f"{user.mention} is **{random.randint(0, 100)}%** cute. {random.choice(randomFaces)}", color = 0xFFC0CB)
         embed.set_thumbnail(url = user.avatar_url)
-        await ctx.send(embed = embed)
+        await ctx.message.reply(embed = embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['simpfor'])
@@ -44,7 +49,7 @@ class Fun(commands.Cog):
 
         embed = discord.Embed(title = "New Simp", description = f"{ctx.author.mention} just simped for {user.mention} <a:EpicPeepoSimp:758955006039818261>.", color = 0xFFC0CB)
         embed.set_thumbnail(url = user.avatar_url)
-        await ctx.send(embed = embed)
+        await ctx.message.reply(embed = embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['dadjoke', 'joke', 'ramjoke', 'ram_joke'])
@@ -59,7 +64,7 @@ class Fun(commands.Cog):
         response = requests.request("GET", url, headers=headers)
         joke = response.json()
 
-        await ctx.send(joke['content'])
+        await ctx.message.reply(joke['content'])
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
@@ -67,7 +72,24 @@ class Fun(commands.Cog):
         results = requests.get('https://type.fit/api/quotes').json()
         num = random.randint(1, 1500)
         content = results[num]['text']
-        await ctx.send(content)
+        await ctx.message.reply(content)
+
+    # @commands.cooldown(1, 5, commands.BucketType.user)
+    # @commands.command()
+    # async def hug(self, ctx, user: discord.Member):
+    #     hugs = ['https://acegif.com/wp-content/gif/anime-hug-86.gif',
+    #             'https://acegif.com/wp-content/gif/anime-hug-19.gif',
+    #             'https://i.pinimg.com/originals/f2/80/5f/f2805f274471676c96aff2bc9fbedd70.gif',
+    #             'https://acegif.com/wp-content/uploads/anime-hug.gif',
+    #             'https://i.pinimg.com/originals/85/72/a1/8572a1d1ebaa45fae290e6760b59caac.gif',
+    #             'https://64.media.tumblr.com/296601d3c45ceea663f5d5dd052025c3/dad1de4967f02b18-56/s640x960/e77460ffb4d1900c59131faf08c448efe41f1d3e.gif']
+
+    #     embed = discord.Embed(title = "Incoming Hug... ", description = f"{ctx.author.mention} just gave a strong hug to {user.mention} <a:EpicHug:766549597493395457>", color = 0x00FF0C)
+    #     embed.set_image(url = random.choice(hugs))
+    #     embed.set_footer(text=f"{ctx.guild}", icon_url=f"{ctx.guild.icon_url}")
+    #     embed.timestamp = datetime.datetime.utcnow()
+
+    #     await ctx.send(embed = embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
@@ -76,13 +98,13 @@ class Fun(commands.Cog):
 
         for word in filter:
             if msg.count(word) > 0:
-                await ctx.send(f"Sorry, I won't ping anyone. Try something else.")
+                await ctx.message.reply(f"Sorry, I won't ping anyone. Try something else.")
                 return
 
         if msg == None:
-            await ctx.send(f"Please enter a message that you want me to say.")
+            await ctx.message.reply(f"Please enter a message that you want me to say.")
         else:
-            await ctx.send(msg)
+            await ctx.message.reply(msg)
         # await ctx.send("This command is temporarily unavailable. Join our discord server -> discord.gg/Zj7h8Fp")
 
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -96,7 +118,7 @@ class Fun(commands.Cog):
                     embed = discord.Embed(title = "Meow! <:EpicConfusedCat:750217867898650644>", color = 0x00FF0C)
                     embed.set_image(url = data['file'])
 
-                    await ctx.send(embed=embed)
+                    await ctx.message.reply(embed=embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases=['dogs'])
@@ -109,7 +131,7 @@ class Fun(commands.Cog):
                     embed = discord.Embed(title = "Woof!", color = 0x00FF0C)
                     embed.set_image(url = data['url'])
 
-                    await ctx.send(embed=embed)
+                    await ctx.message.reply(embed=embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
@@ -118,18 +140,18 @@ class Fun(commands.Cog):
         response = requests.get(url)
         advice = response.json()
         real_advice = advice['slip']['advice']
-        await ctx.send(real_advice)
+        await ctx.message.reply(real_advice)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def ascii(self, ctx, *, text = None):
         if text == None:
-            await ctx.send(f"Please enter some text.")
+            await ctx.message.reply(f"Please enter some text.")
         else:
             if len(pyfiglet.figlet_format(text)) > 2000:
-                await ctx.send(f"Text too long. Please enter short text.")
+                await ctx.message.reply(f"Text too long. Please enter short text.")
             else:
-                await ctx.send(f"```{pyfiglet.figlet_format(text)}```")
+                await ctx.message.reply(f"```{pyfiglet.figlet_format(text)}```")
 
 
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -141,21 +163,21 @@ class Fun(commands.Cog):
 
         embed = discord.Embed(color = 0x00FFFF)
         embed.set_image(url = fox['image'])
-        await ctx.send(embed = embed)
+        await ctx.message.reply(embed = embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def mock(self, ctx, *,text=None):
 
         if text == None:
-            await ctx.send("Please enter some text!")
+            await ctx.message.reply("Please enter some text!")
         else:
 
             filter = ['@here', '@everyone', '<@&', '<@!']
 
             for word in filter:
                 if text.count(word) > 0:
-                    await ctx.send(f"Sorry, I won't ping anyone. Try something else.")
+                    await ctx.message.reply(f"Sorry, I won't ping anyone. Try something else.")
                     return
 
             res = ""
@@ -165,7 +187,7 @@ class Fun(commands.Cog):
                     res += c.upper()
                 else:
                     res += c.lower()
-            await ctx.send(res)
+            await ctx.message.reply(res)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases=["atc"])
@@ -194,15 +216,15 @@ class Fun(commands.Cog):
         elif m == "i":
             s += "_"
 
-        await ctx.send(s)
+        await ctx.message.reply(s)
 
     @commands.command()
     async def lurk(self, ctx):
         if ctx.guild.id != 719157704467152977:
-            await ctx.send(f"This is private command you can't use it here.")
+            await ctx.message.reply(f"This is private command you can't use it here.")
             return
         user = ctx.author
-        await ctx.send(f"{user.mention} has gone to get Chicken Nuggets! We will miss them! ok bye:tm:")
+        await ctx.message.reply(f"{user.mention} has gone to get Chicken Nuggets! We will miss them! ok bye:tm:")
 
 def setup(client):
     client.add_cog(Fun(client))

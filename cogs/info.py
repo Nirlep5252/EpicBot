@@ -118,7 +118,7 @@ class Info(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def botinfo(self, ctx):
-        embed = discord.Embed(title = "**Bot Info**", description = f"I was built by `Nirlep_5252_` on 3rd September. My help command is `e!help`. I am currently in `{len(self.client.guilds)}` servers, and i have more than `{len(set(self.client.get_all_members()))}` users. I have a total of `94` commands.", color = 0x00FFFF)
+        embed = discord.Embed(title = "**Bot Info**", description = f"I was built by `Nirlep_5252_` on 3rd September. My help command is `e!help`. I am currently in `{len(self.client.guilds)}` servers, and i have more than `{len(set(self.client.get_all_members()))}` users. I have a total of `98` commands.", color = 0x00FFFF)
         embed.set_thumbnail(url='https://media.discordapp.net/attachments/757168151141285929/763336446328438784/bot_profile.png')
         embed.add_field(name = "**Invite EpicBot**",
                         value = f"[Click Here](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847)",
@@ -143,26 +143,35 @@ class Info(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def vote(self, ctx):
+        # try:
+        #     url = "https://botrix.cc/api/v1/bot/751100444188737617"
+
+        #     response = requests.get(url)
+
+        #     votes = response.json()
+        #     vote_count = votes['bot']['votes']
+        # except:
+        #     pass
+
         try:
-            url = "https://botrix.cc/api/v1/bot/751100444188737617"
-
-            response = requests.get(url)
-
-            votes = response.json()
-            vote_count = votes['bot']['votes']
-        except:
-            pass
+            eeee = requests.get("https://top.gg/api/bots/751100444188737617").json()
+            vote_count = eeee['points']
+            monthly_vote_count = eeee['monthlyPoints']
+        except Exception as e:
+            print(e)
 
         embed = discord.Embed(title = "**<:EpicVote:779977591292952576>  Vote EpicBot**",
                                 description = f"Voting EpicBot supports us.\nThanks for voting us and bringing us where we are now.\n\n",
                                 color = 0x00FFFF)
-        # embed.set_thumbnail(url='https://media.discordapp.net/attachments/757168151141285929/763336446328438784/bot_profile.png')
         embed.add_field(name = "**Vote**",
-                        value = f"**[Click Here](https://botrix.cc/vote/751100444188737617/)** to vote.",
+                        value=f"**[Click Here](https://top.gg/bot/751100444188737617/vote)** to vote.",
                         inline = False)
         try:
             embed.add_field(name = "**Total Votes**",
                             value = f"\> {vote_count}",
+                            inline = False)
+            embed.add_field(name = "**Monthly Votes**",
+                            value = f"\> {monthly_vote_count}",
                             inline = False)
         except:
             embed.add_field(name = "**Total Votes**",

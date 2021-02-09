@@ -48,7 +48,7 @@ class Stats(commands.Cog):
                             value = f"{yes['data'][0]['commands']}",
                             inline = True)
             embed.add_field(name = "**Total cmds:**",
-                            value = f"94",
+                            value = f"98",
                             inline = True)
             embed.add_field(name = "**Most used cmd:**",
                             value = f"`e!{yes['data'][0]['popular'][0]['name']}` - {yes['data'][0]['popular'][0]['count']} uses",

@@ -68,7 +68,7 @@ class Help(commands.Cog):
             embeds = [
                 discord.Embed(
                     title = "Help Menu (Page 1)",
-                    description = "React to this message to navigate the help menu.\nFor more info on commands or categories please use `e!help <cmd>`",
+                    description = "React to this message to navigate the help menu.\nFor more info on commands or categories please use `e!help <cmd>`\n\n**Total Commands:** 94",
                     color = 0x00FFFF
                 ),
                 discord.Embed(
@@ -120,7 +120,7 @@ class Help(commands.Cog):
                     description="For more info please use `e!help fun`.",
                     color = 0x00FFFF
                 ).add_field(
-                    name="Commands(16)",
+                    name="Commands(17)",
                     value="""
                         ```
 😂-Freenitro
@@ -138,7 +138,8 @@ class Help(commands.Cog):
 👩‍🏫-Advice
 🗣️-Say
 💬-Ascii
-🕵️‍♀️-Predict```
+🕵️‍♀️-Predict
+👨-Randomname```
                     """
                 ),
                 discord.Embed(
@@ -206,11 +207,13 @@ class Help(commands.Cog):
                     description="For more info please use `e!help action`.",
                     color = 0x00FFFF
                 ).add_field(
-                    name = "Commands(3)",
+                    name = "Commands(5)",
                     value = """
 ```🤗-Hug
 💋-Kiss
-💞-Pat```
+💞-Pat
+🖐-Slap
+😆-Tickle```
                     """
                 ),
 
@@ -306,7 +309,7 @@ class Help(commands.Cog):
 
         elif category.lower() == "action" or category.lower() == "actions":
             embed = discord.Embed(
-                    title = "**Action Commands(3)**",
+                    title = "**Action Commands(5)**",
                     description = "To get detailed help for a command, do `e!help [command]`.",
                     color = 0x00FFFF
                 )
@@ -318,6 +321,12 @@ class Help(commands.Cog):
                             inline = True)
             embed.add_field(name = "💞 - Pat",
                             value = "Usage: `e!pat <user>`",
+                            inline = True)
+            embed.add_field(name = "🖐 - Slap",
+                            value = "Usage: `e!slap <user>`",
+                            inline = True)
+            embed.add_field(name = "😆 - Tickle",
+                            value = "Usage: `e!tickle <user>`",
                             inline = True)
 
             embed.add_field(name = "‎",
@@ -368,7 +377,7 @@ class Help(commands.Cog):
         elif category.lower() == "nsfw":
             if ctx.channel.is_nsfw():
                 embed = discord.Embed(
-                    title = "**NSFW Commands(6)**",
+                    title = "**NSFW Commands(7)**",
                     description = "To get detailed help for a command, do `e!help [command]`.",
                     color = 0x00FFFF
                 )
@@ -400,6 +409,11 @@ class Help(commands.Cog):
                 embed.add_field(
                     name = "🍑 - Pussy",
                     value = "Usage: `e!pussy`",
+                    inline = True
+                )
+                embed.add_field(
+                    name = "🖐 - Spank",
+                    value = "Usage: `e!spank <user>`",
                     inline = True
                 )
 
@@ -457,7 +471,7 @@ class Help(commands.Cog):
             await ctx.send(embed = embed)
 
         elif category.lower() == "fun":
-            embed = discord.Embed(title = "**Fun Commands(16)**",
+            embed = discord.Embed(title = "**Fun Commands(17)**",
                                     description = "To get detailed help for a command, do `e!help [command]`.",
                                     color = 0x00FFFF)
             embed.add_field(name = "😂 - Freenitro",
@@ -507,6 +521,9 @@ class Help(commands.Cog):
                             inline = True)
             embed.add_field(name = "😁 - Mock",
                             value = "Usage: `e!mock <text>`",
+                            inline = True) # 👨-Randomname
+            embed.add_field(name = "👨 - Randomname",
+                            value = "Usage: `e!randomname`",
                             inline = True)
 
             embed.add_field(name = "‎",
@@ -1679,6 +1696,70 @@ class Help(commands.Cog):
             else:
                 await ctx.send("This command can only be used in a NSFW channel.")
 
+        elif category.lower() == "boobs":
+            if ctx.channel.is_nsfw():
+                embed = discord.Embed(title = "**Boobs Command**",
+                                        description = "**Usage:** `e!boobs` \n- Sends a random boobs image.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`",
+                                        color = 0x00FFFF)
+
+                embed.add_field(name="‎",
+                                  value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                                  inline=False)
+                  # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+                embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+                embed.timestamp = datetime.datetime.utcnow()
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("This command can only be used in a NSFW channel.")
+
+        elif category.lower() == "blowjob":
+            if ctx.channel.is_nsfw():
+                embed = discord.Embed(title = "**Blowjob Command**",
+                                        description = "**Usage:** `e!blowjob` \n- Sends a random blowjob image/gif.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`",
+                                        color = 0x00FFFF)
+
+                embed.add_field(name="‎",
+                                  value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                                  inline=False)
+                  # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+                embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+                embed.timestamp = datetime.datetime.utcnow()
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("This command can only be used in a NSFW channel.")
+
+        elif category.lower() == "pussy":
+            if ctx.channel.is_nsfw():
+                embed = discord.Embed(title = "**Pussy Command**",
+                                        description = "**Usage:** `e!pussy` \n- Sends a random pussy image/gif.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`",
+                                        color = 0x00FFFF)
+
+                embed.add_field(name="‎",
+                                  value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                                  inline=False)
+                  # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+                embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+                embed.timestamp = datetime.datetime.utcnow()
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("This command can only be used in a NSFW channel.")
+
+        elif category.lower() == "spank":
+            if ctx.channel.is_nsfw():
+                embed = discord.Embed(title = "**Spank Command**",
+                                        description = "**Usage:** `e!spank <user>` \n- You spanked the user.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`",
+                                        color = 0x00FFFF)
+
+                embed.add_field(name="‎",
+                                  value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                                  inline=False)
+                  # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+                embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+                embed.timestamp = datetime.datetime.utcnow()
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("This command can only be used in a NSFW channel.")
+
         elif category.lower() == "mock":
             embed = discord.Embed(title = "**Mock Command**",
                                     description = "**Usage:** `e!mock <text>` \n- Mock someone.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`",
@@ -1838,6 +1919,84 @@ class Help(commands.Cog):
         elif category.lower() == "nqn":
             embed = discord.Embed(title = "**NQN Command**",
                                     description = "**Usage:** `e!nqn enable/disable` \n- This will enable/disable NQN mode for your server.\n\n**Required User Permissions:** `Manage Server`\n**Required Bot Permissions:** `Send Messages`, `Manage Webhooks`, `Manage Messages`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "hug":
+            embed = discord.Embed(title = "**Hug Command**",
+                                    description = "**Usage:** `e!hug <user>` \n- You give a warm hug to the user.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "kiss":
+            embed = discord.Embed(title = "**Kiss Command**",
+                                    description = "**Usage:** `e!kiss <user>` \n- You give a kiss to the user.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "pat":
+            embed = discord.Embed(title = "**Pat Command**",
+                                    description = "**Usage:** `e!pat <user>` \n- You pat the user.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "slap":
+            embed = discord.Embed(title = "**Slap Command**",
+                                    description = "**Usage:** `e!slap <user>` \n- Someone's misbehaving? SLAP THEM!.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "tickle":
+            embed = discord.Embed(title = "**Tickle Command**",
+                                    description = "**Usage:** `e!tickle <user>` \n- Tickle, tickle!\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "randomname":
+            embed = discord.Embed(title = "**Randomname Command**",
+                                    description = "**Usage:** `e!randomname` \n- Sends a random generated name.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`",
                                     color = 0x00FFFF)
 
             embed.add_field(name="‎",

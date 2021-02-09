@@ -1,41 +1,69 @@
 import discord
 from discord import utils
-from discord.ext import commands 
+from discord.ext import commands
 from pymongo import MongoClient
-import os 
+import os
 
 conn = MongoClient(os.environ.get("MONGODB_LINK"))
 db = conn["EpicBot"]
 
 nqn = db["nqn"]
+nqn_block = db["nqn_blocked"]
 
 class NQN(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.command(aliases = ['nqnblock'])
+    @commands.is_owner()
+    async def nqn_block(self, ctx, userID = None):
+        if userID == None:
+            await ctx.send(f"Please enter a user id to block.")
+            return
+        else:
+            if nqn_block.find_one({"_id": userID}) == None:
+                await nqn_block.insert_one({"_id": userID})
+                await ctx.send(f"lol <@{userID}> can't use nqn now kek")
+            else:
+                await ctx.send(f"They are already blocked kek.")
+
+    @commands.command(aliases = ['nqnunblock'])
+    @commands.is_owner()
+    async def nqn_unblock(self, ctx, userID = None):
+        if userID == None:
+            await ctx.send(f"Please enter a user id to unblock.")
+            return
+        else:
+            if nqn_block.find_one({"_id": userID}) != None:
+                await nqn_block.delete_one({"_id": userID})
+                await ctx.send(f"<@{userID}> have now been unblocked and can now use nqn.")
+            else:
+                await ctx.send(f"They aren't blocked so I can't unblock them.")
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     @commands.has_permissions(manage_guild = True)
     async def nqn(self, ctx, nqn_mode = None):
         if nqn_mode == None:
-            await ctx.send(f"Please enter a selection. Usage: `e!nqn enable/disable` to turn if on/off.")
+            await ctx.message.reply(f"Please enter a selection. Usage: `e!nqn enable/disable` to turn if on/off.")
             return
         if nqn_mode.lower() == "enable":
             lol = nqn.find_one({"_id": ctx.guild.id})
             if lol == None:
                 nqn.insert_one({"_id": ctx.guild.id})
-                await ctx.send(f"NQN mode has now been **enabled** for this server. Please make sure I have **Manage Webhooks** permissions for this server.")
+                await ctx.message.reply(f"NQN mode has now been **enabled** for this server. Please make sure I have **Manage Webhooks** permissions for this server.")
                 return
             else:
-                await ctx.send(f"NQN mode is already **enabled** for this server. To disable it you can use `e!nqn disable`.")
+                await ctx.message.reply(f"NQN mode is already **enabled** for this server. To disable it you can use `e!nqn disable`.")
                 return
         if nqn_mode.lower() == "disable":
             lmao = nqn.find_one({"_id": ctx.guild.id})
             if lmao != None:
                 nqn.delete_one({"_id": ctx.guild.id})
-                await ctx.send(f"NQN mode has now been **disabled** for this server. To enable it you can use `e!nqn enable`.")
+                await ctx.message.reply(f"NQN mode has now been **disabled** for this server. To enable it you can use `e!nqn enable`.")
                 return
             else:
-                await ctx.send(f"NQN mode hasn't been enabled for this server. To enable it you can use `e!nqn enable`.")
+                await ctx.message.reply(f"NQN mode hasn't been enabled for this server. To enable it you can use `e!nqn enable`.")
                 return
         else:
             await ctx.send(f"That's not a valid option. Please use it like this: `e!nqn enable/disable`")
