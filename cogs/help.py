@@ -68,7 +68,7 @@ class Help(commands.Cog):
             embeds = [
                 discord.Embed(
                     title = "Help Menu (Page 1)",
-                    description = "React to this message to navigate the help menu.\nFor more info on commands or categories please use `e!help <cmd>`\n\n**Total Commands:** 94",
+                    description = "React to this message to navigate the help menu.\nFor more info on commands or categories please use `e!help <cmd>`\n\n**Total Commands:** 98\n**Voter Only Commands:** 0\n**Premium Commands:** 0",
                     color = 0x00FFFF
                 ),
                 discord.Embed(
