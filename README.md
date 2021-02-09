@@ -5,6 +5,8 @@
 <h1 align="center">EpicBot 🏅</h1>
 <h4 align="center">A simple, multipurpose Discord bot.</h4>
 
+[![Discord Bots](https://top.gg/api/widget/status/751100444188737617.svg)](https://top.gg/bot/751100444188737617) &nbsp; [![Discord Bots](https://top.gg/api/widget/servers/751100444188737617.svg)](https://top.gg/bot/751100444188737617) &nbsp; [![Discord Bots](https://top.gg/api/widget/upvotes/751100444188737617.svg)](https://top.gg/bot/751100444188737617) &nbsp; [![Discord Bots](https://top.gg/api/widget/owner/751100444188737617.svg)](https://top.gg/bot/751100444188737617)
+
 <h2>Features</h2>
 <ul>
   <li>Over 100+ commands.</li>
