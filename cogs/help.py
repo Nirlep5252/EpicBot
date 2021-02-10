@@ -68,7 +68,7 @@ class Help(commands.Cog):
             embeds = [
                 discord.Embed(
                     title = "Help Menu (Page 1)",
-                    description = "React to this message to navigate the help menu.\nFor more info on commands or categories please use `e!help <cmd>`\n\n**Total Commands:** 98\n**Voter Only Commands:** 0\n**Premium Commands:** 0",
+                    description = "React to this message to navigate the help menu.\nFor more info on commands or categories please use `e!help <cmd>`\n\n**Total Commands:** 102\n**Voter Only Commands:** 0\n**Premium Commands:** 0",
                     color = 0x00FFFF
                 ),
                 discord.Embed(
@@ -143,7 +143,21 @@ class Help(commands.Cog):
                     """
                 ),
                 discord.Embed(
-                    title=":notes: • Music Commands(Page 5)",
+                    title = "⬆ • Levelling Commands(Page 5)",
+                    description="For more info please use `e!help levelling`.",
+                    color=0x00FFFF
+                ).add_field(
+                    name = "Commands(4)",
+                    value = """
+                    ```
+🔼-Levels
+💬-Levelupchannel
+💹-Rank
+📊-Leaderboard```
+                    """
+                ),
+                discord.Embed(
+                    title=":notes: • Music Commands(Page 6)",
                     description="For more info please use `e!help music`.",
                     color=0x00FFFF
                 ).add_field(
@@ -162,7 +176,7 @@ class Help(commands.Cog):
                     """
                 ),
                 discord.Embed(
-                    title=":money_with_wings: • Economy Commands(Page 6)",
+                    title=":money_with_wings: • Economy Commands(Page 7)",
                     description="For more info please use `e!help economy`.",
                     color=0x00FFFF
                 ).add_field(
@@ -182,7 +196,7 @@ class Help(commands.Cog):
                     """
                 ),
                 discord.Embed(
-                    title=":frame_photo: • Image Commands(Page 7)",
+                    title=":frame_photo: • Image Commands(Page 8)",
                     description="For more info please use `e!help image`.",
                     color=0x00FFFF
                 ).add_field(
@@ -203,7 +217,7 @@ class Help(commands.Cog):
                     """
                 ),
                 discord.Embed(
-                    title = "<:HugPlease:801710974117740554> • Action Commands(Page 8)",
+                    title = "<:HugPlease:801710974117740554> • Action Commands(Page 9)",
                     description="For more info please use `e!help action`.",
                     color = 0x00FFFF
                 ).add_field(
@@ -218,7 +232,7 @@ class Help(commands.Cog):
                 ),
 
                 discord.Embed(
-                    title="<:EpicInfo:766498653753049109> • Info Commands(Page 9)",
+                    title="<:EpicInfo:766498653753049109> • Info Commands(Page 10)",
                     description="For more info please use `e!help info`.",
                     color=0x00FFFF
                 ).add_field(
@@ -233,7 +247,7 @@ class Help(commands.Cog):
                     """
                 ),
                 discord.Embed(
-                    title="<a:PetEpicBot:797142108611280926> • Bot Commands(Page 10)",
+                    title="<a:PetEpicBot:797142108611280926> • Bot Commands(Page 11)",
                     description="For more info please use `e!help bot`.",
                     color=0x00FFFF
                 ).add_field(
@@ -251,7 +265,7 @@ class Help(commands.Cog):
                     """
                 ),
                 discord.Embed(
-                    title=":video_game: • Game Commands(Page 11)",
+                    title=":video_game: • Game Commands(Page 12)",
                     description="For more info please use `e!help games`.",
                     color=0x00FFFF
                 ).add_field(
@@ -266,6 +280,31 @@ class Help(commands.Cog):
 
             paginator = BotEmbedPaginator(ctx, embeds)
             await paginator.run()
+
+        elif category.lower() == "leveling" or category.lower() == "levelling":
+            embed = discord.Embed(title = "**Level Commands(4)**",
+                                    description = "To get detailed help for a command, do `e!help [command]`.",
+                                    color = 0x00FFFF)
+            embed.add_field(name = "🔼 - Levels",
+                            value = "Usage: `e!levels enable/disable`",
+                            inline = True)
+            embed.add_field(name = "💬 - Levelupchannel",
+                            value = "Usage: `e!levelupchannel <channel>`",
+                            inline = True)
+            embed.add_field(name = "💹 - Rank",
+                            value = "Usage: `e!rank [user]`",
+                            inline = True)
+            embed.add_field(name = "📊 - Leaderboard",
+                            value = "Usage: `e!leaderboard`",
+                            inline = True)
+
+            embed.add_field(name = "‎",
+                            value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                            inline = False)
+            # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed = embed)
 
         elif category.lower() == "music":
             embed = discord.Embed(title = "**Music Commands(9)**",
@@ -1997,6 +2036,58 @@ class Help(commands.Cog):
         elif category.lower() == "randomname":
             embed = discord.Embed(title = "**Randomname Command**",
                                     description = "**Usage:** `e!randomname` \n- Sends a random generated name.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "levels":
+            embed = discord.Embed(title = "**Levels Command**",
+                                    description = "**Usage:** `e!levels enable/disable` \n- This enables/disables levelling for your server.\n\n**Required User Permissions:** `Manage Server`\n**Required Bot Permissions:** `Send Messages`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "levelupchannel":
+            embed = discord.Embed(title = "**Levelupchannel Command**",
+                                    description = "**Usage:** `e!levelupchannel <channel>` \n- Changes the level up channel.\n\n**Required User Permissions:** `Manage Server`\n**Required Bot Permissions:** `Send Messages`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "rank":
+            embed = discord.Embed(title = "**Rank Command**",
+                                    description = "**Usage:** `e!rank [user]` \n- Shows the rank of you or the user mentioned.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`",
+                                    color = 0x00FFFF)
+
+            embed.add_field(name="‎",
+                              value="[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
+                              inline=False)
+              # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
+            embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
+            embed.timestamp = datetime.datetime.utcnow()
+            await ctx.send(embed=embed)
+
+        elif category.lower() == "leaderboard":
+            embed = discord.Embed(title = "**Leaderboard Command**",
+                                    description = "**Usage:** `e!leaderboard` \n- Shows the levels leaderboard for the server.\n\n**Required User Permissions:** `None`\n**Required Bot Permissions:** `Send Messages`",
                                     color = 0x00FFFF)
 
             embed.add_field(name="‎",

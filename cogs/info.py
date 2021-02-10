@@ -118,7 +118,7 @@ class Info(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def botinfo(self, ctx):
-        embed = discord.Embed(title = "**Bot Info**", description = f"I was built by `Nirlep_5252_` on 3rd September. My help command is `e!help`. I am currently in `{len(self.client.guilds)}` servers, and i have more than `{len(set(self.client.get_all_members()))}` users. I have a total of `98` commands.", color = 0x00FFFF)
+        embed = discord.Embed(title = "**Bot Info**", description = f"I was built by `Nirlep_5252_` on 3rd September. My help command is `e!help`. I am currently in `{len(self.client.guilds)}` servers, and i have more than `{len(set(self.client.get_all_members()))}` users. I have a total of `102` commands.", color = 0x00FFFF)
         embed.set_thumbnail(url='https://media.discordapp.net/attachments/757168151141285929/763336446328438784/bot_profile.png')
         embed.add_field(name = "**Invite EpicBot**",
                         value = f"[Click Here](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847)",
