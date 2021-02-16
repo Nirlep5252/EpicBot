@@ -918,22 +918,5 @@ async def update_bank(user, change = 0, mode = "wallet"):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # client.loop.create_task(ch_pr())
 client.run(os.environ.get("BOT_TOKEN"))
