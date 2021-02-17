@@ -74,23 +74,6 @@ class Fun(commands.Cog):
         content = results[num]['text']
         await ctx.message.reply(content)
 
-    # @commands.cooldown(1, 5, commands.BucketType.user)
-    # @commands.command()
-    # async def hug(self, ctx, user: discord.Member):
-    #     hugs = ['https://acegif.com/wp-content/gif/anime-hug-86.gif',
-    #             'https://acegif.com/wp-content/gif/anime-hug-19.gif',
-    #             'https://i.pinimg.com/originals/f2/80/5f/f2805f274471676c96aff2bc9fbedd70.gif',
-    #             'https://acegif.com/wp-content/uploads/anime-hug.gif',
-    #             'https://i.pinimg.com/originals/85/72/a1/8572a1d1ebaa45fae290e6760b59caac.gif',
-    #             'https://64.media.tumblr.com/296601d3c45ceea663f5d5dd052025c3/dad1de4967f02b18-56/s640x960/e77460ffb4d1900c59131faf08c448efe41f1d3e.gif']
-
-    #     embed = discord.Embed(title = "Incoming Hug... ", description = f"{ctx.author.mention} just gave a strong hug to {user.mention} <a:EpicHug:766549597493395457>", color = 0x00FF0C)
-    #     embed.set_image(url = random.choice(hugs))
-    #     embed.set_footer(text=f"{ctx.guild}", icon_url=f"{ctx.guild.icon_url}")
-    #     embed.timestamp = datetime.datetime.utcnow()
-
-    #     await ctx.send(embed = embed)
-
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def say(self, ctx, *, msg = None):
@@ -217,14 +200,6 @@ class Fun(commands.Cog):
             s += "_"
 
         await ctx.message.reply(s)
-
-    @commands.command()
-    async def lurk(self, ctx):
-        if ctx.guild.id != 719157704467152977:
-            await ctx.message.reply(f"This is private command you can't use it here.")
-            return
-        user = ctx.author
-        await ctx.message.reply(f"{user.mention} has gone to get Chicken Nuggets! We will miss them! ok bye:tm:")
 
 def setup(client):
     client.add_cog(Fun(client))
