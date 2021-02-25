@@ -30,6 +30,30 @@ class NSFW(commands.Cog):
             await ctx.message.reply(embed = embed)
         else:
             await ctx.message.reply("This command can only be used in a NSFW channel.")
+            
+            
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command()
+    async def hentai(self, ctx):
+        if ctx.channel.id == 768722875972452352:
+            await ctx.send("No.")
+            return
+        if ctx.channel.is_nsfw():
+            response = requests.get("https://nekos.life/api/v2/img/cum")
+
+            realResponse = response.json()
+
+            embed = discord.Embed(
+                title = "There you go!",
+                color = 0xFFC0CB
+            )
+            embed.set_image(url = realResponse['url'])
+
+            await ctx.message.reply(embed = embed)
+        else:
+            await ctx.message.reply("This command can only be used in a NSFW channel.")
+
+   
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
