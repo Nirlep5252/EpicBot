@@ -9,11 +9,11 @@
 
 <h2>Features</h2>
 <ul>
-  <li>Over 100+ commands</li>
-  <li>99% uptime</li>
-  <li>Low latency, super fast response time</li>
-  <li>Web dashboard (coming soon)</li>
-  <li>Extremely high quality Music playback</li>
+  <li>⚙ Over 100+ commands</li>
+  <li>🔼 99% uptime</li>
+  <li>🟢 Low latency, super fast response time</li>
+  <li>🖥 Web dashboard (coming soon)</li>
+  <li>🎶 Extremely high quality Music playback</li>
 </ul>
 
 <h2>How can I contribute?</h2>
