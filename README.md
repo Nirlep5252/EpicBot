@@ -9,15 +9,15 @@
 
 <h2>Features</h2>
 <ul>
-  <li>Over 100+ commands.</li>
-  <li>99%+ uptime.</li>
-  <li>Low latency, super fast response time.</li>
-  <li>Web dashboard! (coming soon)</li>
-  <li>Extremely high quality Music playback.</li>
+  <li>Over 100+ commands</li>
+  <li>99% uptime</li>
+  <li>Low latency, super fast response time</li>
+  <li>Web dashboard (coming soon)</li>
+  <li>Extremely high quality Music playback</li>
 </ul>
 
-<h2>How can i contribute?</h2>
-<p>Maybe if you feel like you can help adding features to EpicBot or fix bugs you do it as follows:</p>
+<h2>How can I contribute?</h2>
+<p>You may help by adding features to EpicBot or fix bugs in the code. Here's how:</p>
 <ol>
   <li>Fork the repository</li>
   <li>Clone your fork: <code>git clone https://gitlab.com/your-username/epicbot.git</code></li>
@@ -31,6 +31,6 @@
   <li><b><img src="https://cdn.discordapp.com/emojis/802082546875498499.png?v=1" height="15px"> - <a href="https://github.com/Nirlep5252">Nirlep_5252_</a></b> - Owner and Head Developer - Pretty much the whole bot.</li>
   <li><b><img src="https://cdn.discordapp.com/emojis/802082858696048660.png?v=1" height="15px"> - <a href="https://github.com/TheUndeadBowman">TheUndeadBowman</a></b> - Helper - Some bot commands.</li>
 </ul>
-<p>Contributing to the repo = we give u special role on Discord, we kiss you on the cheeks and thank you 💖</p>
+<p>For contribution, we give you a role and our eternal love and respect.</p>
 
-<h3 align="center"><a href="https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847">Invite EpicBot</a> | <a href="https://discord.gg/Zj7h8Fp">Discord Server</a> | <a href="https://epicbot.gq">Website</a></h3>
+<h3 align="center"><a href="https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847">Invite EpicBot</a> | <a href="https://discord.gg/Zj7h8Fp">Discord Server</a> | <a href="https://epic-bot.com">Website</a></h3>
