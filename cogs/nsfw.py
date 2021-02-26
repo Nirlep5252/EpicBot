@@ -34,7 +34,7 @@ class NSFW(commands.Cog):
             
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
-    async def hentai(self, ctx):
+    async def cum(self, ctx):
         if ctx.channel.id == 768722875972452352:
             await ctx.send("No.")
             return
