@@ -4,55 +4,44 @@ import os
 import json
 from discord.ext import commands
 from discord.ext.commands import cooldown, BucketType
-import datetime
 from discord.ext.commands import (CommandOnCooldown)
 
 class Weather(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    #def parse_weather_data(self, data):
-        #data = data['main']
-        #del data['humidity']
-        #del data['pressure']
-        #return data
+    def parse_weather_data(self, data):
+        data = data['main']
+        del data['humidity']
+        del data['pressure']
+        return data
 
     def weather_message(self, data, location):
         location = location.title()
         embed = discord.Embed(
-            title = weather_description,
-            #description = f"Here is the weather data for {location}.",
+            title = f"{location} Weather",
+            description = f"Here is the weather data for {location}.",
             color = 0x00FFFF
         )
         embed.add_field(
             name = f"Temperature",
-            value = f"{str(temp)}° C",
-            inline = False
-        )
-        embed.add_field(
-            name = f"Feels Like",
-            value = f"{str(feels_like)}° C",
+            value = f"{str(data['temp'])}° C",
             inline = False
         )
         embed.add_field(
             name = f"Minimum Temperature",
-            value = f"{str(min_temp}° C",
+            value = f"{str(data['temp_min'])}° C",
             inline = False
         )
         embed.add_field(
             name = f"Maximum Temperature",
-            value = f"{str(max_temp)}° C",
+            value = f"{str(data['temp_max'])}° C",
             inline = False
         )
-
-        embed.set_thumbnail(
-            url= weather_icon_url
-        )
-        embed.set_author(
-            name= f'Weather report of {location}'
-        )
-        embed.set_footer(
-            text=f'Data requested at {datetime.utcnow()}'
+        embed.add_field(
+            name = f"Feels Like",
+            value = f"{str(data['feels_like'])}° C",
+            inline = False
         )
         return embed
 
@@ -73,15 +62,8 @@ class Weather(commands.Cog):
         API_KEY = os.environ.get("WEATHER_API_KEY")
         URL = f"http://api.openweathermap.org/data/2.5/weather?q={location.lower()}&appid={API_KEY}&units=metric"
         try:
-            data = requests.get(URL)
-            #data = self.parse_weather_data(data)
-            temp = data.json()['main']['temp']
-            feels_like = data.json()['main']['feels_like']
-            min_temp = data.json()['main']['temp_min']
-            max_temp = data.json()['main']['temp_max']
-            weather_icon_url = f'http://openweathermap.org/img/wn/{data.json()['weather'][0]['icon']}.png' 
-            weather_description = data.json()['weather'][0]['description']
-            
+            data = json.loads(requests.get(URL).content)
+            data = self.parse_weather_data(data)
             await ctx.send(embed = self.weather_message(data, location))
         except KeyError:
             await ctx.send(embed = self.error_message(location))
