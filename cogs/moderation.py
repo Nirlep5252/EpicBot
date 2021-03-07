@@ -30,7 +30,8 @@ class Moderation(commands.Cog):
             return
 
         await member.kick(reason=reason)
-        await ctx.send(f':crossed_swords: {member.mention} was kicked.\nReason: {reason}')
+        kick = discord.Embed(title="👢 Member Kicked!", description="I have kicked the member from this server!", color=0x89CFF0)
+        await ctx.send(embed=kick)
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
@@ -45,7 +46,8 @@ class Moderation(commands.Cog):
             return
 
         await member.ban(reason=reason)
-        await ctx.send(f':hammer: {member.mention} was banned.\nReason: {reason}')
+        ban = discord.Embed(title="<a:JD_banned:818014712297029643> Member Banned!", description="I have banned the member from this server!", color=0x89CFF0)
+        await ctx.send(embed=ban)
         await member.create_dm()
 
         if reason == None:
