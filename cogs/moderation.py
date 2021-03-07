@@ -30,7 +30,8 @@ class Moderation(commands.Cog):
             return
 
         await member.kick(reason=reason)
-        await ctx.send(f':crossed_swords: {member.mention} was kicked.\nReason: {reason}')
+        kick = discord.Embed(title="👢 Member Kicked!", description=f"I have kicked **{member.name}#{member.discriminator}** from this server!", color=0x89CFF0)
+        await ctx.send(embed=kick)
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
@@ -45,7 +46,8 @@ class Moderation(commands.Cog):
             return
 
         await member.ban(reason=reason)
-        await ctx.send(f':hammer: {member.mention} was banned.\nReason: {reason}')
+        ban = discord.Embed(title="<a:JD_banned:818014712297029643> Member Banned!", description=f"I have banned **{member.name}#{member.discriminator}** from this server!", color=0x89CFF0)
+        await ctx.send(embed=ban)
         await member.create_dm()
 
         if reason == None:
@@ -57,7 +59,10 @@ class Moderation(commands.Cog):
         embed.add_field(name = "Moderator:", value = ctx.author, inline = False)
         embed.add_field(name = "Reason:", value = real_reason, inline = False)
 
-        await member.dm_channel.send(embed = embed)
+        try:
+            await member.dm_channel.send(embed = embed)
+        except:
+            await ctx.send("I tried to DM them about then ban but I failed, they have still been banned tho!")
 
     @commands.command(aliases = ['addrole'])
     @commands.has_permissions(manage_roles = True)
