@@ -14,7 +14,8 @@ class Help(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['test'])
     async def ping(self, ctx):
-        await ctx.message.reply(f'Latency: {round(self.client.latency * 1000)}ms')
+        ping = discord.Embed(title="Pong!", description=f"My current latency is {round(self.client.latency * 1000)}ms!", color=0x00FFFF)
+        await ctx.send(embed=ping)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
