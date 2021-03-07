@@ -1,11 +1,12 @@
 import discord
 import datetime
+import time 
 from discord.ext import commands
 from discord.ext.commands import cooldown, BucketType
 from discord.ext.commands import (CommandOnCooldown)
 from disputils import BotEmbedPaginator, BotConfirmation, BotMultipleChoice
 
-# yes
+# yes - this cog is the worst cog pls dont look at this code thx <3 
 
 class Help(commands.Cog):
     def __init__(self, client):
@@ -14,8 +15,14 @@ class Help(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['test'])
     async def ping(self, ctx):
-        ping = discord.Embed(title="Pong!", description=f"My current latency is {round(self.client.latency * 1000)}ms!", color=0x00FFFF)
-        await ctx.send(embed=ping)
+        
+        time_lol = time.time()
+        
+        msg = await ctx.message.reply(embed=discord.Embed(title="Pinging...", color = 0x00FFFF))
+        
+        ping = discord.Embed(title="Pong!", description=f"API Latency: **{round(self.client.latency * 1000)}ms**\nBot Latency: **{round((time.time() - time_lol) * 1000)}ms**", color=0x00FFFF)
+        
+        await msg.edit(embed=ping)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
