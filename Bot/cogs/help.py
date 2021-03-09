@@ -28,50 +28,6 @@ class Help(commands.Cog):
     @commands.command()
     async def help(self, ctx, *, category = None):
         if category == None:
-            # embed = discord.Embed(title = "**All Commands(89)**",
-            #                         description = "To get detailed help for a command, do `e!help [command]`.",
-            #                         color = 0x00FFFF)
-            # embed.add_field(name = "🔧 • Utility(14)",
-            #                 value = f"Type `e!help utility` for more info.```\n😍-NQN\n❔-Prefix\n⛅-Weather\n😵-SelfDestruct\n📢-Announce\n🎉-Giveaway\n📑-Translate\n📊-Poll\n⏰-Countdown\n🔗-Create Invite\n🟠-Coin Flip\n🔢-Random Number\n🎲-Dice\n📨-Embed\n```",
-            #                 inline = True)
-            # embed.add_field(name = "🛠️ • Moderation(10)",
-            #                 value = f"Type `e!help moderation` for more info.```\n⚠️-Warn\n⚠ - Warnings\n🔨-Ban\n⛏️-Kick\n🍀-Unban\n🔴-Clear\n❌-Delete Channel\n✅-Create Channel\n➕-Add Role\n➖-Remove Role\n```",
-            #                 inline = True)
-            # embed.add_field(name = "😀 • Fun(16)",
-            #                 value = f"Type `e!help fun` for more info.```\n😂-Freenitro\n🔫-Snipe\n🔫-EditSnipe\n😊-Howcute\n😍-Simpfor\n😊-OWO\n💻-Hack\n😁-Mock\n💓-Aesthetic\n😂-Dad Joke\n🤣-Meme\n📜-Quote\n👩‍🏫-Advice\n🗣️-Say\n💬-Ascii\n🕵️‍♀️-Predict\n```",
-            #                 inline = True)
-            # embed.add_field(name = "💸 • Economy(10)",
-            #                 value = f"Type `e!help economy` for more info.```\n💰-Balance\n👜-Inventory\n🏪-Shop\n🎰-Slots\n🛒-Buy\n🛍️-Sell\n💱-Withdraw\n💱-Deposit\n🎁-Give\n🙏-Beg\n```",
-            #                 inline = True)
-            # embed.add_field(name = "🖼️ • Image(12)",
-            #                 value = f"Type `e!help image` for more info.```\n🐱-Cat\n🐶-Dog\n🦊-Fox\n🔥-Burn\n🚮-Trash\n😡-Angry\n📚-Fact\n🧠-Illness\n😱-Shock\n🗡️-Wanted\n🤗-Hug\n🥰-Anime\n```",
-            #                 inline = True)
-            # embed.add_field(name = "ℹ️ • Info(5)",
-            #                 value = f"Type `e!help info` for more info.```\n🦠-Covid-19\n👥-UserInfo\n📈-ServerInfo\n🤖-BotInfo\n🖼️-Avatar\n```",
-            #                 inline = True)
-            # embed.add_field(name = "🤖 • Bot(8)",
-            #                 value = f"Type `e!help bot` for more info.```\n✅-Help\n📈-Stats\n⬆️-Uptime\n❤️-Invite\n🔼-Vote\n🔗-Discord\n👤-Privacy\n🐞-Bug Report\n```",
-            #                 inline = True)
-            # embed.add_field(name = "🎮 • Games(2)",
-            #                 value = f"Type `e!help games` for more info.```\n✅-Tic-Tac-Toe\n📃-Rock-Paper-Scissors\n```",
-            #                 inline = True)
-            # embed.add_field(name = "🎶 • Music(9)",
-            #                 value = f"Type `e!help music` for more info.```\n🔊-Connect\n🎶-Play\n🎵-Nowplaying\n⏸-Pause\n▶-Resume\n🧾-Queue\n⏭-Skip\n⏹-Stop\n🔉-Volume```",
-            #                 inline = True)
-            # if ctx.channel.is_nsfw():
-            #     embed.add_field(name = "🔞 • NSFW(3)",
-            #                     value = "Type `e!help nsfw` for more info.```🤤-Hentai\n😋-Thighs\n🥰-Nekogif```",
-            #                     inline = True)
-            # else:
-            #     pass
-
-            # embed.add_field(name = "‎",
-            #                 value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
-            #                 inline = False)
-            # # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
-            # embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
-            # embed.timestamp = datetime.datetime.utcnow()
-            # await ctx.send(embed = embed)
 
             embeds = [
                 discord.Embed(
@@ -309,7 +265,6 @@ class Help(commands.Cog):
             embed.add_field(name = "‎",
                             value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
                             inline = False)
-            # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
             embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
             embed.timestamp = datetime.datetime.utcnow()
             await ctx.send(embed = embed)
@@ -349,7 +304,6 @@ class Help(commands.Cog):
             embed.add_field(name = "‎",
                             value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
                             inline = False)
-            # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
             embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
             embed.timestamp = datetime.datetime.utcnow()
             await ctx.send(embed = embed)
@@ -379,7 +333,6 @@ class Help(commands.Cog):
             embed.add_field(name = "‎",
                             value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
                             inline = False)
-            # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
             embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
             embed.timestamp = datetime.datetime.utcnow()
             await ctx.send(embed = embed)
@@ -416,7 +369,6 @@ class Help(commands.Cog):
             embed.add_field(name = "‎",
                             value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
                             inline = False)
-            # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
             embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
             embed.timestamp = datetime.datetime.utcnow()
             await ctx.send(embed = embed)
@@ -467,7 +419,6 @@ class Help(commands.Cog):
                 embed.add_field(name = "‎",
                                 value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
                                 inline = False)
-                # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
                 embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
                 embed.timestamp = datetime.datetime.utcnow()
                 await ctx.send(embed = embed)
@@ -512,7 +463,6 @@ class Help(commands.Cog):
             embed.add_field(name = "‎",
                             value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
                             inline = False)
-            # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
             embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
             embed.timestamp = datetime.datetime.utcnow()
             await ctx.send(embed = embed)
@@ -576,7 +526,6 @@ class Help(commands.Cog):
             embed.add_field(name = "‎",
                             value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
                             inline = False)
-            # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
             embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
             embed.timestamp = datetime.datetime.utcnow()
             await ctx.send(embed = embed)
@@ -619,7 +568,6 @@ class Help(commands.Cog):
             embed.add_field(name = "‎",
                             value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
                             inline = False)
-            # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
             embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
             embed.timestamp = datetime.datetime.utcnow()
             await ctx.send(embed = embed)
@@ -668,7 +616,6 @@ class Help(commands.Cog):
             embed.add_field(name = "‎",
                             value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
                             inline = False)
-            # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
             embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
             embed.timestamp = datetime.datetime.utcnow()
             await ctx.send(embed = embed)
@@ -696,7 +643,6 @@ class Help(commands.Cog):
             embed.add_field(name = "‎",
                             value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
                             inline = False)
-            # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
             embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
             embed.timestamp = datetime.datetime.utcnow()
             await ctx.send(embed = embed)
@@ -733,7 +679,6 @@ class Help(commands.Cog):
             embed.add_field(name = "‎",
                             value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
                             inline = False)
-            # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
             embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
             embed.timestamp = datetime.datetime.utcnow()
             await ctx.send(embed = embed)
@@ -2109,7 +2054,8 @@ class Help(commands.Cog):
         else:
             await ctx.send("Couldn't find the command.")
 
+# this is so shit lmfao
 
-
+            
 def setup(client):
     client.add_cog(Help(client))
