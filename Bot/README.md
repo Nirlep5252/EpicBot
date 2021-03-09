@@ -20,7 +20,7 @@
   </a>
 </h1>
 
-<h2><img src="https://cdn.discordapp.com/emojis/716227047982104626.gif?v=1" height="15px"> • How do I run EpicBot locally?</h2>
+<h2><img src="https://cdn.discordapp.com/emojis/716227047982104626.gif?v=1" height="20px"> • How do I run EpicBot locally?</h2>
 
 <p>First of all you need to have the latest version of <a href="https://www.python.org/downloads/">Python</a> once you have that you can follow these steps:</p>
 
