@@ -10,6 +10,20 @@ from discord.ext import commands
 class Fun(commands.Cog):
     def __init__(self, client):
         self.client = client
+        
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command()
+    async def meme(self, ctx):
+        embed=discord.Embed(
+            title = "Haha!",
+            color = 0x00FFFF
+        )
+
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get('https://www.reddit.com/r/dankmemes/new.json?sort=hot') as r:
+                res = await r.json()
+                embed.set_image(url=res['data']['children'][random.randint(0, 25)]['data']['url'])
+                await ctx.send(embed=embed)  
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['bait', 'freenitro', 'nitrobait', 'keknitro'])
