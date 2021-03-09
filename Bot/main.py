@@ -50,22 +50,14 @@ def get_prefix(client, message):
 
     return commands.when_mentioned_or(prefix)(client, message)
 
-    # if not message.guild:
-    #     return commands.when_mentioned_or("e!")(client, message)
-
-    # with open("prefixes.json", "r") as f:
-    #     prefixes = json.load(f)
-
-    # if str(message.guild.id) not in prefixes:
-    #     return commands.when_mentioned_or("e!")(client, message)
-
-    # prefix = prefixes[str(message.guild.id)]
-    # return commands.when_mentioned_or(prefix)(client, message)
 intents = discord.Intents.default()
 intents.members = True
-client = commands.Bot(command_prefix = get_prefix, intents = intents, case_insensitive = True)
+client = commands.Bot(
+    command_prefix = get_prefix,
+    intents = intents,
+    case_insensitive = True
+)
 client.remove_command('help')
-# status = cycle(['e!help', 'A Bot by Nirlep_5252_'])
 
 mainshop = [{"name":"Laptop","price":25000,"description":"For Working."},
             {"name":"PC","price":100000,"description":"Gaming and Streaming."},
@@ -80,23 +72,8 @@ async def change_status():
 
 @client.event
 async def on_ready():
-    channel_logging = client.get_channel(757168151141285929)
-    await channel_logging.send(f"Now Online! <@!558861606063308822>")
-    print("poggies")
+    print("Bot is now online!")
     change_status.start()
-    # await client.change_presence(activity=discord.Game(name=f"e!help | {len(client.guilds)} Servers!"))
-
-# async def ch_pr():
-#     await client.wait_until_ready()
-#
-#     statuses = [f"e!help | {len(client.guilds)} servers."]
-#
-#     while not client.is_closed():
-#         status = random.choice(statuses)
-#
-#         await client.change_presence(activity = discord.Game(name = status))
-#
-#         await asyncio.sleep(10)
 
 start = time.time()
 
@@ -145,15 +122,6 @@ async def prefix(ctx, *, new_prefix = None):
                 }
             )
         await ctx.send(f"The new prefix has now been set to be `{new_prefix}`")
-    # with open(r"prefixes.json", 'r') as f:
-    #     prefixes = json.load(f)
-
-    # prefixes[str(ctx.guild.id)] = pre
-
-    # await ctx.send(f"The new prefix is now set as `{pre}`")
-
-    # with open(r"prefixes.json", 'w') as f:
-    #     json.dump(prefixes, f, indent = 4)
 
 @client.command(aliases = ['memberinfo', 'user_info', 'member_info'])
 async def userinfo(ctx, target: Optional[Member]):
@@ -168,7 +136,6 @@ async def userinfo(ctx, target: Optional[Member]):
                 ("Username", f"`{str(target)}`", True),
                 ("Top Roles", target.top_role.mention, True),
                 ("Server Boosts", bool(target.premium_since), False),
-                # ("Status", str(target.status).title(), False),
                 ("Created At", target.created_at.strftime("%d/%m/%y | %H:%M:%S"), False),
                 ("Joined At", target.joined_at.strftime("%d/%m/%y | %H:%M:%S"), False)]
 
@@ -176,37 +143,6 @@ async def userinfo(ctx, target: Optional[Member]):
         embed.add_field(name=name, value=value, inline=inline)
 
     await ctx.send(embed=embed)
-    # await ctx.send(f"This command is not working temporarily, for more details please join our server - https://discord.gg/Zj7h8Fp")
-
-# @client.command(aliases = ['guildinfo', 'server_info', 'guild_info'])
-@client.command()
-async def old_serverinfo(ctx):
-    try:
-        embed = discord.Embed(title = "__**Server Information**__", color = 0x00FFFF)
-        embed.set_thumbnail(url = ctx.guild.icon_url)
-        embed.set_footer(text=f"{ctx.guild}", icon_url=f"{ctx.guild.icon_url}")
-        embed.timestamp = datetime.datetime.utcnow()
-
-        fields = [("ID", f"`{ctx.guild.id}`", False),
-                    ("Owner", f"`{ctx.guild.owner}`", True),
-                    ("Region", ctx.guild.region, True),
-                    ("Created At", ctx.guild.created_at.strftime("%d/%m/%y | %H:%M:%S"), True),
-                    ("Members", len(ctx.guild.members), True),
-                    ("Humans", len(list(filter(lambda m: not m.bot, ctx.guild.members))), True),
-                    ("Bots", len(list(filter(lambda m: m.bot, ctx.guild.members))), True),
-                    ("Banned Members", len(await ctx.guild.bans()), True),
-                    ("Text Channels", len(ctx.guild.text_channels), True),
-                    ("Voice Channels", len(ctx.guild.voice_channels), True),
-                    ("Categories", len(ctx.guild.categories), True),
-                    ("Roles", len(ctx.guild.roles), True),
-                    ("Invites", len(await ctx.guild.invites()), True),
-                    ("\u200b", "\u200b", True)]
-        for name, value, inline in fields:
-            embed.add_field(name=name, value=value, inline=inline)
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send(f"I don't have enough permissions to get all the information about this server. Please check my permissions and try again.")
-    # await ctx.send(f"This command is not working temporarily, for more details please join our server - https://discord.gg/Zj7h8Fp")
 
 @client.command()
 async def wanted(ctx, user: discord.Member = None):
@@ -371,78 +307,6 @@ async def unload_error(ctx, error):
 async def reload_error(ctx, error):
     print(error)
 
-# @client.event
-# async def on_member_update(before, after):
-#
-#     channel_logging = client.get_channel(762630141557866517)
-#
-#     if before.display_name != after.display_name:
-#         embed = discord.Embed(title = "**Member Updated**", description = "Nickname Changed", color = 0x00FF0C)
-#         embed.add_field(name = "**Before**", value = f"`{before.display_name}`", inline = False)
-#         embed.add_field(name = "**After**", value = f"`{after.display_name}`", inline = False)
-#         embed.add_field(name = "**User Name**", value = f"`{before.name}#{before.discriminator}`", inline = False)
-#         embed.add_field(name = "**Server**", value = f"{after.guild}", inline = False)
-#         await channel_logging.send(embed = embed)
-
-# @client.event
-# async def on_user_update(before, after):
-#
-#     channel_logging = client.get_channel(762630141557866517)
-#
-#     if before.avatar_url != after.avatar_url:
-#         embed = discord.Embed(title = "**Member Updated**", description = f"**Avatar Changed**\nBefore :point_right: \nAfter :point_down: ", color = 0x00FF0C)
-#         embed.add_field(name = "**User Name**", value = f"`{before.name}#{before.discriminator}`", inline = False)
-#         embed.set_thumbnail(url = before.avatar_url)
-#         embed.set_image(url = after.avatar_url)
-#         await channel_logging.send(embed = embed)
-
-# @client.event
-# async def on_message_edit(before, after):
-#
-#     channel_logging = client.get_channel(762630642738397214)
-#
-#     if before.content != after.content:
-#         embed = discord.Embed(title = "**Message Edited**", color = 0x00FF0C)
-#         embed.add_field(name = "**Before**", value = f"{before.content}", inline = False)
-#         embed.add_field(name = "**After**", value = f"{after.content}", inline = False)
-#         embed.add_field(name = "**User**", value = f"`{after.author}`", inline = False)
-#         embed.add_field(name = "**Server**", value = f"{after.guild}", inline = False)
-#         await channel_logging.send(embed = embed)
-
-# @client.event
-# async def on_message_delete(message):
-#
-#     if message.content == "You can now vote for Grace here!: <https://top.gg/bot/604170962178408469/vote>":
-#         return
-#
-#     channel_logging = client.get_channel(775951189367062558)
-#
-#     embed = discord.Embed(title = "**Message Deleted**", description = f"**message** : `{message.content}`", color = 0xFF0000)
-#     embed.add_field(name = "**Author**", value = f"`{message.author}`", inline = False)
-#     embed.add_field(name = "**Server**", value = f"`{message.guild}`", inline = False)
-#     await channel_logging.send(embed = embed)
-
-#BotStatus
-#WATCHING
-#@tasks.loop(seconds=5)
-#async def change_status():
-    #await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="NAME"))
-
-#PLAYING
-# @tasks.loop(seconds=5)
-# async def change_status():
-#     await client.change_presence(activity=discord.Game(name=f"e!help | {len(set(client.get_all_members()))} Users | {len(client.guilds)} Servers!"))
-
-#STREAMING
-#@tasks.loop(seconds=5)
-#async def change_status():
-    #await client.change_presence(activity=discord.Streaming(name="NAME", url="https://twitch.tv/ramaziz"))
-
-#LISTENING
-#@tasks.loop(seconds=5)
-#async def change_status():
-    #await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="NAME"))
-
 @client.event
 async def on_message(message):
     channel = message.channel
@@ -455,14 +319,6 @@ async def on_message(message):
 
     if message.author == client.user:
         return
-
-    # if str(message.channel.type) == "private":
-    #
-    #     await dm_logging.send(f"This person - `{message.author} ({message.author.id})` just DMed me and said - `{message.content}`")
-    #     return
-
-    if message.content == "RIGGED" and guild.id == 719157704467152977:
-        await channel.send("RIGGED")
 
 @client.command(aliases=['createinvite'])
 @commands.has_permissions(create_instant_invite = True)
@@ -551,13 +407,6 @@ async def on_command_error(ctx, error):
         embed.add_field(name=f':x: Terminal Error', value=f"```{error}```")
         await client.get_channel(800252938869669898).send(embed=embed)
         raise error
-
-    # if isinstance(error, commands.CommandNotFound):
-    #     await ctx.send(f"Looks like this command doesn't exist yet.")
-
-    #if isinstance(error, commands.CommandInvokeError):
-    #    await ctx.send(f"I don't think i have enough permissions to execute this task.")
-# --------------------------
 
 # Economy continues ------------------
 @client.command(aliases = ['with'])
@@ -822,37 +671,6 @@ async def sell_this(user,item_name,amount,price = None):
 
     return [True,"Worked"]
 
-# @client.command(aliases = ["lb"])
-# async def leaderboard(ctx,x = 5):
-#     users = await get_bank_data()
-#     leader_board = {}
-#     total = []
-#     for user in users:
-#         name = int(user)
-#         total_amount = users[user]["wallet"] + users[user]["bank"]
-#         leader_board[total_amount] = name
-#         total.append(total_amount)
-
-#     total = sorted(total, reverse = True)
-#     print("pog3")
-
-#     em = discord.Embed(title = f"Top {x} Richest People" , description = "This is decided on the basis of raw money in the bank and wallet",color = 0x00FF0C)
-#     print("pog4")
-#     index = 1
-#     for amt in total:
-#         id_ = leader_board[amt]
-#         member = client.get_user(id_)
-#         name = member.name
-#         em.add_field(name = f"{index}. {name}" , value = f"{amt}",  inline = False)
-#         if index == x:
-#             break
-#         else:
-#             index += 1
-
-#     await ctx.send(embed = em)
-
-
-
 @client.command(aliases=['donate', 'send'])
 async def give(ctx, user:discord.Member, amount = None):
     await open_account(ctx.author)
@@ -908,8 +726,4 @@ async def update_bank(user, change = 0, mode = "wallet"):
     bal = [users[str(user.id)]["wallet"],users[str(user.id)]["bank"]]
     return bal
 
-
-
-
-# client.loop.create_task(ch_pr())
 client.run(os.environ.get("BOT_TOKEN"))
