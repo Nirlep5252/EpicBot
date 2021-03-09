@@ -10,22 +10,6 @@ class Giveaway(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-        # def convert(time):
-        #     pos = ["s", "m", "h", "d"]
-
-        #     time_dict = {"s": 1, "m": 60, "h": 3600, "d": 3600*24}
-
-        #     unit = time[-1]
-
-        #     if unit not in pos:
-        #         return -1
-        #     try:
-        #         val = int(time[:-1])
-        #     except:
-        #         return -2
-
-        #     return val * time_dict[unit]
-
     @commands.command()
     @commands.has_permissions(manage_guild = True)
     async def giveaway(self, ctx):
