@@ -16,7 +16,6 @@ class Info(commands.Cog):
 
         embed = discord.Embed(title = f"Server Information about **{ctx.guild}**", color = 0x00FFFF)
         embed.set_author(name = ctx.guild, icon_url = ctx.guild.icon_url)
-        # embed.set_thumbnail(url = ctx.guild.icon_url)
         embed.add_field(name = "<:EpicOwner:794075390980653106>  Owner:", value = f"{ctx.guild.owner.mention}", inline = True)
         embed.add_field(name = "🌏  Region:", value = f"{str(ctx.guild.region).title()}", inline = True)
         embed.add_field(name = "⏰  Created At:", value = ctx.guild.created_at.strftime("%d/%m/%y | %H:%M:%S"), inline = True)
@@ -52,34 +51,9 @@ class Info(commands.Cog):
         embed.add_field(name = "‎",
                     value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
                     inline = False)
-        # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
         embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
         embed.timestamp = datetime.datetime.utcnow()
         await ctx.send(embed = embed)
-
-        # embed = discord.Embed(title = "__**Server Information**__", color = 0x00FF0C)
-        # embed.set_thumbnail(url = ctx.guild.icon_url)
-        # embed.set_footer(text=f"{ctx.guild}", icon_url=f"{ctx.guild.icon_url}")
-        # embed.timestamp = datetime.datetime.utcnow()
-        #
-        # fields = [("ID", f"`{ctx.guild.id}`", False),
-        #             ("Owner", f"`{ctx.guild.owner}`", True),
-        #             ("Region", ctx.guild.region, True),
-        #             ("Created At", ctx.guild.created_at.strftime("%d/%m/%y | %H:%M:%S"), True),
-        #             ("Members", len(ctx.guild.members), True),
-        #             ("Humans", len(list(filter(lambda m: not m.bot, ctx.guild.members))), True),
-        #             ("Bots", len(list(filter(lambda m: m.bot, ctx.guild.members))), True),
-        #             ("Banned Members", len(await ctx.guild.bans()), True),
-        #             ("Text Channels", len(ctx.guild.text_channels), True),
-        #             ("Voice Channels", len(ctx.guild.voice_channels), True),
-        #             ("Categories", len(ctx.guild.categories), True),
-        #             ("Roles", len(ctx.guild.roles), True),
-        #             ("Invites", len(await ctx.guild.invites()), True),
-        #             ("\u200b", "\u200b", True)]
-        #
-        # for name, value, inline in fields:
-        #     embed.add_field(name=name, value=value, inline=inline)
-        # await ctx.send(embed=embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['profile', 'pfp'])
@@ -93,32 +67,10 @@ class Info(commands.Cog):
 
         await ctx.send(embed = embed)
 
-    # @commands.command(aliases = ['memberinfo', 'user_info', 'member_info'])
-    # async def userinfo(self, ctx, target: Optional[Member]):
-    #     target = target or ctx.author
-
-    #     embed = discord.Embed(title = "__**User Information**__", color = 0x00FF0C)
-    #     embed.set_thumbnail(url = target.avatar_url)
-    #     embed.set_footer(text=f"{ctx.guild}", icon_url=f"{ctx.guild.icon_url}")
-    #     embed.timestamp = datetime.datetime.utcnow()
-
-    #     fields = [("ID", f"`{target.id}`", False),
-    #                 ("Username", f"`{str(target)}`", True),
-    #                 ("Top Roles", target.top_role.mention, True),
-    #                 ("Server Boosts", bool(target.premium_since), False),
-    #                 ("Status", str(target.status).title(), False),
-    #                 ("Created At", target.created_at.strftime("%d/%m/%y | %H:%M:%S"), False),
-    #                 ("Joined At", target.joined_at.strftime("%d/%m/%y | %H:%M:%S"), False)]
-
-    #     for name, value, inline in fields:
-    #         embed.add_field(name=name, value=value, inline=inline)
-
-    #     await ctx.send(embed=embed)
-
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def botinfo(self, ctx):
-        embed = discord.Embed(title = "**Bot Info**", description = f"I was built by `Nirlep_5252_` on 3rd September. My help command is `e!help`. I am currently in `{len(self.client.guilds)}` servers, and i have more than `{len(set(self.client.get_all_members()))}` users. I have a total of `102` commands.", color = 0x00FFFF)
+        embed = discord.Embed(title = "**Bot Info**", description = f"I was built by `Nirlep_5252_` on 3rd September. My help command is `e!help`. I am currently in `{len(self.client.guilds)}` servers, and i have more than `{len(set(self.client.get_all_members()))}` users. I have a total of `103` commands.", color = 0x00FFFF)
         embed.set_thumbnail(url='https://media.discordapp.net/attachments/757168151141285929/763336446328438784/bot_profile.png')
         embed.add_field(name = "**Invite EpicBot**",
                         value = f"[Click Here](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847)",
@@ -143,48 +95,16 @@ class Info(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def vote(self, ctx):
-        # try:
-        #     url = "https://botrix.cc/api/v1/bot/751100444188737617"
 
-        #     response = requests.get(url)
+        embed = discord.Embed(
+            title = "Vote EpicBot! \💖",
+            description = "Thank you so much!",
+            color = 0x00FFFF,
+            url = "https://top.gg/bot/751100444188737617/vote"
+        )
+        embed.set_footer(text="I love you! ✨")
 
-        #     votes = response.json()
-        #     vote_count = votes['bot']['votes']
-        # except:
-        #     pass
-
-        try:
-            eeee = requests.get("https://top.gg/api/bots/751100444188737617").json()
-            vote_count = eeee['points']
-            monthly_vote_count = eeee['monthlyPoints']
-        except Exception as e:
-            print(e)
-
-        embed = discord.Embed(title = "**<:EpicVote:779977591292952576>  Vote EpicBot**",
-                                description = f"Voting EpicBot supports us.\nThanks for voting us and bringing us where we are now.\n\n",
-                                color = 0x00FFFF)
-        embed.add_field(name = "**Vote**",
-                        value=f"**[Click Here](https://top.gg/bot/751100444188737617/vote)** to vote.",
-                        inline = False)
-        try:
-            embed.add_field(name = "**Total Votes**",
-                            value = f"\> {vote_count}",
-                            inline = False)
-            embed.add_field(name = "**Monthly Votes**",
-                            value = f"\> {monthly_vote_count}",
-                            inline = False)
-        except:
-            embed.add_field(name = "**Total Votes**",
-                            value = f"An error occured.",
-                            inline = False)
-
-        embed.add_field(name = "‎",
-                        value = "[Invite Bot](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847) | [Discord Server](https://discord.gg/Zj7h8Fp) | [Bug Report](https://docs.google.com/forms/d/1PYkQSB0rMSfZePp7o_iqC1cfecnvlys62GGhfHt9OYo)",
-                        inline = False)
-        # embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/749996055369875459/771644964542349322/bot_profile.png")
-        embed.set_footer(text=f"{ctx.author.guild}", icon_url=f"{ctx.guild.icon_url}")
-        embed.timestamp = datetime.datetime.utcnow()
-        await ctx.send(embed = embed)
+        await ctx.send(embed=embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['role-info', 'role_info'])
@@ -208,8 +128,6 @@ class Info(commands.Cog):
     @commands.command()
     async def invite(self, ctx):
         try:
-
-            # \nTo invite EpicBot [Click Here](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847)
 
             url = "https://api.statcord.com/v3/751100444188737617"
             response = requests.get(url)
