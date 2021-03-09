@@ -14,32 +14,6 @@ class NQN(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(aliases = ['nqnblock'])
-    @commands.is_owner()
-    async def nqn_block(self, ctx, userID = None):
-        if userID == None:
-            await ctx.send(f"Please enter a user id to block.")
-            return
-        else:
-            if nqn_block.find_one({"_id": userID}) == None:
-                await nqn_block.insert_one({"_id": userID})
-                await ctx.send(f"lol <@{userID}> can't use nqn now kek")
-            else:
-                await ctx.send(f"They are already blocked kek.")
-
-    @commands.command(aliases = ['nqnunblock'])
-    @commands.is_owner()
-    async def nqn_unblock(self, ctx, userID = None):
-        if userID == None:
-            await ctx.send(f"Please enter a user id to unblock.")
-            return
-        else:
-            if nqn_block.find_one({"_id": userID}) != None:
-                await nqn_block.delete_one({"_id": userID})
-                await ctx.send(f"<@{userID}> have now been unblocked and can now use nqn.")
-            else:
-                await ctx.send(f"They aren't blocked so I can't unblock them.")
-
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     @commands.has_permissions(manage_guild = True)
