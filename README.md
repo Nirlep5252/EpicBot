@@ -22,15 +22,20 @@
 
 <h2><img src="https://cdn.discordapp.com/emojis/766498653753049109.png?v=1" height="20px"> • Info</h2>
 
-<p>EpicBot is a multipurpose Discord bot, open source and regularly updated. It is made using Python, it's very easy and simple to run it locally as well!</p>
+<p>EpicBot is a multipurpose Discord bot that was designed to make your Discord life easier and cooler. It is also an open source project which other developers can contribute to and work on it together.</p>
 
 <h2><img src="https://cdn.discordapp.com/emojis/818758128329556018.gif?v=1" height="20px"> • Features</h2>
 <ul>
-  <li>⚙ Over 100+ commands</li>
-  <li>🔼 99% uptime</li>
+  <li>📌 Over 100+ commands</li>
+  <li>🔼 99%+ uptime</li>
   <li>🟢 Low latency, super fast response time</li>
-  <li>🖥 Web dashboard (coming soon)</li>
-  <li>🎶 Extremely high quality Music playback</li>
+  <li>💻 Web dashboard (coming soon)</li>
+  <li>🎶 Extremely high quality Music playback.</li>
+  <li>✨ Level up system</li>
+  <li>🔨 Powerful moderation</li>
+  <li>🎀 Regularly updated and maintained</li>
+</ul>
+
 </ul>
 
 <h2><img src="https://cdn.discordapp.com/emojis/791817532901949440.png?v=1" height="20px"> • How can I contribute?</h2>
