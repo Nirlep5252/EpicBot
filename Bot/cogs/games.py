@@ -2,7 +2,6 @@ import discord
 import datetime
 import random 
 import asyncio 
-# import aiopentdb 
 from discord.ext import commands
 from games import tictactoe 
 
@@ -36,6 +35,7 @@ class Games(commands.Cog):
         CoinChances = ['Heads 🎈', 'Tails 🎁', 'Heads 🎀', 'Tails 💎', 'Heads ✅', 'Tails ✅', 'Heads 🎉', 'Tails 🥁', 'Heads ✨', 'Tails 🎄']
         await ctx.send(f'{random.choice(CoinChances)}')
 
+    # this cmd is the ugliest shit ever, please dont use this
     @commands.command()
     async def rps(self, ctx, selection: str = None):
         bot_chances = ['Rock :rock:', 'Paper 🧻', 'Scissors ✂']
