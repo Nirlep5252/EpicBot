@@ -25,7 +25,6 @@
 <p>First of all you need to have the latest version of <a href="https://www.python.org/downloads/">Python</a> once you have that you can follow these steps:</p>
 
 1.  Install all the libraries that are required using `pip install -r requirements.txt`
-
 2.  Create a file called `.env` in the same folder as your `main.py` file and put this in it:  
 
     ```
@@ -34,7 +33,6 @@
     WEATHER_API_KEY = "YOUR OPENWEATHERMAP API KEY"  
     WEBSITE_SCREENSHOT_TOKEN = "YOUR CONVERTAPI API KEY"
     ```
-
 3.  Now you can just run the `main.py` file and the bot will run perfectly! <3
 
 <p>Having problems? Join our <a href="https://discord.gg/Zj7h8Fp">Support Server</a></p>
