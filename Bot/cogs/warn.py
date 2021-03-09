@@ -119,10 +119,7 @@ class Warn(commands.Cog):
             else:
                 await ctx.send(f"This user has {warnings['warns']} warnings.")
 
-    # @warn.error
-    # async def warn_error(self, ctx, error):
-    #     if isinstance(error, commands.CommandInvokeError):
-    #         await ctx.send(f"I can't send messages to this user")
+# this cog is incomplete haha rip i never completed this code
 
 def setup(client):
     client.add_cog(Warn(client))
