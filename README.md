@@ -33,7 +33,7 @@
   <li>🎶 Extremely high quality Music playback</li>
 </ul>
 
-<h2><img src="https://cdn.discordapp.com/emojis/745039418229915708.png?v=1" height="20px"> • How can I contribute?</h2>
+<h2><img src="https://cdn.discordapp.com/emojis/791817532901949440.png?v=1" height="20px"> • How can I contribute?</h2>
 <p>You may help by adding features to EpicBot or fix bugs in the code. Here's how:</p>
 <ol>
   <li>Fork the repository</li>
