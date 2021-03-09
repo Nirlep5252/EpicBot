@@ -32,6 +32,7 @@
     MONGODB_LINK = "YOUR MONGODB URL"  
     WEATHER_API_KEY = "YOUR OPENWEATHERMAP API KEY"  
     WEBSITE_SCREENSHOT_TOKEN = "YOUR CONVERTAPI API KEY"
+    STATCORD_API_KEY = "YOUR STATCORD API KEY"
     ```
 3.  Now you can just run the `main.py` file and the bot will run perfectly! <3
 
