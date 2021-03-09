@@ -11,7 +11,7 @@ class ScreenShot(commands.Cog , name ="WebScreenShot"):
     @commands.is_owner()
     async def screenshot(self, ctx , *,text):
 
-        SECRET_TOKEN_OMEGALUL = os.environ.get("WEBSITE_SCREENSHOT_SECRET_TOKEN_OMEGALUL") # put ur secret key here
+        SECRET_TOKEN_OMEGALUL = os.environ.get("WEBSITE_SCREENSHOT_TOKEN") # put ur secret key here
 
         if ctx.channel.is_nsfw():
             pass
