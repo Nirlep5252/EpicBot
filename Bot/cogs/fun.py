@@ -117,7 +117,6 @@ class Fun(commands.Cog):
             await ctx.message.reply(f"Please enter a message that you want me to say.")
         else:
             await ctx.message.reply(msg)
-        # await ctx.send("This command is temporarily unavailable. Join our discord server -> discord.gg/Zj7h8Fp")
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases=['meow', 'simba', 'cats'])
