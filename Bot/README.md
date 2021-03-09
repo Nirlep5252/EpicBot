@@ -28,10 +28,12 @@
 
 2.  Create a file called `.env` in the same folder as your `main.py` file and put this in it:  
 
-    ```BOT_TOKEN = "YOUR SECRET BOT TOKEN"  
+    ```
+    BOT_TOKEN = "YOUR SECRET BOT TOKEN"
     MONGODB_LINK = "YOUR MONGODB URL"  
     WEATHER_API_KEY = "YOUR OPENWEATHERMAP API KEY"  
-    WEBSITE_SCREENSHOT_TOKEN = "YOUR CONVERTAPI API KEY"```
+    WEBSITE_SCREENSHOT_TOKEN = "YOUR CONVERTAPI API KEY"
+    ```
 
 3.  Now you can just run the `main.py` file and the bot will run perfectly! <3
 
