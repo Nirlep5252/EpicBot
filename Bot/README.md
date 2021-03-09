@@ -27,6 +27,7 @@
 1.  Install all the libraries that are required using `pip install -r requirements.txt`
 
 2.  Create a file called `.env` in the same folder as your `main.py` file and put this in it:  
+
     ```BOT_TOKEN = "YOUR SECRET BOT TOKEN"  
     MONGODB_LINK = "YOUR MONGODB URL"  
     WEATHER_API_KEY = "YOUR OPENWEATHERMAP API KEY"  
