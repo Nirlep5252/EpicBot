@@ -24,6 +24,21 @@ class Fun(commands.Cog):
                 res = await r.json()
                 embed.set_image(url=res['data']['children'][random.randint(0, 25)]['data']['url'])
                 await ctx.send(embed=embed)  
+                
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command()
+    async def anime(self, ctx):
+        response = requests.get("https://shiro.gg/api/images/neko")
+
+        realResponse = response.json()
+
+        embed = discord.Embed(
+            title = "uwu",
+            color = 0xFFC0CB
+        )
+        embed.set_image(url = realResponse['url'])
+
+        await ctx.send(embed = embed)                
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['bait', 'freenitro', 'nitrobait', 'keknitro'])
