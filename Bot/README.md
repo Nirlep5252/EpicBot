@@ -20,9 +20,18 @@
   </a>
 </h1>
 
-<h2><img src="https://cdn.discordapp.com/emojis/716227047982104626.gif?v=1" height="20px"> • How do I run EpicBot locally?</h2>
+<h2><img src="https://cdn.discordapp.com/emojis/772563729237803049.gif?v=1" height="20px"> • Requirements</h2>
 
-<p>First of all you need to have the latest version of <a href="https://www.python.org/downloads/">Python</a> once you have that you can follow these steps:</p>
+<ul>
+    <li><a href="https://www.python.org/downloads/">Python</a> 3.8 or higher</li>
+    <li>A MongoDB Cluster - <a href="https://docs.atlas.mongodb.com/tutorial/deploy-free-tier-cluster/">Guide</a></li>
+    <li>All the required API keys that are being used, listed in the steps to run below.</li>
+    <li>Basic Python knowledge, to understand the code <img src="https://cdn.discordapp.com/emojis/812910259722256384.png?v=1" height="20px"></li>
+</ul>
+
+<h2><img src="https://cdn.discordapp.com/emojis/727411881324838954.png?v=1" height="20px"> • How do I run EpicBot locally?</h2>
+
+<p>Follow these steps in order to run EpicBot locally:</p>
 
 1.  Install all the libraries that are required using `pip install -r requirements.txt`
 2.  Create a file called `.env` in the same folder as your `main.py` file and put this in it:  
@@ -35,6 +44,14 @@
     STATCORD_API_KEY = "YOUR STATCORD API KEY"
     ```
 3.  Now you can just run the `main.py` file and the bot will run perfectly! <3
+
+<h2><img src="https://cdn.discordapp.com/emojis/700940624957800468.png?v=1" height="20px"> • Self hosting Agreement</h2>
+
+<ul>
+    <li>You may not use the EpicBot logo or name.</li>
+    <li>You may not provide support for EpicBot.</li>
+    <li>Keep in mind that we put a lot of work into this, a thank you would be appreciated a lot! <img src="https://cdn.discordapp.com/emojis/800741855805046815.png?v=1" height="20px"></li> 
+</ul>
 
 <p>Having problems? Join our <a href="https://discord.gg/Zj7h8Fp">Support Server</a></p>
 

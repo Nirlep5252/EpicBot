@@ -46,6 +46,7 @@
   <li>Create your feature branch: <code>git checkout -b my-new-feature</code></li>
   <li>Commit your changes: <code>git commit -am 'uwu new feature'</code></li>
   <li>Push to the branch: <code>git push origin my-new-feature</code></li>
+  <li>Submit a pull request</li>
 </ol>
 
 <h2><img src="https://cdn.discordapp.com/emojis/759148342704865323.png?v=1" height="20px"> • Contributors</h2>
