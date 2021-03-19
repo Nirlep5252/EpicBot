@@ -39,7 +39,7 @@ class Fun(commands.Cog):
 
             return text
 
-        await ctx.send(text_to_owo(msg))        
+        await ctx.send(text_to_owo(msg))
         
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
@@ -88,16 +88,67 @@ class Fun(commands.Cog):
         await ctx.message.reply(requests.get("https://nekos.life/api/v2/name").json()['name'])
 
     @commands.cooldown(1, 5, commands.BucketType.user)
-    @commands.command(aliases = ['howcute'])
-    async def how_cute(self, ctx, user: discord.Member = None):
+    @commands.command(help="Shows how cute you are, I know you are a cutie!")
+    async def howcute(self, ctx, user: discord.Member = None):
         if user == None:
             user = ctx.author
+        embed = discord.Embed(
+            title = "Calculating cuteness...",
+            color = MAIN_COLOR
+        )
+        msg1 = await ctx.message.reply(embed=embed)
 
-        randomFaces = ['uwu','owo', ';;w;;', '^w^', '>w<', 'UwU', '(・`ω\´・)', '(´・ω・\`)', '>.<']
+        cute_number = random.randint(0, 100)
 
-        embed = discord.Embed(title = "Cuteness Detector", description = f"{user.mention} is **{random.randint(0, 100)}%** cute. {random.choice(randomFaces)}", color = 0xFFC0CB)
-        embed.set_thumbnail(url = user.avatar_url)
-        await ctx.message.reply(embed = embed)
+        if 0 <= cute_number <= 20:
+            lol = "Damn, you're ugly!"
+            embed_color_uwu = RED_COLOR
+        if 20 < cute_number <= 50:
+            lol = "Not bad!"
+            embed_color_uwu = ORANGE_COLOR
+        if 50 < cute_number <= 75:
+            lol = "You're kinda cute, UwU"
+            embed_color_uwu = MAIN_COLOR
+        if 75 < cute_number <= 100:
+            lol = "Holy fuck, you're cute! ><"
+            embed_color_uwu = MAIN_COLOR
+
+        embed = discord.Embed(
+            title="Cuteness detector!",
+            description = f"**{user.name}#{user.discriminator}** is **{cute_number}%** cute!",
+            color = embed_color_uwu
+        )
+        embed.set_footer(text=lol)
+
+        await msg1.edit(embed=embed)
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command(help="Calculates how gay the user is!")
+    async def howgay(self, ctx, user: discord.Member = None):
+        if user == None:
+            user = ctx.author
+        embed = discord.Embed(
+            title="Calculating how gay you are...",
+            color=MAIN_COLOR
+        )
+        msg = await ctx.message.reply(embed=embed)
+
+        cute_number = random.randint(0, 100)
+
+        if 0 <= cute_number <= 20:
+            embed_color_uwu = RED_COLOR
+        if 20 < cute_number <= 50:
+            embed_color_uwu = ORANGE_COLOR
+        if 50 < cute_number <= 100:
+            embed_color_uwu = MAIN_COLOR
+
+        embed = discord.Embed(
+            title="Gayness Detector!",
+            description=f"**{user.name}#{user.discriminator}** is **{cute_number}%** gay!",
+            color=embed_color_uwu
+        )
+
+        await msg.edit(embed=embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['simpfor'])

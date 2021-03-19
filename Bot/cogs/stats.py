@@ -4,6 +4,7 @@ import requests
 import datetime
 import os
 from discord.ext import commands
+from config import *
 
 class Stats(commands.Cog):
     def __init__(self, client):
@@ -48,7 +49,7 @@ class Stats(commands.Cog):
                             value = f"{yes['data'][0]['commands']}",
                             inline = True)
             embed.add_field(name = "**Total cmds:**",
-                            value = f"102",
+                            value = f"{total_cmds}",
                             inline = True)
             embed.add_field(name = "**Most used cmd:**",
                             value = f"`e!{yes['data'][0]['popular'][0]['name']}` - {yes['data'][0]['popular'][0]['count']} uses",
@@ -63,10 +64,13 @@ class Stats(commands.Cog):
                             value = f"{round(self.client.latency * 1000)}ms",
                             inline = True)
             embed.add_field(name = "**Memory Load:**",
-                            value = f"{yes['data'][0]['memload']}",
+                            value = f"{yes['data'][0]['memload']}%",
                             inline = True)
             embed.add_field(name = "**CPU Load:**",
-                            value = f"{yes['data'][0]['cpuload']}",
+                            value = f"{yes['data'][0]['cpuload']}%",
+                            inline = True)
+            embed.add_field(name = "**Shard ID:**",
+                            value = f"{ctx.guild.shard_id}/{len(self.client.shards)}",
                             inline = True)
 
             embed.add_field(name = "‎",

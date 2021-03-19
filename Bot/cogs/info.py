@@ -2,6 +2,7 @@ import discord
 import datetime
 import requests
 import typing as t
+import time
 from typing import Optional
 from discord.ext import commands
 from discord import Member
@@ -9,6 +10,26 @@ from discord import Member
 class Info(commands.Cog):
     def __init__(self, client):
         self.client = client
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command()
+    async def ping(self, ctx):
+
+        time1 = time.time()
+
+        msg = await ctx.message.reply(embed=discord.Embed(title = "Pinging...", color=0x00FFFF))
+
+        embed = discord.Embed(
+            title = "Pong!",
+            description = f"""
+API Latency: **{round(self.client.latency * 1000)}ms**
+Bot Latency: **{round((time.time() - time1) * 1000)}ms**
+            """,
+            color = 0x00FFFF
+        )
+        embed.set_footer(text="Experiencing lag issues? Join our support server!")
+
+        await msg.edit(embed=embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['guildinfo', 'server_info', 'guild_info'])

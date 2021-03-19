@@ -6,7 +6,8 @@ class Moderation(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command()
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command(aliases=['purge'])
     @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx, amount=10):
         await ctx.channel.purge(limit=amount+1)
@@ -17,6 +18,7 @@ class Moderation(commands.Cog):
         new_msg = await ctx.channel.fetch_message(msg.id)
         await new_msg.delete()
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member : discord.Member, *, reason=None):
@@ -30,9 +32,17 @@ class Moderation(commands.Cog):
             return
 
         await member.kick(reason=reason)
-        kick = discord.Embed(title="👢 Member Kicked!", description=f"I have kicked **{member.name}#{member.discriminator}** from this server!", color=0x89CFF0)
-        await ctx.send(embed=kick)
 
+        embed = discord.Embed(
+            title = "👢  Member Kicked!",
+            description = f"I have kicked **{member.name}#{member.discriminator}** from this server!",
+            color = 0x00FFFF
+        )
+
+        # await ctx.send(f':crossed_swords: {member.mention} was kicked.\nReason: {reason}')
+        await ctx.send(embed=embed)
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member : discord.Member, *, reason=None):
@@ -46,24 +56,33 @@ class Moderation(commands.Cog):
             return
 
         await member.ban(reason=reason)
-        ban = discord.Embed(title="<a:JD_banned:818014712297029643> Member Banned!", description=f"I have banned **{member.name}#{member.discriminator}** from this server!", color=0x89CFF0)
-        await ctx.send(embed=ban)
-        await member.create_dm()
 
-        if reason == None:
-            real_reason = "NONE"
-        elif reason != None:
-            real_reason = reason
+        embed = discord.Embed(
+            title = "<:bonk:818034352176103434>  Bonk!",
+            description = f"I have yeeted **{member.name}#{member.discriminator}** out of this server! We'll never see them again, Amazing!",
+            color = 0x00FFFF
+        )
 
-        embed = discord.Embed(title = "🔨  BAN  🔨", description = f"You were banned from `{ctx.guild}`.", color = 0xFF0000)
-        embed.add_field(name = "Moderator:", value = ctx.author, inline = False)
-        embed.add_field(name = "Reason:", value = real_reason, inline = False)
+        # await ctx.send(f':hammer: {member.mention} was banned.\nReason: {reason}')
+        await ctx.send(embed=embed)
 
         try:
+            await member.create_dm()
+
+            if reason == None:
+                real_reason = "None"
+            elif reason != None:
+                real_reason = reason
+
+            embed = discord.Embed(title = "🔨  BAN  🔨", description = f"You were banned from `{ctx.guild}`.", color = 0xFF0000)
+            embed.add_field(name = "Moderator:", value = f"`{ctx.author}`", inline = False)
+            embed.add_field(name = "Reason:", value = f"`{real_reason}`", inline = False)
+
             await member.dm_channel.send(embed = embed)
         except:
-            await ctx.send("I tried to DM them about then ban but I failed, they have still been banned tho!")
+            await ctx.send(f"After banning them I tried to DM them but they have their DMs off or something so I wasn't able to DM them. They are still banned tho :D")
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['addrole'])
     @commands.has_permissions(manage_roles = True)
     async def add_role(self, ctx, member: discord.Member, role: discord.Role):
@@ -76,6 +95,7 @@ class Moderation(commands.Cog):
         embed = discord.Embed(title = "Role Added", description = f"Successfully added {role.mention} role to {member.mention}.", color = 0x00FF0C)
         await ctx.send(embed = embed)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['removerole'])
     @commands.has_permissions(manage_roles = True)
     async def remove_role(self, ctx, member: discord.Member, role: discord.Role):
@@ -87,23 +107,33 @@ class Moderation(commands.Cog):
         await member.remove_roles(role)
         embed = discord.Embed(title = "Role Removed", description = f"Successfully removed {role.mention} role from {member.mention}.", color = 0xFF0000)
         await ctx.send(embed = embed)
-        
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['deletechannel', 'delete-channel', 'nukechannel'])
     @commands.has_permissions(manage_channels = True)
     async def delete_channel(self, ctx, channel: discord.TextChannel = None):
+
+        if channel == None:
+            channel = ctx.channel
 
         msg = await ctx.send(f"Deleting `{channel}`... <a:EpicLoading1:762919634336088074>")
         await channel.delete()
         await msg.edit(content = f"Deleted `{channel}` <a:EpicTik:766172079179169813>")
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['createchannel', 'create-channel'])
     @commands.has_permissions(manage_channels = True)
-    async def create_channel(self, ctx, channelName):
+    async def create_channel(self, ctx, channelName = None):
+
+        if channelName == None:
+            await ctx.message.reply(f"You didn't mention what name you want the channel to have, please try again.")
+            return
 
         msg = await ctx.send(f"Creating `{channelName}`... <a:EpicLoading1:762919634336088074>")
         await ctx.guild.create_text_channel(name = channelName)
         await msg.edit(content = f"Created `{channelName}` <a:EpicTik:766172079179169813>")
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['changenick', 'nickname'])
     @commands.has_permissions(manage_nicknames = True)
     async def nick(self, ctx, member: discord.Member = None, *,nickname):
@@ -113,6 +143,7 @@ class Moderation(commands.Cog):
         new_nick = member.nick
         await ctx.send(f"{member.mention}'s nickname changed from `{old_nick}` to `{new_nick}` <a:EpicTik:766172079179169813>")
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx, *, member):

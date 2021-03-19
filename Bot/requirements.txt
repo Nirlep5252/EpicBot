@@ -21,6 +21,6 @@ dnspython
 cffi
 six
 pycparser
-disputils
+git+https://github.com/LiBa001/disputils
 dblpy
 jishaku
