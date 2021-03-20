@@ -33,7 +33,6 @@ cmd_categories = [
 
 utility = {
   'nqn': "Nitro emojis, Without Nitro!",
-  'prefix': "Change the bot's prefix.",
   'weather': "Find weather info.",
   'announce': "Make an embedded announement.",
   'giveaway': "Start a giveaway.",
@@ -179,7 +178,6 @@ nsfw = {
 
 utility_with_emojis = """```
 😍-NQN
-❔-Prefix
 ⛅-Weather
 📢-Announce
 🎉-Giveaway
@@ -384,10 +382,6 @@ all_cmds = {
   'nqn': [
     "Use nitro emojis, WITHOUT nitro!",
     "nqn enable/disable"
-],
-  'prefix': [
-    utility['prefix'],
-    "prefix <new prefix>"
 ],
   'weather': [
     utility['weather'],
