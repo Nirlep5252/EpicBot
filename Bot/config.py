@@ -1,5 +1,5 @@
 # when u add a new cmd you will need to update the following things:
-#   - add it in its correct category dict and its usage
+#   - add it in its correct category dict and its desc
 #   - add it in the emoji category dict
 #   - add it in the all_cmds dict
 
@@ -89,15 +89,18 @@ leveling = {
 }
 
 music = {
-  'connect': "I will join your voice channel.",
+  'join': "I will join your voice channel.",
+  'summon': "Make the bot join a specific channel.",
   'play': "I will play music in your ears.",
   'nowplaying': "Shows which song is playing currently.",
+  'shuffle': "Shuffles the queue.",
   'pause': "Pauses the music.",
   'resume': "Resumes the music.",
   'queue': "Shows the music queue.",
-  'skip': "Skips the current song.",
+  'skip': "Vote to skip a song. The requester can automatically skip.",
+  'remove': "Removes a song from the queue at a given index.",
   'stop': "Stops the music and clears the queue.",
-  'volume': "Changes the volume."
+  'leave': "Clears the queue and leaves the voice channel.",
 }
 
 economy = { 
@@ -234,15 +237,18 @@ leveling_with_emojis = """```
 """
 
 music_with_emojis = """```
-🔊-Connect
+🔊-Join
+🔊-Summon
 🎶-Play
 🎵-Nowplaying
+🔀-Shuffle
 ⏸-Pause
 ⏯-Resume
 🧾-Queue
 ⏭-Skip
+❌-Remove
 ⏹-Stop
-🔉-Volume```
+👋-Leave```
 """
 
 economy_with_emojis = """```
@@ -580,9 +586,13 @@ all_cmds = {
 
   # music
 
-  'connect': [
-    music['connect'],
-    "connect"
+  'join': [
+    music['join'],
+    "join"
+],
+  'summon': [
+    music['summon'],
+    "summon <voice channel>"
 ],
   'play': [
     music['play'],
@@ -591,6 +601,10 @@ all_cmds = {
   'nowplaying': [
     music['nowplaying'],
     "nowplaying"
+],
+  'shuffle': [
+    music['shuffle'],
+    "shuffle"
 ],
   'pause': [
     music['pause'],
@@ -608,13 +622,17 @@ all_cmds = {
     music['skip'],
     "skip"
 ],
+  'remove': [
+    music['remove'],
+    "remove <number>"
+],
   'stop': [
     music['stop'],
     "stop"
 ],
-  'volume': [
-    music['volume'],
-    "volume <number>"
+  'leave': [
+    music['leave'],
+    "leave"
 ],
 
   # economy
