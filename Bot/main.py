@@ -20,40 +20,14 @@ from itertools import cycle
 from discord import DMChannel
 from PIL import Image, ImageFont, ImageDraw
 from io import BytesIO
-from pymongo import MongoClient
-
-conn = MongoClient(os.environ.get("MONGODB_LINK"))
-db = conn["EpicBot"]
-
-prefixes = db["real_prefixes"]
 
 numbers = ("1️⃣","2️⃣","3️⃣","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣","🔟")
 
-def get_prefix(client, message):
-    if not message.guild:
-        return commands.when_mentioned_or("e!")(client, message)
-
-    try:
-        prefix = prefixes.find_one({"_id": message.guild.id})["prefix"]
-    except:
-        prefixes.insert_one(
-            {
-                "_id": message.guild.id,
-                "prefix": "e!"
-            }
-        )
-
-    prefix = prefixes.find_one({"_id": message.guild.id})["prefix"]
-
-    if prefix == None:
-        return commands.when_mentioned_or("e!")(client, message)
-
-    return commands.when_mentioned_or(prefix)(client, message)
 
 intents = discord.Intents.default()
 intents.members = True
 client = commands.Bot(
-    command_prefix = get_prefix,
+    command_prefix = commands.when_mentioned_or("e!", "E!"),
     intents = intents,
     case_insensitive = True
 )
@@ -96,32 +70,6 @@ async def uptime(ctx):
 
     elif uptime_day > 1:
         await ctx.send(f"{uptime_day} days.")
-
-@client.command()
-@commands.has_permissions(administrator = True)
-async def prefix(ctx, *, new_prefix = None):
-    if new_prefix == None:
-        await ctx.send("Please enter a new prefix.")
-
-    else:
-        prefix = prefixes.find_one({"_id": ctx.guild.id})["prefix"]
-        if prefix == None:
-            prefixes.insert_one(
-                {
-                    "_id": ctx.guild.id,
-                    "prefix": new_prefix
-                }
-            )
-        else:
-            prefixes.update_one(
-                {
-                    "_id": ctx.guild.id
-                },
-                {
-                    "$set": {"prefix": new_prefix}
-                }
-            )
-        await ctx.send(f"The new prefix has now been set to be `{new_prefix}`")
 
 @client.command(aliases = ['memberinfo', 'user_info', 'member_info'])
 async def userinfo(ctx, target: Optional[Member]):
