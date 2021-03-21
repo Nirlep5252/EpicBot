@@ -1,0 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap');
+
+/* vote epicbot and stop looking at the code kthxbai */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: 'Poppins', sans-serif;
+}
+html {
+  scroll-behavior: smooth;
+}
+
+.loader-wrapper {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: #222;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: fixed;
+}
+
+.longfazers {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.longfazers span {
+  position: absolute;
+  height: 4px;
+  width: 20%;
+  background: crimson;
+}
+.longfazers span:nth-child(1) {
+  top: 20%;
+  animation: lf 0.6s linear infinite;
+  animation-delay: -5s;
+}
+.longfazers span:nth-child(2) {
+  top: 40%;
+  animation: lf2 0.8s linear infinite;
+  animation-delay: -1s;
+}
+.longfazers span:nth-child(3) {
+  top: 60%;
+  animation: lf3 0.6s linear infinite;
+}
+.longfazers span:nth-child(4) {
+  top: 80%;
+  animation: lf4 0.5s linear infinite;
+  animation-delay: -3s;
+}
+@keyframes lf {
+  0% {
+    left: -200%;
+ }
+  100% {
+    left: 200%;
+    opacity: 0;
+ }
+}
+@keyframes lf2 {
+  0% {
+    left: -200%;
+ }
+  100% {
+    left: 200%;
+    opacity: 0;
+ }
+}
+@keyframes lf3 {
+  0% {
+    left: -200%;
+ }
+  100% {
+    left: 100%;
+    opacity: 0;
+ }
+}
+@keyframes lf4 {
+  0% {
+    left: -200%;
+ }
+  100% {
+    left: 100%;
+    opacity: 0;
+ }
+}
+
+body {
+  background: #121212;
+}
+section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+section img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+section h2 {
+  position: relative;
+  color: #fff;
+  font-size: 9em;
+  transition: font-size 0.3s ease;
+}
+section h2 span {
+  color: crimson;
+}
+
+@media (max-width: 1500px) {
+  section h2 {
+    font-size: 7em;
+  }
+}
+@media (max-width: 1100px) {
+  section h2 {
+    font-size: 6em;
+  }
+}
+@media (max-width: 900px) {
+  section h2 {
+    font-size: 4em;
+  }
+}
+@media (max-width: 600px) {
+  section h2 {
+    font-size: 2.5em;
+  }
+}
