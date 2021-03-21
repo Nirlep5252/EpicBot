@@ -105,6 +105,67 @@ class Other(commands.Cog):
             await ctx.send(embed=e)
         except:
             await send_error_msg() # thank you bowman <3
-            
+ 
+	@client.command(aliases=['df','def','urban','ud','urbandictionary'])
+	async def define(ctx,*,ud_query):
+		url = "API key"
+		querystring = {"term":ud_query}
+		headers = {
+			
+			}
+		ud_file = requests.request("GET", url, headers=headers, params=querystring)
+		#print(ud_file.json)
+		total_definitions = len(ud_file.json()["list"])
+		try:
+			word_name = ud_file.json()["list"][1]["word"]
+			definition = ud_file.json()["list"][1]["definition"]
+			link = ud_file.json()["list"][1]["permalink"]
+			example = ud_file.json()["list"][1]["example"]
+			more_res = total_definitions - 1
+
+			definition2 = ud_file.json()["list"][0]["definition"]
+			example2 = ud_file.json()["list"][0]["example"]
+
+			em_ud = discord.Embed(
+			title= str(word_name),
+			color=discord.Color.from_rgb(233, 110, 76),
+			url = link
+			)
+			em_ud.add_field(name="Definition : ",value=definition,inline=False)
+			em_ud.add_field(name="Example : ",value=example,inline=False)
+
+			em_ud.add_field(name="Definition (2): ",value=definition2,inline=False)
+			em_ud.add_field(name="Example (2): ",value=example2,inline=False)
+
+			em_ud.set_footer(text=f'{more_res} more results.')
+			em_ud.timestamp=datetime.utcnow()
+			await ctx.send(embed=em_ud)
+
+		except IndexError:
+			try:
+				word_name = ud_file.json()["list"][0]["word"]
+				definition = ud_file.json()["list"][0]["definition"]
+				link = ud_file.json()["list"][0]["permalink"]
+				example = ud_file.json()["list"][0]["example"]
+				more_res = total_definitions - 1
+				em_ud = discord.Embed(
+				title= str(word_name),
+				color=discord.Color.from_rgb(233, 110, 76),
+				url = link
+				)
+				em_ud.add_field(name="Definition : ",value=definition,inline=False)
+				em_ud.add_field(name="Example : ",value=example,inline=False)
+				em_ud.set_footer(text=f'{more_res} more results.')
+				em_ud.timestamp=datetime.utcnow()
+				await ctx.send(embed=em_ud)
+			except IndexError:
+				#await ctx.send(f'No results :(')
+				em_ud_no = discord.Embed(
+				title = "\"" + str(ud_query) + "\" does not matched to any pages. Try another query!",
+				color= discord.Color.from_rgb(240, 73, 71)
+				)
+				em_ud_no.timestamp=datetime.utcnow()
+				await ctx.send(embed=em_ud_no)
+
 def setup(client):
     client.add_cog(Other(client))
