@@ -3,15 +3,84 @@ import googletrans
 import requests
 import aiohttp
 import datetime
+import os 
 from aiohttp import request
 from googletrans import Translator
 from discord.ext import commands
+from config import *
 
 numbers = ("1️⃣","2️⃣","3️⃣","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣","🔟")
 
 class Other(commands.Cog):
     def __init__(self, client):
         self.client = client
+        
+    @commands.command(aliases=['df','def','urban','ud','urbandictionary'])
+    async def define(self, ctx,*,ud_query = None):
+        if ud_query == None:
+            await ctx.message.reply(embed=discord.Embed(
+                title = "Incorrect Usage!",
+                description = "Please use the command like this: `e!define <query>`",
+                color = RED_COLOR
+            ).set_footer(text="Idiot!"))
+            return
+        url = "https://mashape-community-urban-dictionary.p.rapidapi.com/define"
+        querystring = {"term":ud_query}
+        headers = {
+            "x-rapidapi-key": "YOUR API KEY",
+            "x-rapidapi-host": "mashape-community-urban-dictionary.p.rapidapi.com",
+		}
+        ud_file = requests.request("GET", url, headers=headers, params=querystring)
+        total_definitions = len(ud_file.json()["list"])
+        try:
+            word_name = ud_file.json()["list"][1]["word"]
+            definition = ud_file.json()["list"][1]["definition"]
+            link = ud_file.json()["list"][1]["permalink"]
+            example = ud_file.json()["list"][1]["example"]
+            more_res = total_definitions - 1
+
+            definition2 = ud_file.json()["list"][0]["definition"]
+            example2 = ud_file.json()["list"][0]["example"]
+
+            em_ud = discord.Embed(
+            title= str(word_name),
+            color=MAIN_COLOR,
+            url = link
+            )
+            em_ud.add_field(name="Definition : ",value=definition,inline=False)
+            em_ud.add_field(name="Example : ",value=example,inline=False)
+
+            em_ud.add_field(name="Definition (2): ",value=definition2,inline=False)
+            em_ud.add_field(name="Example (2): ",value=example2,inline=False)
+
+            em_ud.set_footer(text=f'{more_res} more results.')
+            em_ud.timestamp=datetime.datetime.utcnow()
+            await ctx.send(embed=em_ud)
+
+        except IndexError:
+            try:
+                word_name = ud_file.json()["list"][0]["word"]
+                definition = ud_file.json()["list"][0]["definition"]
+                link = ud_file.json()["list"][0]["permalink"]
+                example = ud_file.json()["list"][0]["example"]
+                more_res = total_definitions - 1
+                em_ud = discord.Embed(
+                title= str(word_name),
+                color=MAIN_COLOR,
+                url = link
+                )
+                em_ud.add_field(name="Definition : ",value=definition,inline=False)
+                em_ud.add_field(name="Example : ",value=example,inline=False)
+                em_ud.set_footer(text=f'{more_res} more results.')
+                em_ud.timestamp=datetime.datetime.utcnow()
+                await ctx.send(embed=em_ud)
+            except IndexError:
+                em_ud_no = discord.Embed(
+                title = "\"" + str(ud_query) + "\" does not matched to any pages. Try another query!",
+                color= RED_COLOR
+				)
+                em_ud_no.timestamp=datetime.datetime.utcnow()
+                await ctx.send(embed=em_ud_no)
 
     @commands.command()
     async def translate(self, ctx, lang, *, content):
