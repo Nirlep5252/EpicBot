@@ -38,6 +38,7 @@ React to this message to navigate the help menu.
 
 **Latest Update:** 
 `-` \🟢 Added new welcome and leave system with autoroles!
+`-` \🟢 Added new `e!chat` command, chat with me! UwU
 `-` \🟢 Added improved Music system \🎶
 """,
                     color = 0x00FFFF
