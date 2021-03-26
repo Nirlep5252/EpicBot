@@ -74,6 +74,7 @@ fun = {
   'editsnipe': "Snipe the last edited message.",
   'howcute': "Check howcute someone is, you're pretty cute 😊",
   'howgay': "Check how gay someone is.",
+  'chat': "Chat with me!",
   'simpfor': "Simp for someone.",
   'owo': "OwO",
   'hack': "Hack someone",
@@ -234,6 +235,7 @@ fun_with_emojis = """```
 😊-Howcute
 🌈-Howgay
 😍-Simpfor
+💬-Chat
 😊-OWO
 💻-Hack
 😁-Mock
@@ -556,6 +558,10 @@ all_cmds = {
   'howgay': [
     fun['howgay'],
     "howgay [user]"
+],
+  'chat': [
+    fun['chat'],
+    "chat <msg>"
 ],
   'simpfor': [
     fun['simpfor'],
