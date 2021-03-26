@@ -31,7 +31,7 @@
   <li>🟢 Low latency, super fast response time.</li>
   <li>💻 Web dashboard! (coming soon)</li>
   <li>🎶 Extremely high quality Music playback.</li>
-  <li>🎊 Welcome and Leave messages.</li>
+  <li>🎊 Welcome and Leave messages, Autorole.</li>
   <li>✨ Level up system.</li>
   <li>🎉 Giveaway commands.</li>
   <li>🔨 Powerful moderation.</li>
