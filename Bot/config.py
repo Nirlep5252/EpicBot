@@ -18,6 +18,7 @@ PINK_COLOR = 0xe0b3c7
 
 cmd_categories = [
   'utility',
+  'config',
   'moderation',
   'fun',
   'leveling',
@@ -32,8 +33,8 @@ cmd_categories = [
 ]
 
 utility = {
-  'nqn': "Nitro emojis, Without Nitro!",
   'weather': "Find weather info.",
+  'define': "Finds the definition for your word in urban dictionary.",
   'announce': "Make an embedded announement.",
   'giveaway': "Start a giveaway.",
   'reroll': "Reroll a giveaway.",
@@ -42,6 +43,16 @@ utility = {
   'countdown': "Start a countdown.",
   'createinvite': "Create an invite instantly that never expires.",
   'embed': "Convert your message into a beautiful customizable embed."
+}
+
+config = {
+  'serverconfig': "Shows the server configuration for EpicBot",
+  'nqn': "Nitro emojis, Without Nitro!",
+  'welcome': "Enable/Disable welcome messages for your server.",
+  'welcomechannel': "Configure the welcome channel.",
+  'autorole': "Enable/Disable autorole for your server.",
+  'leavemessage': "Enable/Disable leave messages for your server.",
+  'leavechannel': "Configure the leave channel.",
 }
 
 moderation = {
@@ -180,8 +191,8 @@ nsfw = {
 
 
 utility_with_emojis = """```
-😍-NQN
 ⛅-Weather
+📖-Define
 📢-Announce
 🎉-Giveaway
 🎉-Reroll
@@ -190,6 +201,17 @@ utility_with_emojis = """```
 ⏰-Countdown
 🔗-Create Invite
 📨-Embed```
+"""
+
+config_with_emojis = """```
+🔧-Serverconfig
+😍-NQN
+🎊-Welcome
+💬-Welcomechannel
+🤖-Autorole
+😢-Leavemessage
+💬-Leavechannel
+```
 """
 
 moderation_with_emojis = """```
@@ -328,6 +350,7 @@ nsfw_with_emojis = """```
 
 help_categories = [
     utility,
+    config,
     moderation,
     fun,
     leveling,
@@ -342,6 +365,7 @@ help_categories = [
 ]
 help_emoji_categories = [ 
     utility_with_emojis,
+    config_with_emojis,
     moderation_with_emojis,
     fun_with_emojis,
     leveling_with_emojis,
@@ -356,17 +380,18 @@ help_emoji_categories = [
 ]
 help_category_titles = [
     ":wrench: • Utility Commands (Page 2)",
-    ":tools: • Moderation Commands (Page 3)",
-    ":grinning: • Fun Commands(Page 4)",
-    "⬆ • Levelling Commands(Page 5)",
-    ":notes: • Music Commands(Page 6)",
-    ":money_with_wings: • Economy Commands(Page 7)",
-    ":frame_photo: • Image Commands(Page 8)",
-    "<:HugPlease:801710974117740554> • Action Commands(Page 9)",
-    "<:EpicInfo:766498653753049109> • Info Commands(Page 10)",
-    "<a:PetEpicBot:797142108611280926> • Bot Commands(Page 11)",
-    ":video_game: • Game Commands(Page 12)",
-    "🔞 • NSFW Commands(Page 13)",
+    "<:settings:825008012867534928> • Config Commands (Page 3)",
+    ":tools: • Moderation Commands (Page 4)",
+    ":grinning: • Fun Commands(Page 5)",
+    "⬆ • Levelling Commands(Page 6)",
+    ":notes: • Music Commands(Page 7)",
+    ":money_with_wings: • Economy Commands(Page 8)",
+    ":frame_photo: • Image Commands(Page 9)",
+    "<:HugPlease:801710974117740554> • Action Commands(Page 10)",
+    "<:EpicInfo:766498653753049109> • Info Commands(Page 11)",
+    "<a:PetEpicBot:797142108611280926> • Bot Commands(Page 12)",
+    ":video_game: • Game Commands(Page 13)",
+    "🔞 • NSFW Commands(Page 14)",
 ]
 
 
@@ -385,13 +410,14 @@ all_cmds = {
 
   # utility 
 
-  'nqn': [
-    "Use nitro emojis, WITHOUT nitro!",
-    "nqn enable/disable"
-],
+
   'weather': [
     utility['weather'],
     "weather <location>"
+],
+  'define': [
+    utility['define'],
+    "define <word>"
 ],
   'announce': [
     utility['announce'],
@@ -424,6 +450,37 @@ all_cmds = {
   'embed': [
     utility['embed'],
     "embed <#hexcolor> | <title> | <description>"
+],
+
+  #config 
+
+  'serverconfig': [
+    config['serverconfig'],
+    "serverconfig"
+],
+  'nqn': [
+    config['nqn'],
+    "nqn enable/disable"
+],
+  'welcome': [
+    config['welcome'],
+    "welcome enable/disable"
+],
+  'welcomechannel': [
+    config['welcomechannel'],
+    "welcomechannel <channel>"
+],
+  'autorole': [
+    config['autorole'],
+    "autorole <role>"
+],
+  'leavemessage': [
+    config['leavemessage'],
+    "leavemessage enable/disable"
+],
+  'leavechannel': [
+    config['leavechannel'],
+    "leavechannel <channel>"
 ],
 
   # moderation
