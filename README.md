@@ -26,14 +26,16 @@
 
 <h2><img src="https://cdn.discordapp.com/emojis/818758128329556018.gif?v=1" height="20px"> • Features</h2>
 <ul>
-  <li>📌 Over 100+ commands</li>
-  <li>🔼 99%+ uptime</li>
-  <li>🟢 Low latency, super fast response time</li>
-  <li>💻 Web dashboard (coming soon)</li>
+  <li>📌 Over 100+ commands!</li>
+  <li>🔼 99%+ uptime.</li>
+  <li>🟢 Low latency, super fast response time.</li>
+  <li>💻 Web dashboard! (coming soon)</li>
   <li>🎶 Extremely high quality Music playback.</li>
-  <li>✨ Level up system</li>
-  <li>🔨 Powerful moderation</li>
-  <li>🎀 Regularly updated and maintained</li>
+  <li>🎊 Welcome and Leave messages.</li>
+  <li>✨ Level up system.</li>
+  <li>🎉 Giveaway commands.</li>
+  <li>🔨 Powerful moderation.</li>
+  <li>🎀 Regularly updated and maintained.</li>
 </ul>
 
 </ul>
