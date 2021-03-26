@@ -191,7 +191,7 @@ Please make sure that I have **Manage Role** permissions to avoid problems.
                     description = f"""
 Welcome message have now been **enabled**
 Welcome channel has been set to {ctx.channel.mention}
-In order to customize the settings please use `e!help welcomeandleave`.
+In order to customize the settings please use `e!help config`.
                     """,
                     color = MAIN_COLOR
                 )
@@ -332,7 +332,7 @@ To enable them again you can use `e!welcome enable`
                     description = f"""
 Leave message have now been **enabled**
 Leave channel has been set to {ctx.channel.mention}
-In order to customize the settings please use `e!help welcomeandleave`.
+In order to customize the settings please use `e!help config`.
                     """,
                     color = MAIN_COLOR
                 )

@@ -34,6 +34,11 @@ React to this message to navigate the help menu.
 
 `-` [**Website**](https://epic-bot.com)
 `-` [**Support Server**](https://discord.gg/Zj7h8Fp)
+`-` [**Source Code**](https://github.com/Nirlep5252/EpicBot)
+
+**Latest Update:** 
+`-` \🟢 Added new welcome and leave system with autoroles!
+`-` \🟢 Added improved Music system \🎶
 """,
                     color = 0x00FFFF
                 ),
@@ -50,7 +55,7 @@ React to this message to navigate the help menu.
                     name=f"Commands({len(help_categories[i])})",
                     value=help_emoji_categories[i]
                 )
-                if not ctx.channel.is_nsfw() and title == "🔞 • NSFW Commands(Page 13)":
+                if not ctx.channel.is_nsfw() and title == "🔞 • NSFW Commands(Page 14)":
                     pass
                 else:
                     embeds.append(embed)
