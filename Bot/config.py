@@ -73,8 +73,10 @@ fun = {
   'snipe': "Snipe the last deleted message.",
   'editsnipe': "Snipe the last edited message.",
   'howcute': "Check howcute someone is, you're pretty cute 😊",
+  'howhorny': "Check howhorny someone it.",
   'howgay': "Check how gay someone is.",
   'chat': "Chat with me!",
+  'whendie': "Check when someone is gonna die!",
   'simpfor': "Simp for someone.",
   'owo': "OwO",
   'hack': "Hack someone",
@@ -233,9 +235,11 @@ fun_with_emojis = """```
 🔫-Snipe
 🔫-EditSnipe
 😊-Howcute
+😳-Howhorny
 🌈-Howgay
 😍-Simpfor
 💬-Chat
+💀-Whendie
 😊-OWO
 💻-Hack
 😁-Mock
@@ -555,6 +559,10 @@ all_cmds = {
     fun['howcute'],
     "howcute [user]"
 ],
+  'howhorny': [
+    fun['howhorny'],
+    "howhorny [user]"
+],
   'howgay': [
     fun['howgay'],
     "howgay [user]"
@@ -562,6 +570,10 @@ all_cmds = {
   'chat': [
     fun['chat'],
     "chat <msg>"
+],
+  'whendie': [
+    fun['whendie'],
+    "whendie [user]"
 ],
   'simpfor': [
     fun['simpfor'],
