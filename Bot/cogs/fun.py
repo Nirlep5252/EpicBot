@@ -22,6 +22,53 @@ class Fun(commands.Cog):
         response = requests.get(f"https://rdch.dev64.repl.co/chat?message={msg}").json()['reply']
 
         await ctx.message.reply(response)
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command()
+    async def whendie(self, ctx, *, user: discord.Member = None):
+        if user == None:
+            user = ctx.author
+
+        msg = await ctx.message.reply(embed=discord.Embed(title="Let's see when you're gonna die...", color=MAIN_COLOR))
+
+        something = [
+            f'{random.randint(0, 60)} Second(s)',
+            f'{random.randint(1, 60)} Minute(s)',
+            f'{random.randint(1, 24)} Hour(s)',
+            f'{random.randint(1, 7)} Day(s)',
+            f'{random.randint(1, 4)} Week(s)',
+            f'{random.randint(1, 100)} Year(s)'
+        ]
+
+        thingy = random.choice(something)
+
+        if thingy == something[0]:
+            funny_text = "LOL YOU'RE DEAD"
+            embed_color = RED_COLOR
+        if thingy == something[1]:
+            funny_text = "Well rip, you're almost dead"
+            embed_color = RED_COLOR
+        if thingy == something[2]:
+            funny_text = "Sad"
+            embed_color = RED_COLOR
+        if thingy == something[3]:
+            funny_text = "Ok you have some time before you die"
+            embed_color = ORANGE_COLOR
+        if thingy == something[4]:
+            funny_text = "You're not dying that early, Yay!"
+            embed_color = ORANGE_COLOR
+        if thingy == something[5]:
+            funny_text = "Wowie, you have a nice long life! OwO"
+            embed_color = MAIN_COLOR
+
+        embed = discord.Embed(
+            description = f"{user.mention} is gonna die in **{thingy}**",
+            color = embed_color,
+        )
+        embed.set_author(name=user.name, icon_url=user.avatar_url)
+        embed.set_footer(text=funny_text)
+
+        await msg.edit(embed=embed)
         
     @commands.command()
     async def owo(self, ctx, *, msg):
@@ -133,6 +180,40 @@ class Fun(commands.Cog):
         embed.set_footer(text=lol)
 
         await msg1.edit(embed=embed)
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command()
+    async def howhorny(self, ctx, *, user: discord.Member = None):
+        if user == None:
+            user = ctx.author
+        embed = discord.Embed(
+            title = "Calculating how horny you are...",
+            color = MAIN_COLOR
+        )
+        msg = await ctx.message.reply(embed=embed)
+
+        percentage = random.randint(0, 100)
+
+        if 0 <= percentage <= 20:
+            lol = "You are a happy person."
+            embed_color_uwu = MAIN_COLOR
+        if 20 < percentage <= 50:
+            lol = "Hmm"
+            embed_color_uwu = ORANGE_COLOR
+        if 50 < percentage <= 75:
+            lol = "You're kinda horny, OwO"
+            embed_color_uwu = MAIN_COLOR
+        if 75 < percentage <= 100:
+            lol = "You are very horny!"
+            embed_color_uwu = PINK_COLOR
+
+        await msg.edit(
+            embed = discord.Embed(
+                title = "Hornyness detector!",
+                description = f"**{user.name}#{user.discriminator}** is **{percentage}%** horny!",
+                color = embed_color_uwu
+            ).set_footer(text=lol)
+        )
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Calculates how gay the user is!")
