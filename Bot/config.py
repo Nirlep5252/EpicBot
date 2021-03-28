@@ -168,6 +168,7 @@ bot = {
   'invite': "Invite me to your server \💖",
   'vote': "Vote for me \💖",
   'discord': "Join support server!",
+  'credits': "Credits to all contributors!",
   'privacy': "Shows the privacy policy.",
   'bugreport': "Report a bug."
 }
@@ -330,6 +331,7 @@ bot_with_emojis = """```
 ❤️-Invite
 🔼-Vote
 🔗-Discord
+🧾-Credits
 👤-Privacy
 🐞-Bug Report```
 """
@@ -875,6 +877,10 @@ all_cmds = {
   'discord': [
     bot['discord'],
     "discord"
+],
+  'credits': [
+    bot['credits'],
+    "credits"
 ],
   'privacy': [
     bot['privacy'],
