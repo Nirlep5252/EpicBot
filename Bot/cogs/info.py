@@ -6,6 +6,7 @@ import time
 from typing import Optional
 from discord.ext import commands
 from discord import Member
+from config import *
 
 class Info(commands.Cog):
     def __init__(self, client):
@@ -30,6 +31,38 @@ Bot Latency: **{round((time.time() - time1) * 1000)}ms**
         embed.set_footer(text="Experiencing lag issues? Join our support server!")
 
         await msg.edit(embed=embed)
+
+    @commands.command()
+    async def credits(self, ctx):
+        embed = discord.Embed(
+            title = "Credits",
+            description = "This bot wouldn't have been possible without them!",
+            color = MAIN_COLOR
+        )
+        embed.add_field(
+            name="Contributors",
+            value="""
+- [`Nirlep_5252_`](https://github.com/Nirlep5252) - Owner
+- [`TheUndeadBowman`](https://github.com/TheUndeadBowman) - Supporter, Helper
+- [`CAT`](https://github.com/KittyKart) - Supporter, Helper
+- [`Craftzman7`](https://github.com/Craftzman7) - Helper
+- [`Motzumoto`](https://github.com/Motzumoto) - Helper
+- [`WindowsCmd`](https://github.com/WindowsCmd) - Supporter, Helper
+- [`imkrvishal`](https://github.com/imkrvishal) - Helper
+- [`ELEXR`](https://github.com/ELEXR) - Supporter, Helper
+            """,
+            inline=False
+        )
+        embed.add_field(
+            name="Other Credits",
+            value="""
+- [`Hexbot`](https://github.com/1Prototype1/HexBot) - Game Commands
+            """,
+            inline=False
+        )
+        embed.set_footer(text="They are amazing! 💖")
+
+        await ctx.message.reply(embed=embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['guildinfo', 'server_info', 'guild_info'])
