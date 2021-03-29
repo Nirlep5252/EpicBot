@@ -119,7 +119,7 @@ class Images(commands.Cog):
                 color=RED_COLOR
             ))
             return
-        url = f"https://some-random-api.ml/canvas/youtube-comment?avatar={ctx.author.avatar_url}&username={ctx.author.name}&comment={msg}"
+        url = f"https://some-random-api.ml/canvas/youtube-comment?avatar={ctx.author.avatar_url_as(format="png")}&username={ctx.author.name}&comment={msg}"
         url = url.replace(" ", "%20")
         embed = discord.Embed(color=MAIN_COLOR)
         embed.set_image(url=url)
