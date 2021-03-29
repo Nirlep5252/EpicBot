@@ -131,7 +131,7 @@ class Images(commands.Cog):
         if user == None:
             user = ctx.author
 
-        url = f"https://some-random-api.ml/canvas/wasted?avatar={user.avatar_url}"
+        url = f"https://some-random-api.ml/canvas/wasted?avatar={user.avatar_url_as(format='png')}"
         embed = discord.Embed(color=MAIN_COLOR)
         embed.set_image(url=url)
         await ctx.send(embed=embed)
