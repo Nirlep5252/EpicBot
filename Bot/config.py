@@ -15,6 +15,7 @@ MAIN_COLOR = 0x00FFFF
 RED_COLOR = 0xFF0000
 ORANGE_COLOR = 0xFFA500
 PINK_COLOR = 0xe0b3c7
+PINK_COLOR_2 = 0xFFC0CB
 
 cmd_categories = [
   'utility',
@@ -131,10 +132,15 @@ economy = {
 }
 
 images = { 
+  'anime': "Gives a random anime picture.",
   'cat': "Gives a random cute cat picture.",
   'dog': "Gives a random cute dog picture.",
   'fox': "Gives a random cute fox picture.",
-  'anime': "Gives a random anime picture.",
+  'panda': "Gives a random panda picture.",
+  'redpanda': "Gives a random redpanda picture.",
+  'pikachu': "Gives a random pikachu picture.",
+  'comment': "Makes a YouTube comment.",
+  'wasted': "The user is wasted (meme)",
   'burn': "Burns the user into ashes.",
   'trash': "Trashes the user.",
   'angry': "The user made someone angry 😬",
@@ -149,7 +155,9 @@ actions = {
   'kiss': "Kiss someone 💋",
   'pat': "Pat someone",
   'slap': "Slap someone 🤚",
-  'tickle': "Tickle someone"
+  'wink': "Wink at someone 😉",
+  'tickle': "Tickle someone",
+  'facepalm': "Facepalm at someone",
 }
 
 info = {
@@ -294,10 +302,15 @@ economy_with_emojis = """```
 """
 
 images_with_emojis = """```
+🥰-Anime
 🐱-Cat
 🐶-Dog
 🦊-Fox
-🥰-Anime
+🐼-Panda
+🐼-RedPanda
+😻-Pikachu
+💬-Comment
+💀-Wasted
 🔥-Burn
 🚮-Trash
 😡-Angry
@@ -312,7 +325,9 @@ actions_with_emojis = """
 💋-Kiss
 💞-Pat
 🖐-Slap
-😆-Tickle```
+😉-Wink
+😆-Tickle
+🤦‍♂️-Facepalm```
 """
 
 info_with_emojis = """```
@@ -756,7 +771,11 @@ all_cmds = {
 ],
 
   # images
-  
+
+  'anime': [
+      images['anime'],
+      "anime"
+  ],
   'cat': [
     images['cat'],
     "cat"
@@ -769,13 +788,21 @@ all_cmds = {
     images['fox'],
     "fox"
 ],
-  'anime': [
-    images['anime'],
-    "anime"
+  'panda': [
+    images['panda'],
+    "panda"
 ],
-  'burn': [
-    images['burn'],
-    "burn [user]"
+  'redpanda': [
+    images['redpanda'],
+    "redpanda"
+      ],
+  'pikachu': [
+      images['pikachu'],
+    "pikachu"
+  ],
+  'comment': [
+    images['comment'],
+    "comment <text>"
 ],
   'trash': [
     images['trash'],
@@ -820,9 +847,17 @@ all_cmds = {
     actions['slap'],
     "slap <user>"
 ],
+  'wink': [
+    actions['wink'],
+    "wink <user>"
+],
   'tickle': [
     actions['tickle'],
     "tickle <user>"
+],
+  'facepalm': [
+    actions['facepalm'],
+    "facepalm"
 ],
 
   # info
