@@ -8,6 +8,7 @@ from config import *
 class Images(commands.Cog):
     def __init__(self, client):
         self.client = client
+        client.stale_memes = []
         
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
@@ -17,11 +18,15 @@ class Images(commands.Cog):
             color = MAIN_COLOR
         )
 
-        async with aiohttp.ClientSession() as cs:
-            async with cs.get('https://www.reddit.com/r/dankmemes/new.json?sort=hot') as r:
-                res = await r.json()
-                embed.set_image(url=res['data']['children'][random.randint(0, 25)]['data']['url'])
-                await ctx.send(embed=embed)
+        while True:
+            async with aiohttp.ClientSession() as cs:
+                async with cs.get('https://www.reddit.com/r/memes/new.json?sort=hot') as r:
+                    res = await r.json()
+                    if res['data']['children'][random.randint(0, 25)]['data']['url'] not in client.stale_memes:
+                        embed.set_image(url=res['data']['children'][random.randint(0, 25)]['data']['url'])
+                        client.stale_memes.append(res['data']['children'][random.randint(0, 25)]['data']['url'])
+                        await ctx.send(embed=embed)
+                        break
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
