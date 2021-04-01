@@ -15,9 +15,6 @@
   <a href="https://top.gg/bot/751100444188737617">
       <img src="https://top.gg/api/widget/upvotes/751100444188737617.svg" alt="EpicBot 🏅" />
   </a>
-  <a href="https://top.gg/bot/751100444188737617">
-      <img src="https://top.gg/api/widget/owner/751100444188737617.svg" alt="EpicBot 🏅" />
-  </a>
 </h1>
 
 <h2><img src="https://cdn.discordapp.com/emojis/766498653753049109.png?v=1" height="20px"> • Info</h2>
