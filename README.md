@@ -1,5 +1,5 @@
 <h2 align="center">
-  <img src="https://cdn.discordapp.com/attachments/749996055369875459/808166922415636550/logo.png" height='100px' width='100px'>
+  <img src="https://cdn.discordapp.com/attachments/770679803635433473/827107391844778024/circle-cropped5.png" height='100px' width='100px'>
 </h2>
 
 <h1 align="center">EpicBot 🏅</h1>
