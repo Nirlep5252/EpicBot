@@ -23,7 +23,7 @@
 
 <h2><img src="https://cdn.discordapp.com/emojis/818758128329556018.gif?v=1" height="20px"> • Features</h2>
 <ul>
-  <li>📌 Over 120+ commands!</li>
+  <li>📌 Over 130+ commands!</li>
   <li>🔼 99%+ uptime.</li>
   <li>🟢 Low latency, super fast response time.</li>
   <li>💻 Web dashboard! (coming soon)</li>
