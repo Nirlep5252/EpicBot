@@ -41,23 +41,12 @@ Bot Latency: **{round((time.time() - time1) * 1000)}ms**
         )
         embed.add_field(
             name="Contributors",
-            value="""
-- [`Nirlep_5252_`](https://github.com/Nirlep5252) - Owner
-- [`TheUndeadBowman`](https://github.com/TheUndeadBowman) - Supporter, Helper
-- [`CAT`](https://github.com/KittyKart) - Supporter, Helper
-- [`Craftzman7`](https://github.com/Craftzman7) - Helper
-- [`Motzumoto`](https://github.com/Motzumoto) - Helper
-- [`WindowsCmd`](https://github.com/WindowsCmd) - Supporter, Helper
-- [`imkrvishal`](https://github.com/imkrvishal) - Helper
-- [`ELEXR`](https://github.com/ELEXR) - Supporter, Helper
-            """,
+            value=CONTRIBUTORS,
             inline=False
         )
         embed.add_field(
             name="Other Credits",
-            value="""
-- [`Hexbot`](https://github.com/1Prototype1/HexBot) - Game Commands
-            """,
+            value=OTHER_CREDITS,
             inline=False
         )
         embed.set_footer(text="They are amazing! 💖")
@@ -124,7 +113,7 @@ Bot Latency: **{round((time.time() - time1) * 1000)}ms**
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def botinfo(self, ctx):
-        embed = discord.Embed(title = "**Bot Info**", description = f"I was built by `Nirlep_5252_` on 3rd September. My help command is `e!help`. I am currently in `{len(self.client.guilds)}` servers, and i have more than `{len(set(self.client.get_all_members()))}` users. I have a total of `103` commands.", color = 0x00FFFF)
+        embed = discord.Embed(title = "**Bot Info**", description = f"I was built by `Nirlep_5252_` on 3rd September. My help command is `e!help`. I am currently in `{len(self.client.guilds)}` servers, and i have more than `{len(set(self.client.get_all_members()))}` users. I have a total of `{total_cmds}` commands.", color = 0x00FFFF)
         embed.set_thumbnail(url='https://media.discordapp.net/attachments/757168151141285929/763336446328438784/bot_profile.png')
         embed.add_field(name = "**Invite EpicBot**",
                         value = f"[Click Here](https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847)",
