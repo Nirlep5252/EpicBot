@@ -17,6 +17,28 @@ ORANGE_COLOR = 0xFFA500
 PINK_COLOR = 0xe0b3c7
 PINK_COLOR_2 = 0xFFC0CB
 
+CHANGE_LOG = """
+`-` \🟢 Added new welcome and leave system with autoroles!
+`-` \🟢 Added new `e!chat` command, chat with me! UwU
+`-` \🟢 Added a new `e!run` command that you can run your code with.
+`-` \🟢 Added improved Music system \🎶
+"""
+
+CONTRIBUTORS = """
+- [`Nirlep_5252_`](https://github.com/Nirlep5252) - Owner
+- [`TheUndeadBowman`](https://github.com/TheUndeadBowman) - Supporter, Helper
+- [`CAT`](https://github.com/KittyKart) - Supporter, Helper
+- [`Craftzman7`](https://github.com/Craftzman7) - Helper
+- [`Motzumoto`](https://github.com/Motzumoto) - Helper
+- [`WindowsCmd`](https://github.com/WindowsCmd) - Supporter, Helper
+- [`imkrvishal`](https://github.com/imkrvishal) - Helper
+- [`ELEXR`](https://github.com/ELEXR) - Supporter, Helper
+"""
+OTHER_CREDITS = """
+- [`Tech-Struck`](https://github.com/FalseDev/Tech-Struck) - Run command
+- [`Hexbot`](https://github.com/1Prototype1/HexBot) - Game Commands
+"""
+
 cmd_categories = [
   'utility',
   'config',
@@ -36,6 +58,7 @@ cmd_categories = [
 utility = {
   'weather': "Find weather info.",
   'define': "Finds the definition for your word in urban dictionary.",
+  'run': "Runs your code.",
   'announce': "Make an embedded announement.",
   'giveaway': "Start a giveaway.",
   'reroll': "Reroll a giveaway.",
@@ -205,6 +228,7 @@ nsfw = {
 utility_with_emojis = """```
 ⛅-Weather
 📖-Define
+💻-Run
 📢-Announce
 🎉-Giveaway
 🎉-Reroll
@@ -441,6 +465,10 @@ all_cmds = {
   'define': [
     utility['define'],
     "define <word>"
+],
+  'run': [
+    utility['run'],
+    "run <codeblock>"
 ],
   'announce': [
     utility['announce'],
