@@ -8,7 +8,6 @@ conn = MongoClient(os.environ.get("MONGODB_LINK"))
 db = conn["EpicBot"]
 
 nqn = db["nqn"]
-nqn_block = db["nqn_blocked"]
 
 class NQN(commands.Cog):
     def __init__(self, client):
