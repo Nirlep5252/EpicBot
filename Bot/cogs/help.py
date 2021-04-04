@@ -54,7 +54,7 @@ React to this message to navigate the help menu.
                     name=f"Commands({len(help_categories[i])})",
                     value=help_emoji_categories[i]
                 )
-                if not ctx.channel.is_nsfw() and title == "🔞 • NSFW Commands(Page 14)":
+                if not ctx.channel.is_nsfw() and title == "🔞 • NSFW Commands (Page 14)":
                     pass
                 else:
                     embeds.append(embed)
