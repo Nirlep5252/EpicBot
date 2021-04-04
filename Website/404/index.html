@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404</title>
+
+  <link rel="icon" href="../images/logo.png">
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.11/typed.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+  <link rel="stylesheet" type="text/css" href="../aos/aos.css">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Oh no!">
+  <meta property="og:description" content="Uh oh! Couldn't find this page!">
+  <meta property="og:image" content="https://cdn.discordapp.com/emojis/454716383041945614.png?v=1">
+  <meta name="theme-color" content="#FF0000">
+</head>
+<body>
+  <section>
+    <h1>404</h1>
+    <p class="line2">Looks like something went<span class="glitch" data-text="wrong">wrong :(</span></p>
+
+    <div class="buttons">
+      <a href="/"><button class="home">
+        Go back home
+      </button></a>
+      <button class="hug">
+        Gimme a hug!
+      </button>
+    </div>
+    <div class="container">
+      <div class="bar">
+        <div class="fill"></div>
+      </div>
+      <div class="counter">0%</div>
+      <button class="huggies">HUG PLEASE!</button>
+    </div>
+
+    <div class="output">
+      <img src="https://cdn.discordapp.com/emojis/622840881837375511.png?v=1">
+      <div class="text">Have a nice day! <3</div>
+    </div>
+    
+  </section>
+
+  <div class="loader-wrapper">
+    <img src="https://cdn.discordapp.com/emojis/800605718444376075.gif?v=1" alt="Loading...">
+    <div class="longfazers">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+      
+  </div>
+  <!-- haha hugs go brr -->
+  <script>
+    let owo = document.querySelector(".hug");
+    let container2 = document.querySelector(".container");
+    let output2 = document.querySelector(".output");
+
+    owo.addEventListener('click', () => {
+      if (output2.style.display === "block") {
+        return;
+      }
+      if (container2.style.display === "none" || output2.style.display === "none") {
+        container2.style.display = "block";
+      } else {
+        container2.style.display = "none";
+      }
+    })
+  </script>
+  <script>
+    let container = document.querySelector(".container");
+    let output = document.querySelector(".output");
+    let fill = document.querySelector(".fill");
+    let click = document.querySelector(".huggies");
+
+    click.addEventListener('click', () => {
+      var a = 0;
+      var run = setInterval(frames, 50);
+      function frames() {
+        a = a+1;
+        if( a == 101 ) {
+          clearInterval(run);
+          container.style.display = "none";
+          output.style.display = "block"
+        }
+        else {
+          var counter = document.querySelector(".counter");
+          counter.textContent = a + "%";
+          fill.style.width = a + "%";
+        }
+      }
+    })
+  </script>
+  <script>
+    $(window).on("load", function() {
+        $(".loader-wrapper").fadeOut("slow")
+    })
+  </script>
+</body>
+</html>

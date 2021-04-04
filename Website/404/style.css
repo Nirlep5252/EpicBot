@@ -1,0 +1,399 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap');
+
+/* vote epicbot and stop looking at the code kthxbai */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+body {
+  background: #121212;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  background: #121212;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 20px;
+  background: crimson;
+  box-shadow: inset 2px 2px 2px rgba(255, 255, 255, 0.25), inset -2px -2px -2px rgba(0,0,0,0.25);
+}
+section {
+  /* padding-left: 5%;*/
+  margin-top: 5%; 
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+section h1 {
+  color: crimson;
+  font-size: 200px;
+  font-family: 'Ubuntu', sans-serif;
+  letter-spacing: 10px;
+}
+section p {
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+}
+section .line2 {
+  font-size: 50px;
+  letter-spacing: 2px;
+}
+.glitch {
+  position: relative;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding-left: 24px;
+}
+.glitch:before,
+.glitch:after {
+  position: absolute;
+  content: attr(data-text);
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: #121212;
+  color: #fff;
+  overflow: hidden;
+}
+
+.glitch:after {
+  left: -3px;
+  text-shadow: -2px 0 blue;
+  animation: glitch-1 2s 0s linear reverse infinite;
+}
+.glitch:before {
+  left: 3px;
+  text-shadow: -2px 0 crimson;
+  animation: glitch-2 2s 0s linear reverse infinite;
+}
+@keyframes glitch-1 {
+  0% {
+    clip: rect(132px, auto, 101px, 30px);
+  }
+  5% {
+    clip: rect(17px, auto, 94px, 30px);
+  }
+  10% {
+    clip: rect(40px, auto, 66px, 30px);
+  }
+  15% {
+    clip: rect(87px, auto, 82px, 30px);
+  }
+  20% {
+    clip: rect(137px, auto, 61px, 30px);
+  }
+  25% {
+    clip: rect(34px, auto, 14px, 30px);
+  }
+  30% {
+    clip: rect(133px, auto, 74px, 30px);
+  }
+  35% {
+    clip: rect(76px, auto, 107px, 30px);
+  }
+  40% {
+    clip: rect(59px, auto, 130px, 30px);
+  }
+  45% {
+    clip: rect(29px, auto, 84px, 30px);
+  }
+  50% {
+    clip: rect(22px, auto, 67px, 30px);
+  }
+  55% {
+    clip: rect(67px, auto, 62px, 30px);
+  }
+  60% {
+    clip: rect(10px, auto, 105px, 30px);
+  }
+  65% {
+    clip: rect(78px, auto, 115px, 30px);
+  }
+  70% {
+    clip: rect(105px, auto, 13px, 30px);
+  }
+  75% {
+    clip: rect(15px, auto, 75px, 30px);
+  }
+  80% {
+    clip: rect(66px, auto, 39px, 30px);
+  }
+  85% {
+    clip: rect(133px, auto, 73px, 30px);
+  }
+  90% {
+    clip: rect(36px, auto, 128px, 30px);
+  }
+  95% {
+    clip: rect(68px, auto, 103px, 30px);
+  }
+  100% {
+    clip: rect(14px, auto, 100px, 30px);
+  }
+}
+@keyframes glitch-2 {
+  0% {
+    clip: rect(129px, auto, 36px, 30px);
+  }
+  5% {
+    clip: rect(36px, auto, 4px, 30px);
+  }
+  10% {
+    clip: rect(85px, auto, 66px, 30px);
+  }
+  15% {
+    clip: rect(91px, auto, 91px, 30px);
+  }
+  20% {
+    clip: rect(148px, auto, 138px, 30px);
+  }
+  25% {
+    clip: rect(38px, auto, 122px, 30px);
+  }
+  30% {
+    clip: rect(69px, auto, 54px, 30px);
+  }
+  35% {
+    clip: rect(98px, auto, 71px, 30px);
+  }
+  40% {
+    clip: rect(146px, auto, 34px, 30px);
+  }
+  45% {
+    clip: rect(134px, auto, 43px, 30px);
+  }
+  50% {
+    clip: rect(102px, auto, 80px, 30px);
+  }
+  55% {
+    clip: rect(119px, auto, 44px, 30px);
+  }
+  60% {
+    clip: rect(106px, auto, 99px, 30px);
+  }
+  65% {
+    clip: rect(141px, auto, 74px, 30px);
+  }
+  70% {
+    clip: rect(20px, auto, 78px, 30px);
+  }
+  75% {
+    clip: rect(133px, auto, 79px, 30px);
+  }
+  80% {
+    clip: rect(78px, auto, 52px, 30px);
+  }
+  85% {
+    clip: rect(35px, auto, 39px, 30px);
+  }
+  90% {
+    clip: rect(67px, auto, 70px, 30px);
+  }
+  95% {
+    clip: rect(71px, auto, 103px, 30px);
+  }
+  100% {
+    clip: rect(83px, auto, 40px, 30px);
+  }
+}
+.loader-wrapper {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: #222;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: fixed;
+}
+
+
+
+
+.longfazers {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.longfazers span {
+  position: absolute;
+  height: 4px;
+  width: 20%;
+  background: crimson;
+}
+.longfazers span:nth-child(1) {
+  top: 20%;
+  animation: lf 0.6s linear infinite;
+  animation-delay: -5s;
+}
+.longfazers span:nth-child(2) {
+  top: 40%;
+  animation: lf2 0.8s linear infinite;
+  animation-delay: -1s;
+}
+.longfazers span:nth-child(3) {
+  top: 60%;
+  animation: lf3 0.6s linear infinite;
+}
+.longfazers span:nth-child(4) {
+  top: 80%;
+  animation: lf4 0.5s linear infinite;
+  animation-delay: -3s;
+}
+@keyframes lf {
+  0% {
+    left: -200%;
+ }
+  100% {
+    left: 200%;
+    opacity: 0;
+ }
+}
+@keyframes lf2 {
+  0% {
+    left: -200%;
+ }
+  100% {
+    left: 200%;
+    opacity: 0;
+ }
+}
+@keyframes lf3 {
+  0% {
+    left: -200%;
+ }
+  100% {
+    left: 100%;
+    opacity: 0;
+ }
+}
+@keyframes lf4 {
+  0% {
+    left: -200%;
+ }
+  100% {
+    left: 100%;
+    opacity: 0;
+ }
+}
+
+
+
+.buttons {
+  margin-top: 20px;
+}
+.home, .hug {
+  padding: 20px;
+  margin: 20px;
+  font-size: 20px;
+  font-family: 'Ubuntu', sans;
+  border-radius: 10px;
+  background: crimson;
+  border: 2px solid crimson;
+  transition: all 0.3s ease;
+  color: #fff;
+}
+.home:hover, .hug:hover {
+  background: #121212;
+  cursor: pointer;
+}
+
+.container {
+  width: 50%;
+  padding: 40px 0;
+  background: #222;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+  margin: auto;
+  border-radius: 10px;
+  margin-top: 20px;
+  display: none;
+  transition: all 0.3s ease;
+}
+.bar {
+  background: #b6b6b6;
+  width: 90%;
+  height: 50px;
+  margin: 10px auto;
+  border-radius: 50px;
+  overflow: hidden;
+}
+.fill {
+  height: 100%;
+  width: 1%;
+  background: crimson;
+  transition: all 0.3s ease;
+}
+.counter {
+  font-size: 40px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  color: crimson;
+}
+.huggies {
+  text-transform: uppercase;
+  font-size: 30px;
+  font-weight: 800;
+  font-family: 'Ubuntu', sans-serif;
+  color: #fff;
+  background: crimson;
+  border: 2px solid crimson;
+  transition: all 0.3s ease;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 20px;
+  letter-spacing: 0.5px;
+}
+.huggies:hover {
+  background: #222;
+  cursor: pointer;
+}
+.output {
+  width: 50%;
+  padding: 30px 0;
+  background: #222;
+  border-radius: 5px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+  margin: auto;
+  font-family: 'Ubuntu', sans-serif;
+  display: none;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+.output img {
+  height: 150px;
+  width: 150px;
+  animation: animate 1s ease;
+}
+.output .text {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 40px;
+  color: #fff;
+  margin-top: 20px;
+}
+@keyframes animate {
+  0% {
+    transform: translateY(60px) scale(0.7) rotate(0deg);
+    opacity: 0.2;
+  }
+  50% {
+    transform: scale(0.3) rotate(90deg) skewY(-40deg);
+    width: 50px;
+  }
+  75% {
+    transform: scale(1.4) rotate(180deg) skewY(20deg);
+    width: 10px;
+  }
+  100% {
+    transform: translateY(0px) scale(1) rotate(360deg);
+    opacity: 1;
+  }
+}
