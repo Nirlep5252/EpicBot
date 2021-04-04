@@ -137,8 +137,8 @@ Please make sure that I have **Manage Role** permissions to avoid problems.
                     )
                 if hmm != None:
                     auto_roleee.update_one({
-                        "_id": ctx.guild.id,
-                        "$set": {"role_id": role.id}
+                        {"_id": ctx.guild.id},
+                        {"$set": {"role_id": role.id}}
                     })
                     await ctx.message.reply(
                         embed = discord.Embed(
