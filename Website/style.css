@@ -8,6 +8,9 @@
   box-sizing: border-box;
   text-decoration: none;
 }
+*::selection {
+  color: crimson;
+}
 html {
   scroll-behavior: smooth;
 }
@@ -15,6 +18,16 @@ html {
   max-width: 1300px;
   padding: 0 80px;
   margin: auto;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  background: #121212;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 20px;
+  background: crimson;
+  box-shadow: inset 2px 2px 2px rgba(255, 255, 255, 0.25), inset -2px -2px -2px rgba(0,0,0,0.25);
 }
 
 .navbar {
@@ -95,7 +108,10 @@ html {
   pointer-events: auto;
 }
 
-
+#particles-js {
+  height: 100vh;
+  position: absolute;
+}
 .home {
   display: flex;
   background: #121212 no-repeat center;
@@ -125,7 +141,8 @@ html {
   color: crimson;
   font-weight: 500;
 }
-.home .home-content a {
+.this-is-pain {
+  position: absolute;
   display: inline-block;
   background: crimson;
   color: #fff;
@@ -136,7 +153,7 @@ html {
   border: 2px solid crimson;
   transition: all 0.3s ease;
 }
-.home .home-content a:hover {
+.this-is-pain:hover {
   background: none;
   color: crimson;
 }
@@ -231,6 +248,7 @@ section .title::after {
 
 .stats {
   font-family: 'Poppins', sans-serif;
+  background: #fff;
 }
 .stats .title::after {
   content: "thank you <3";
