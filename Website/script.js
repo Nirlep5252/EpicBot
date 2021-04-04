@@ -31,6 +31,7 @@ $(document).ready(function() {
       "made with love",
       "sexy",
       "well developed",
+      "epic",
     ],
     typeSpeed: 100,
     backSpeed: 60,
