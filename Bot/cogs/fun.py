@@ -16,13 +16,14 @@ class Fun(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def chat(self, ctx, *, msg: str = None):
-        if msg == None:
-            await ctx.message.reply("Hello! In order to chat with me use: `e!chat <message>`")
-            return
+        async with ctx.channel.typing():
+            if msg == None:
+                await ctx.message.reply("Hello! In order to chat with me use: `e!chat <message>`")
+                return
 
-        response = requests.get(f"https://rdch.dev64.repl.co/chat?message={msg}").json()['reply']
+            response = requests.get(f"https://rdch.dev64.repl.co/chat?message={msg}").json()['reply']
 
-        await ctx.message.reply(response)
+            await ctx.message.reply(response)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
