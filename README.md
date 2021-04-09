@@ -14,7 +14,9 @@
   </a>
   <a href="https://top.gg/bot/751100444188737617">
       <img src="https://top.gg/api/widget/upvotes/751100444188737617.svg" alt="EpicBot 🏅" />
-  </a>
+  </a><br>
+  <img src="https://img.shields.io/badge/discord.py-1.6-blue?style=flat" />
+  <img src="https://img.shields.io/badge/Python-3.8.6-green?style=flat&logo=python" />
 </h1>
 
 <h2><img src="https://cdn.discordapp.com/emojis/766498653753049109.png?v=1" height="20px"> • Info</h2>
