@@ -58,7 +58,7 @@
   <li><b><img src="https://cdn.discordapp.com/emojis/818753430796763146.png?v=1" height="18px"> - <a href="https://github.com/Craftzman7">Craftzman7</a></b> - Supporter, Helper - A few NSFW commands. <img src="https://cdn.discordapp.com/emojis/755471640434966628.gif?v=1" height="18px"></li>
   <li><b><img src="https://cdn.discordapp.com/attachments/749996055369875459/818796810436476948/circle-cropped1.png" height="18px"> - <a href="https://github.com/Motzumoto">Motzumoto</a></b> - Helper - Eval command.</li>
   <li><b><img src="https://cdn.discordapp.com/attachments/749996055369875459/818797459488243773/circle-cropped2.png" height="18px"> - <a href="https://github.com/WindowsCmd">WindowsCmd</a></b> - Supporter, Helper - Something, I am not too sure.</li>
-  <li><b><img src="https://cdn.discordapp.com/attachments/749996055369875459/818797641302278144/circle-cropped3.png" height="18px"> - <a href="https://github.com/imkr-vishal">Vishal Kumar</a></b> - Helper - Website screenshot command!</li>
+  <li><b><img src="https://cdn.discordapp.com/attachments/749996055369875459/818797641302278144/circle-cropped3.png" height="18px"> - <a href="https://github.com/imkrvishal">Vishal Kumar</a></b> - Helper - Website screenshot command!</li>
   <li><b><img src="https://avatars.githubusercontent.com/u/76996596?s=460&u=5f8e887f821963ad26b5bb7a5fe2a1f8b310b827&v=4" height="18px"> - <a href="https://github.com/ELEXR">ELEXR</a></b> - Helper - Weather command.</li>
 </ul>
 <p>Contributing to the repo = We give you a special role on Discord, we kiss you on the cheeks and thank you 💖</p>
