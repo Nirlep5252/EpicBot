@@ -3,10 +3,57 @@ import requests
 from discord.ext import commands
 from config import *
 
-
 class Actions(commands.Cog):
     def __init__(self, client):
         self.client = client
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command()
+    async def bite(self, ctx, user: discord.Member = None):
+        if user == None:
+            await ctx.message.reply(f"Who do you want to bite idiot? Mention them next time.")
+            return
+
+        if user == ctx.author:
+            await ctx.message.reply("Imagine biting yourself... why are you so lonely")
+            return
+
+        if user == self.client.user:
+            await ctx.message.reply(f"Hey, don't bite me pls")
+            return
+
+        embed = discord.Embed(
+            title = "AWOOO!",
+            description = f"{user.mention} just got bitten by {ctx.author.mention}.",
+            color = PINK_COLOR_2
+        )
+        embed.set_image(url = requests.get("https://api.neko-chxn.xyz/v1/bite/img").json()['url'])
+
+        await ctx.send(embed=embed)
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command()
+    async def cuddle(self, ctx, user: discord.Member = None):
+        if user == None:
+            await ctx.message.reply(f"Who do you want to cuddle with idiot? Mention them next time.")
+            return
+
+        if user == ctx.author:
+            await ctx.message.reply("Imagine cuddling with yourself... why are you so lonely")
+            return
+
+        if user == self.client.user:
+            await ctx.message.reply(f"UwU *cuddles back*")
+            return
+
+        embed = discord.Embed(
+            title = "UwU",
+            description = f"{user.mention} just got cuddled by {ctx.author.mention}.",
+            color=PINK_COLOR_2
+        )
+        embed.set_image(url = requests.get("https://api.neko-chxn.xyz/v1/cuddle/img").json()['url'])
+
+        await ctx.send(embed=embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
@@ -51,12 +98,11 @@ class Actions(commands.Cog):
             return
 
         embed = discord.Embed(
-            title="aww hugs uwu",
-            description=f"this is so cute >< {ctx.author.mention} just hugged {user.mention}",
-            color=PINK_COLOR_2
-        )
-        embed.set_image(url=requests.get(
-            "https://nekos.life/api/hug").json()['url'])
+			title = "aww hugs uwu",
+			description = f"this is so cute >< {ctx.author.mention} just hugged {user.mention}",
+			color = PINK_COLOR_2
+			)
+        embed.set_image(url=requests.get("https://nekos.life/api/hug").json()['url'])
 
         await ctx.send(embed=embed)
 
@@ -76,12 +122,11 @@ class Actions(commands.Cog):
             return
 
         embed = discord.Embed(
-            title="<a:kissr:808235262261723156><a:kissl:808235261708337182>",
-            description=f"{ctx.author.mention} just kissed {user.mention}",
-            color=PINK_COLOR_2
-        )
-        embed.set_image(url=requests.get(
-            "https://nekos.life/api/kiss").json()['url'])
+			title = "<a:kissr:808235262261723156><a:kissl:808235261708337182>",
+			description = f"{ctx.author.mention} just kissed {user.mention}",
+			color = PINK_COLOR_2
+			)
+        embed.set_image(url=requests.get("https://nekos.life/api/kiss").json()['url'])
 
         await ctx.send(embed=embed)
 
@@ -101,12 +146,11 @@ class Actions(commands.Cog):
             return
 
         embed = discord.Embed(
-            title="*cute pats*",
-            description=f"<a:uwuAYAYA:800611977247719424> {ctx.author.mention} just patted {user.mention}",
-            color=PINK_COLOR_2
-        )
-        embed.set_image(url=requests.get(
-            "https://nekos.life/api/pat").json()['url'])
+			title = "*cute pats*",
+			description = f"<a:uwuAYAYA:800611977247719424> {ctx.author.mention} just patted {user.mention}",
+			color = PINK_COLOR_2
+			)
+        embed.set_image(url=requests.get("https://nekos.life/api/pat").json()['url'])
 
         await ctx.send(embed=embed)
 
@@ -126,12 +170,11 @@ class Actions(commands.Cog):
             return
 
         embed = discord.Embed(
-            title="Damn boi!",
-            description=f"{user.mention} just got slapped by {ctx.author.mention}.",
-            color=PINK_COLOR_2
-        )
-        embed.set_image(url=requests.get(
-            "https://nekos.life/api/v2/img/slap").json()['url'])
+			title = "Damn boi!",
+			description = f"{user.mention} just got slapped by {ctx.author.mention}.",
+			color = PINK_COLOR_2
+		)
+        embed.set_image(url = requests.get("https://nekos.life/api/v2/img/slap").json()['url'])
 
         await ctx.send(embed=embed)
 
@@ -151,12 +194,11 @@ class Actions(commands.Cog):
             return
 
         embed = discord.Embed(
-            title="Tickle, tickle!",
-            description=f"{user.mention} just got tickled by {ctx.author.mention}.",
-            color=PINK_COLOR_2
-        )
-        embed.set_image(url=requests.get(
-            "https://nekos.life/api/v2/img/tickle").json()['url'])
+			title = "Tickle, tickle!",
+			description = f"{user.mention} just got tickled by {ctx.author.mention}.",
+			color = PINK_COLOR_2
+		)
+        embed.set_image(url = requests.get("https://nekos.life/api/v2/img/tickle").json()['url'])
 
         await ctx.send(embed=embed)
 
@@ -174,7 +216,6 @@ class Actions(commands.Cog):
         )
         embed.set_image(url=facepalm['link'])
         await ctx.send(embed=embed)
-
 
 def setup(client):
 	client.add_cog(Actions(client))

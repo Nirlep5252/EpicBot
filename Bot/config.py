@@ -175,7 +175,9 @@ images = {
 
 actions = { 
   'hug': "Hug someone 🤗",
+  'cuddle': "Cuddle with someone",
   'kiss': "Kiss someone 💋",
+  'bite': "Bite someone OwO",
   'pat': "Pat someone",
   'slap': "Slap someone 🤚",
   'wink': "Wink at someone 😉",
@@ -347,7 +349,9 @@ images_with_emojis = """```
 
 actions_with_emojis = """
 ```🤗-Hug
+😊-Cuddle
 💋-Kiss
+👄-Bite
 💞-Pat
 🖐-Slap
 😉-Wink
@@ -868,9 +872,17 @@ all_cmds = {
     actions['hug'],
     "hug <user>"
 ],
+  'cuddle': [
+    actions['cuddle'],
+    "cuddle <user>"
+],
   'kiss': [
     actions['kiss'],
     "kiss <user>"
+],
+  'bite': [
+    actions['bite'],
+    "bite <user>"
 ],
   'pat': [
     actions['pat'],
