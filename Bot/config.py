@@ -56,6 +56,7 @@ cmd_categories = [
 ]
 
 utility = {
+  'afk': "Sets you as AFK, so that no one disturbs you while you are gone.",
   'weather': "Find weather info.",
   'define': "Finds the definition for your word in urban dictionary.",
   'run': "Runs your code.",
@@ -226,6 +227,7 @@ nsfw = {
 
 
 utility_with_emojis = """```
+😴-AFK
 ⛅-Weather
 📖-Define
 💻-Run
@@ -458,6 +460,10 @@ all_cmds = {
   # utility 
 
 
+  'afk': [
+    utility['afk'],
+    "afk [reason]"
+],
   'weather': [
     utility['weather'],
     "weather <location>"

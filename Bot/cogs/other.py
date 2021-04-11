@@ -4,18 +4,62 @@ import requests
 import aiohttp
 import datetime
 import os 
-import asyncio 
+import asyncio
 from aiohttp import request
 from googletrans import Translator
 from discord.ext import commands
 from config import *
+
+afk_users = []
+afk_reasons = {}
 
 numbers = ("1️⃣","2️⃣","3️⃣","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣","🔟")
 
 class Other(commands.Cog):
     def __init__(self, client):
         self.client = client
-        
+
+    @commands.command()
+    async def afk(self, ctx, *, reason = None):
+        if ctx.author.id in afk_users:
+            return
+
+        afk_users.append(ctx.author.id)
+        afk_reasons.update({ctx.author.id: reason})
+
+        await ctx.reply(
+            embed = discord.Embed(
+                title = "<:tickYes:828260365908836423>  AFK",
+                description = f"I set you as AFK for reason: `{afk_reasons[ctx.author.id]}`",
+                color = MAIN_COLOR
+            )
+        )
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author.bot:
+            return
+        if "e!afk" in message.content.lower() or "e/afk" in message.content.lower():
+            return
+        if message.author.id in afk_users:
+            afk_users.remove(message.author.id)
+            return await message.reply(
+                embed = discord.Embed(
+                    title = "Welcome Back!",
+                    description = "I removed you from AFK.",
+                    color = MAIN_COLOR
+                )
+            )
+        for user in message.mentions:
+            if user.id in afk_users:
+                return await message.reply(
+                    embed = discord.Embed(
+                        title = "Bruh!",
+                        description = f"{user.mention} is AFK for: `{afk_reasons[user.id]}`, please don't ping them!",
+                        color = RED_COLOR
+                    )
+                )
+
     @commands.command(aliases=['df','def','urban','ud','urbandictionary'])
     async def define(self, ctx,*,ud_query = None):
         if ud_query == None:
@@ -28,7 +72,7 @@ class Other(commands.Cog):
         url = "https://mashape-community-urban-dictionary.p.rapidapi.com/define"
         querystring = {"term":ud_query}
         headers = {
-            "x-rapidapi-key": "YOUR API KEY",
+            "x-rapidapi-key": os.environ.get("UD_API_KEY"),
             "x-rapidapi-host": "mashape-community-urban-dictionary.p.rapidapi.com",
 		}
         ud_file = requests.request("GET", url, headers=headers, params=querystring)
@@ -85,11 +129,15 @@ class Other(commands.Cog):
 
     @commands.command()
     async def translate(self, ctx, lang, *, content):
-        # t = Translator()
-        # a = t.translate(content, dest = lang)
-        # await ctx.send(a.text)
-        await ctx.send(f"This command is not working temporarily, for more details please join our server - https://discord.gg/Zj7h8Fp")
+        try:
+            t = Translator()
+            a = t.translate(content, dest = lang)
+            await ctx.send(a.text)
+        except Exception as e:
+            print(e)
+            await ctx.send(f"An unknown error occured.")
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     @commands.has_permissions(manage_guild = True)
     async def poll(self, ctx, question, *options):
@@ -110,46 +158,47 @@ class Other(commands.Cog):
             for emoji in numbers[:len(options)]:
                 await msg.add_reaction(emoji)
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['covid-19', 'covid19'])
-    async def covid(self, ctx, *, country = None):
+    async def covid(self, ctx, *, countryName = None):
         try:
-            if country == None:
+            if countryName is None:
                 await ctx.send(f"You didn't enter a country name, use the command like this - `e!covid [country]`")
-                return
-            
-            url = f"https://coronavirus-19-api.herokuapp.com/countries/{countryName.lower()}"
-            stats = requests.get(url)
-            json_stats = stats.json()
-            country = json_stats["country"]
-            totalCases = json_stats["cases"]
-            todayCases = json_stats["todayCases"]
-            totalDeaths = json_stats["deaths"]
-            todayDeaths = json_stats["todayDeaths"]
-            recovered = json_stats["recovered"]
-            active = json_stats["active"]
-            critical = json_stats["critical"]
-            casesPerOneMillion = json_stats["casesPerOneMillion"]
-            deathsPerOneMillion = json_stats["deathsPerOneMillion"]
-            totalTests = json_stats["totalTests"]
-            testsPerOneMillion = json_stats["testsPerOneMillion"]
+            else:
+                url = f"https://coronavirus-19-api.herokuapp.com/countries/{countryName.lower()}"
+                stats = requests.get(url)
+                json_stats = stats.json()
+                country = json_stats["country"]
+                totalCases = json_stats["cases"]
+                todayCases = json_stats["todayCases"]
+                totalDeaths = json_stats["deaths"]
+                todayDeaths = json_stats["todayDeaths"]
+                recovered = json_stats["recovered"]
+                active = json_stats["active"]
+                critical = json_stats["critical"]
+                casesPerOneMillion = json_stats["casesPerOneMillion"]
+                deathsPerOneMillion = json_stats["deathsPerOneMillion"]
+                totalTests = json_stats["totalTests"]
+                testsPerOneMillion = json_stats["testsPerOneMillion"]
 
-            embed2 = discord.Embed(title = f"**COVID - 19 Status of {country}**", description = f"This information isn't always live, so it may not be accurate.", color =  0xFFA500)
-            embed2.add_field(name = f"Total Cases", value = f"{totalCases}", inline = True)
-            embed2.add_field(name = f"Today Cases", value = f"{todayCases}", inline = True)
-            embed2.add_field(name = f"Total Deaths", value = f"{totalDeaths}", inline = True)
-            embed2.add_field(name = f"Today Deaths", value = f"{todayDeaths}", inline = True)
-            embed2.add_field(name = f"Recovered", value = f"{recovered}", inline = True)
-            embed2.add_field(name = f"Active", value = f"{active}", inline = True)
-            embed2.add_field(name = f"Critical", value = f"{critical}", inline = True)
-            embed2.add_field(name = f"Cases Per One Million", value = f"{casesPerOneMillion}", inline = True)
-            embed2.add_field(name = f"Deaths Per One Million", value = f"{deathsPerOneMillion}", inline = True)
-            embed2.add_field(name = f"Total Tests", value = f"{totalTests}", inline = True)
-            embed2.add_field(name = f"Tests Per One Million", value = f"{testsPerOneMillion}", inline = True)
-            embed2.set_thumbnail(url = "https://cdn.discordapp.com/attachments/564520348821749766/701422183217365052/2Q.png")
-            await ctx.send(embed = embed2)
+                embed2 = discord.Embed(title = f"**COVID - 19 Status of {country}**", description = f"This information isn't always live, so it may not be accurate.", color =  0xFFA500)
+                embed2.add_field(name = f"Total Cases", value = f"{totalCases}", inline = True)
+                embed2.add_field(name = f"Today Cases", value = f"{todayCases}", inline = True)
+                embed2.add_field(name = f"Total Deaths", value = f"{totalDeaths}", inline = True)
+                embed2.add_field(name = f"Today Deaths", value = f"{todayDeaths}", inline = True)
+                embed2.add_field(name = f"Recovered", value = f"{recovered}", inline = True)
+                embed2.add_field(name = f"Active", value = f"{active}", inline = True)
+                embed2.add_field(name = f"Critical", value = f"{critical}", inline = True)
+                embed2.add_field(name = f"Cases Per One Million", value = f"{casesPerOneMillion}", inline = True)
+                embed2.add_field(name = f"Deaths Per One Million", value = f"{deathsPerOneMillion}", inline = True)
+                embed2.add_field(name = f"Total Tests", value = f"{totalTests}", inline = True)
+                embed2.add_field(name = f"Tests Per One Million", value = f"{testsPerOneMillion}", inline = True)
+                embed2.set_thumbnail(url = "https://cdn.discordapp.com/attachments/564520348821749766/701422183217365052/2Q.png")
+                await ctx.send(embed = embed2)
         except:
             await ctx.send("Invalid country name or API error. Please try again.")
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command()
     async def embed(self, ctx, *, arg=None):
         async def send_error_msg():
@@ -174,8 +223,9 @@ class Other(commands.Cog):
             )
             await ctx.send(embed=e)
         except:
-            await send_error_msg() # thank you bowman <3
+            await send_error_msg()
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases = ['selfdestruct', 'timed_message', 'timedmessage', 'timed_msg', 'timedmsg'])
     @commands.has_permissions(manage_guild = True)
     async def self_destruct(self, ctx, textChannel: discord.TextChannel = None, time = None, *, message = None):
@@ -228,6 +278,6 @@ class Other(commands.Cog):
             await ctx.send(f"The timed message was deleted.")
         except:
             await ctx.send(f"{ctx.author.mention}, I tried to delete the timed message in {textChannel.mention} but i don't have enough permissions to do that, please check my permissions and try again.")
-            
+
 def setup(client):
     client.add_cog(Other(client))
