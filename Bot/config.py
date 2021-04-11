@@ -18,9 +18,8 @@ PINK_COLOR = 0xe0b3c7
 PINK_COLOR_2 = 0xFFC0CB
 
 CHANGE_LOG = """
-`-` \🟢 Added new welcome and leave system with autoroles!
 `-` \🟢 Added new `e!chat` command, chat with me! UwU
-`-` \🟢 Added a new `e!run` command that you can run your code with.
+`-` \🟢 Added `e!afk` command
 `-` \🟢 Added improved Music system \🎶
 """
 
