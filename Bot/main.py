@@ -99,7 +99,7 @@ async def wanted(ctx, user: discord.Member = None):
 
     wanted = Image.open("images/wanted.jpg")
 
-    asset = user.avatar_url_as(size = 4096)
+    asset = user.avatar_url_as(size = 4096, format="png")
     data = BytesIO(await asset.read())
     profile_pic = Image.open(data)
 
@@ -160,7 +160,7 @@ async def burn(ctx, user: discord.Member = None):
 
     burn = Image.open("images/burn.jpg")
 
-    asset = user.avatar_url_as(size = 4096)
+    asset = user.avatar_url_as(size = 4096, format="png")
     data = BytesIO(await asset.read())
     profile_pic = Image.open(data)
 
@@ -178,7 +178,7 @@ async def angry(ctx, user: discord.Member = None):
 
     angry = Image.open("images/angry.jpg")
 
-    asset = user.avatar_url_as(size = 4096)
+    asset = user.avatar_url_as(size = 4096, format="png")
     data = BytesIO(await asset.read())
     profile_pic = Image.open(data)
 
@@ -196,7 +196,7 @@ async def trash(ctx, user: discord.Member = None):
 
     trash = Image.open("images/trash.jpg")
 
-    asset = user.avatar_url_as(size = 4096)
+    asset = user.avatar_url_as(size = 4096, format="png")
     data = BytesIO(await asset.read())
     profile_pic = Image.open(data)
 
@@ -206,18 +206,6 @@ async def trash(ctx, user: discord.Member = None):
     trash.save("epic_trash.jpg")
 
     await ctx.send(file = discord.File("epic_trash.jpg"))
-
-@client.command(aliases = ['emojilist', 'allemojis'])
-@commands.is_owner()
-async def emojis(ctx):
-    emojis = ctx.guild.emojis
-    emoji_list = list(emojis)
-
-    print(emoji_list)
-
-@emojis.error
-async def emojis_error(ctx, error):
-    print(error)
 
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
@@ -273,12 +261,6 @@ async def on_message(message):
 async def create_invite(ctx):
     link = await ctx.channel.create_invite(max_age=0)
     await ctx.send(link)
-
-@client.command()
-async def search(ctx):
-    user = ctx.author
-
-    print(f"{user} used the search command!")
 
 # Economy Starts here.------------------------------------
 @commands.cooldown(1, 10, commands.BucketType.user)
