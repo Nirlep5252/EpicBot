@@ -656,4 +656,5 @@ async def update_bank(user, change = 0, mode = "wallet"):
     bal = [users[str(user.id)]["wallet"],users[str(user.id)]["bank"]]
     return bal
 
+# Credits: Kaname
 client.run(os.environ.get("BOT_TOKEN"))
