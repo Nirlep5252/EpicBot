@@ -21,7 +21,7 @@ class Eval(commands.Cog):
                 await ctx.send(res)
         except Exception as e:
             print(e)
-            await ctx.send(f"ERROR: {e}")
+            await ctx.send(f"**Error**: `{e}`")
 
 def setup(client):
     client.add_cog(Eval(client))
