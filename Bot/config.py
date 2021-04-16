@@ -32,6 +32,8 @@ CONTRIBUTORS = """
 - [`WindowsCmd`](https://github.com/WindowsCmd) - Supporter, Helper
 - [`imkrvishal`](https://github.com/imkrvishal) - Helper
 - [`ELEXR`](https://github.com/ELEXR) - Supporter, Helper
+- [`Nek`](https://github.com/NekWasTaken) - Retarted idiot 
+
 """
 OTHER_CREDITS = """
 - [`Tech-Struck`](https://github.com/FalseDev/Tech-Struck) - Run command
