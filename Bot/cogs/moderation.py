@@ -157,7 +157,54 @@ class Moderation(commands.Cog):
                 await ctx.guild.unban(user)
                 await ctx.send(f'{user.mention} was unbanned.')
                 return
+    #lockdown
+    @client.command(aliases=['lock'])
+    @commands.guild_only()
+    @commands.has_guild_permissions(manage_channels=True)
+    @commands.bot_has_guild_permissions(manage_channels=True)
+    async def lockdown(self, ctx, channel: discord.TextChannel=None):
+        channel = channel or ctx.channel
 
+        if ctx.guild.default_role not in channel.overwrites:
+            overwrites = {
+            ctx.guild.default_role: discord.PermissionOverwrite(send_messages=False)
+            }
+            await channel.edit(overwrites=overwrites)
+            E = discord.Embed(description=f"⚠ {channel.mention} on lockdown.")
+
+            await ctx.send(embed= E)
+        elif channel.overwrites[ctx.guild.default_role].send_messages == True or channel.overwrites[ctx.guild.default_role].send_messages == None:
+            overwrites = channel.overwrites[ctx.guild.default_role]
+            overwrites.send_messages = False
+            await channel.set_permissions(ctx.guild.default_role, overwrite=overwrites)
+            E = discord.Embed(description=f"⚠ {channel.mention} on lockdown.")
+
+            await ctx.send(embed= E)
+        else:
+            E = discord.Embed(description=f"⚠ {channel.mention} is already on lockdown.")
+
+            await ctx.send(embed= E)
+
+    @client.command(aliases=['unlock'])
+    @commands.guild_only()
+    @commands.has_guild_permissions(manage_channels=True)
+    @commands.bot_has_guild_permissions(manage_channels=True)
+    async def removelockdown(self,ctx,channel:discord.TextChannel=None):
+        channel = channel or ctx.channel
+
+        if channel.overwrites[ctx.guild.default_role].send_messages == False:
+            overwrites = channel.overwrites[ctx.guild.default_role]
+            overwrites.send_messages = None
+            await channel.set_permissions(ctx.guild.default_role, overwrite=overwrites)
+            E = discord.Embed(description=f"⚠ Removed lockdown from {channel.mention}")
+
+            await ctx.send(embed= E)
+        elif channel.overwrites[ctx.guild.default_role].send_messages == None or channel.overwrites[ctx.guild.default_role].send_messages == True:
+            E = discord.Embed(description=f"⚠ The specified channel {channel.mention} is already open.\n Please run another command specifying the channel to remove lockdown.")
+
+            await ctx.send(embed= E)
+        else:
+            return()            
     @nick.error
     async def nick_error(self, ctx, error):
         if isinstance(error, commands.CommandInvokeError):
