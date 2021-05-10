@@ -158,7 +158,7 @@ class Moderation(commands.Cog):
                 await ctx.send(f'{user.mention} was unbanned.')
                 return
     #lockdown
-    @client.command(aliases=['lock'])
+    @commands.command(aliases=['lock'])
     @commands.guild_only()
     @commands.has_guild_permissions(manage_channels=True)
     @commands.bot_has_guild_permissions(manage_channels=True)
@@ -185,7 +185,7 @@ class Moderation(commands.Cog):
 
             await ctx.send(embed= E)
 
-    @client.command(aliases=['unlock'])
+    @commands.command(aliases=['unlock'])
     @commands.guild_only()
     @commands.has_guild_permissions(manage_channels=True)
     @commands.bot_has_guild_permissions(manage_channels=True)
