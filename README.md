@@ -19,6 +19,9 @@
   <img src="https://img.shields.io/badge/Python-3.8.6-green?style=flat&logo=python" />
 </h1>
 
+<h2><img src="https://cdn.discordapp.com/emojis/649313301645361153.gif" height="20px"> • IMPORTANT!</h2>
+<h4>EpicBot is currently being rewritten.</h4>
+
 <h2><img src="https://cdn.discordapp.com/emojis/766498653753049109.png?v=1" height="20px"> • Info</h2>
 
 <p>EpicBot is a multipurpose Discord bot that was designed to make your Discord life easier and cooler. It is also an open source project which other developers can contribute to and work on it together.</p>
