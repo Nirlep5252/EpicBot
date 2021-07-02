@@ -279,5 +279,53 @@ class Other(commands.Cog):
         except:
             await ctx.send(f"{ctx.author.mention}, I tried to delete the timed message in {textChannel.mention} but i don't have enough permissions to do that, please check my permissions and try again.")
 
+    @client.command()
+    @commands.guild_only()
+    @commands.cooldown(1,30,commands.BucketType.user) #add error handlin for this thingy
+    async def bookmark(self,ctx):
+    
+
+        if not ctx.message.reference:
+            await ctx.reply('You didnt referred to any message.')
+            return
+
+        bookmark_id = ctx.message.reference.message_id
+
+        try :
+            bookmark_msg = await ctx.channel.fetch_message(bookmark_id)
+            e1 = discord.Embed(title=":bookmark_tabs: Bookmark", description=f'Original message link : {bookmark_msg.jump_url}')
+            try:
+                await ctx.author.send(embed = e1)
+            except :
+                await ctx.reply("prolly ur DMs are closed brdr")
+                return
+
+            if bookmark_msg.content:
+                e1 = discord.Embed(description= bookmark_msg.content)
+                await ctx.author.send(embed = e1)
+
+            try:
+                temp_attachments = []
+                if bookmark_msg.attachments:
+                    for i in bookmark_msg.attachments:
+                        x1 = await i.to_file()
+                        temp_attachments.append(x1)
+                    await ctx.author.send(files = temp_attachments)
+            except Exception as e :
+                #do stuff brdrrr
+                await ctx.author.send("Error sending files")
+                pass
+
+            try: 
+                if bookmark_msg.embeds:
+                    for i in bookmark_msg.embeds:
+                        await ctx.author.send(embed= i.copy())
+            except :
+                await ctx.author.send("Error sending embeds")
+                pass #do stuff
+
+
+        except Exception as e:
+            await ctx.reply(f"Error fetching the referred message.\n{e}")
 def setup(client):
     client.add_cog(Other(client))
