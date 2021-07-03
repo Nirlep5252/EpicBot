@@ -30,7 +30,7 @@ class Other(commands.Cog):
                 color = MAIN_COLOR
             )
         )
-	oldnick = ctx.author.nick
+        oldnick = ctx.author.nick
         try:
             await ctx.author.edit(nick = f"[AFK] {oldnick}")
         except:
