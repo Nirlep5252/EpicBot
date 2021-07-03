@@ -23,10 +23,6 @@ class Other(commands.Cog):
     async def afk(self, ctx, *, reason = None):
         if ctx.author.id in afk_users:
             return
-
-        afk_users.append(ctx.author.id)
-        afk_reasons.update({ctx.author.id: reason})
-
         await ctx.reply(
             embed = discord.Embed(
                 title = "<:tickYes:828260365908836423>  AFK",
@@ -34,6 +30,17 @@ class Other(commands.Cog):
                 color = MAIN_COLOR
             )
         )
+        oldnick = ctx.author.nick
+        try:
+            await ctx.author.edit(nick = f"[AFK] {oldnick}")
+        except:
+            pass
+        await asyncio.sleep(30)
+        afk_users.append(ctx.author.id)
+        afk_reasons.update({ctx.author.id: reason})
+
+
+
 
     @commands.Cog.listener()
     async def on_message(self, message):
