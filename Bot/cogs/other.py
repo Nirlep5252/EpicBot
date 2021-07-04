@@ -50,6 +50,14 @@ class Other(commands.Cog):
             return
         if message.author.id in afk_users:
             afk_users.remove(message.author.id)
+            if message.author.nick = None:
+                pass
+            else:
+                newnick = message.author.nick.replace("[AFK]","")
+                try:
+                    await message.author.edit(nick = newnick)
+                except:
+                    pass
             return await message.reply(
                 embed = discord.Embed(
                     title = "Welcome Back!",
@@ -334,5 +342,8 @@ class Other(commands.Cog):
 
         except Exception as e:
             await ctx.reply(f"Error fetching the referred message.\n{e}")
+            
+
+
 def setup(client):
     client.add_cog(Other(client))
