@@ -1,6 +1,7 @@
 import discord 
 import asyncio
 from discord.ext import commands 
+from datetime import datetime
 
 class Moderation(commands.Cog):
     def __init__(self, client):
@@ -204,7 +205,66 @@ class Moderation(commands.Cog):
 
             await ctx.send(embed= E)
         else:
-            return()            
+            return()
+        
+    #ghost ping detector
+    @commands.Cog.listener("on_message_delete")
+    async def ghostping_delete(self,msgobj):
+        time_created = int(msgobj.created_at.strftime("%H%M%S"))
+        time_now = int(datetime.utcnow().strftime("%H%M%S"))
+        delta = time_now - time_created
+        if delta > 11:
+            return
+        else:
+            mentions = msgobj.role_mentions
+            for i in msgobj.mentions:
+                if not i.bot:
+                    if not i == msgobj.author:
+                        mentions.append(i)
+                    
+            if mentions or msgobj.mention_everyone:
+                string = (f" ")
+                for i in mentions:  
+                    string = string + f" {i.mention}"
+                if msgobj.mention_everyone:
+                    string = "@everyone / @here" + string
+                E = discord.Embed(title="Ghost ping detected!\n[msg deleted]", description=f"**Offender** : {msgobj.author.mention}\n**Victims** : {string}")
+                await msgobj.channel.send(embed = E)
+
+    @commands.Cog.listener("on_message_edit")
+    async def ghostping_edit(self,before,after):
+        if before.edited_at == None:
+            time_EB = int(before.created_at.strftime("%H%M%S"))
+            time_EA = int(after.edited_at.strftime("%H%M%S"))
+        else:
+            time_EB = int(before.edited_at.strftime("%H%M%S"))
+            time_EA = int(after.edited_at.strftime("%H%M%S"))
+        string = ""
+        delta = time_EA - time_EB
+        if delta >11:
+            return
+        if before.mention_everyone and (not after.mention_everyone):
+            string = "@everyone / @here"
+
+        mentionsB = before.role_mentions
+        for i in before.mentions:
+            if not i.bot:
+                if not i == before.author:
+                    mentionsB.append(i)
+        if mentionsB:
+            mentionsA = after.role_mentions
+            for i in after.mentions:
+                if not i.bot:
+                    if not i == after.author:
+                        mentionsA.append(i)
+            
+            mentionsDelta = list(set(mentionsB) - set(mentionsA))
+            for i in mentionsDelta:
+                string = string + f"{i.mention}"
+
+        if string:
+            E = discord.Embed(title="Ghost ping detected!\n[msg edited]", description=f"**Offender** : {after.author.mention}\n**Victims** : {string}")
+            await after.reply(embed = E)
     @nick.error
     async def nick_error(self, ctx, error):
         if isinstance(error, commands.CommandInvokeError):
