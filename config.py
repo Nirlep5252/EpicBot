@@ -15,51 +15,42 @@ limitations under the License.
 """
 
 import time
+import os
 
 # LOL TOKEN GO BRR
-BOT_TOKEN = ""
-MONGO_DB_URL = ""
+BOT_TOKEN = os.environ.get("TOKEN")
+MONGO_DB_URL = os.environ.get("MONGO")
 DB_UPDATE_INTERVAL = 300
-PREFIX = "your-default-prefix"
-OWNERS = []
-COOLDOWN_BYPASS = []
-EPICBOT_GUILD_ID = 1234  # ID of your support server guild
+PREFIX = "e/"
+OWNERS = [558861606063308822]
+COOLDOWN_BYPASS = [558861606063308822, 344313283714613248]
+EPICBOT_GUILD_ID = 746202728031584358
 
-PREMIUM_GUILDS = []
+PREMIUM_GUILDS = [746202728031584358, 749996055369875456]
 
 # AFK KEYS
 
-UD_API_KEY = ""
-WEATHER_API_KEY = ""
-TOP_GG_TOKEN = ""
-TWITCH_CLIENT_ID = ""
-TWITCH_CLIENT_SECRET = ""
-CHAT_BID = ""
-CHAT_API_KEY = ""
+UD_API_KEY = os.environ.get("UD_API_KEY")
+WEATHER_API_KEY = os.environ.get("WEATHER")
+TOP_GG_TOKEN = os.environ.get("SHIT_GG_TOKEN")
+TWITCH_CLIENT_ID = os.environ.get("TWITCH_CLIENT_ID")
+TWITCH_CLIENT_SECRET = os.environ.get("TWITCH_CLIENT_SECRET")
+CHAT_BID = os.environ.get("CHAT_BID")
+CHAT_API_KEY = os.environ.get("CHAT_API_KEY")
 
 # SECRET LOGS HEHE :3
 
-ONLINE_LOG_CHANNEL = 1234
-SHARD_LOG_CHANNEL = 1234
-ADD_REMOVE_LOG_CHANNEL = 1234
-DATABASE_LOG_CHANNEL = 1234
-COMMANDS_LOG_CHANNEL = 1234
-ERROR_LOG_CHANNEL = 1234
-DM_LOG_CHANNEL = 1234
-BUG_REPORT_CHANNEL = 1234
-RANK_CARD_SUBMIT_CHANNEL = 1234
-SUGGESTION_CHANNEL = 1234
-USER_REPORT_CHANNEL = 1234
-
-# WEBHOOKS (PAIN)
-
-ONLINE_LOG_WEBHOOK = ""
-ADD_REMOVE_LOG_WEBHOOK = ""
-DATABASE_LOG_WEBHOOK = ""
-CMD_LOG_WEBHOOK = ""
-ERROR_LOG_WEBHOOK = ""
-DM_LOG_WEBHOOK = ""
-
+ONLINE_LOG_CHANNEL = 832645093080039466
+SHARD_LOG_CHANNEL = 832645114459324507
+ADD_REMOVE_LOG_CHANNEL = 832645168578560031
+DATABASE_LOG_CHANNEL = 832645226799300609
+COMMANDS_LOG_CHANNEL = 832645132117082203
+ERROR_LOG_CHANNEL = 832645286098239488
+DM_LOG_CHANNEL = 832645270365667328
+BUG_REPORT_CHANNEL = 834665587010568252
+RANK_CARD_SUBMIT_CHANNEL = 856512113580703814
+SUGGESTION_CHANNEL = 746202728648146986
+USER_REPORT_CHANNEL = 863768592159473694
 # COLORS
 
 # MAIN_COLOR = 0xDC143C # crimson
@@ -72,21 +63,21 @@ STARBOARD_COLOR = 15655584
 
 # LINK
 
-WEBSITE_LINK = "https://epic-bot.com"  # e
-SUPPORT_SERVER_LINK = "https://discord.gg/Zj7h8Fp"  # go join
-INVITE_BOT_LINK = "https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847"  # go invite
-VOTE_LINK = "https://top.gg/bot/751100444188737617/vote"  # go vote
+WEBSITE_LINK = "https://epic-bot.com"
+SUPPORT_SERVER_LINK = "https://discord.gg/Zj7h8Fp"
+INVITE_BOT_LINK = "https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847"
+VOTE_LINK = "https://top.gg/bot/751100444188737617/vote"
 
 # ROLES
 
-BOT_MOD_ROLE = 1234
-OWNER_ROLE = 1234
-SUPPORTER_ROLE = 1234
-PARTNER_ROLE = 1234
-STAFF_ROLE = 1234
-BOOSTER_ROLE = 1234
-DESIGN_HELPER_ROLE = 1234
-VIP_ROLE = 1234
+BOT_MOD_ROLE = 857146993464967169
+OWNER_ROLE = 746202728375648267
+SUPPORTER_ROLE = 842241145584484362
+PARTNER_ROLE = 785404547883204608
+STAFF_ROLE = 764425511707344928
+BOOSTER_ROLE = 787336331474370563
+DESIGN_HELPER_ROLE = 856100670780342272
+VIP_ROLE = 746202728031584366
 
 # EMOJIS
 
@@ -193,13 +184,20 @@ CUTE_EMOJIS = [
 # CREDITS
 
 CREDITS_CONTRIBUTORS = {
-    "amogus": ["amogus"]
+    "TheUndeadBowman": ["TheUndeadBowman", "Supporter, Helper"],
+    "CAT": ["KittyKart", "Supporter, Helper"],
+    "Vishal": ["imkrvishal", "Helper"],
+    "Crafterzman": ["Craftzman7", "Helper"],
+    "Motzumoto": ["Motzumoto", "Helper"],
+    "Windows": ["WindowsCmd", "Helper"],
+    "Nek": ["NekWasTaken", "Helper"],
+    "ELEXR": ["ELEXR", "Supporter, Helper"]
 }
 
 # PP
 
-BIG_PP_GANG = []  # figure it out yourself
-NO_PP_GANG = []
+BIG_PP_GANG = [558861606063308822, 344313283714613248, 478623992337530883, 541410668117753876]
+NO_PP_GANG = [550083219136053259, 729770314388603020]
 
 # SOME RANDOM STUFF
 
@@ -239,28 +237,98 @@ custom_cmds_tags_lemao = """
 ENABLE = ['enable', 'enabled', 'yes', 'true']
 DISABLE = ['disable', 'disabled', 'no', 'false']
 
-DEFAULT_WELCOME_MSG = "your default welcome message"
-DEFAULT_LEAVE_MSG = "your default leave message"
-DEFAULT_TWITCH_MSG = "your default twitch message"
-DEFAULT_LEVEL_UP_MSG = "your default level up message"
+DEFAULT_WELCOME_MSG = """
+{
+    "title": "Welcome",
+    "description": "Yay! {user_mention} has joined our server!",
+    "color": "MAIN_COLOR",
+    "footer": {
+        "text": "Invited by {inviter_tag}",
+        "icon_url": "{inviter_avatar}"
+    },
+    "thumbnail": "{user_avatar}"
+}
+"""
+DEFAULT_LEAVE_MSG = """
+{
+    "title": "Sad!",
+    "description": "Sad! **{user_tag}** has left us!",
+    "color": "RED_COLOR",
+    "footer": {
+        "text": "Invited by {inviter_tag}",
+        "icon_url": "{inviter_avatar}"
+    },
+    "thumbnail": "{user_avatar}"
+}
+"""
+
+DEFAULT_TWITCH_MSG = """
+Poggers! **{streamer}** is now live! Go check them out! {url}
+"""
+
+DEFAULT_LEVEL_UP_MSG = """
+Pog! {user_mention} just leveled up to level {level}!
+"""
 
 DEFAULT_AUTOMOD_CONFIG = {
-    "banned_words": {"enabled": False, "words": []},
-    "all_caps": {"enabled": False},
-    "duplicate_text": {"enabled": False},
-    "message_spam": {"enabled": False},
-    "invites": {"enabled": False},
-    "links": {"enabled": False, "whitelist": []},
-    "mass_mentions": {"enabled": False},
-    "emoji_spam": {"enabled": False},
-    "zalgo_text": {"enabled": False},
+    "banned_words": {  # done
+        "enabled": False,
+        "words": []
+    },
+    "all_caps": {  # done
+        "enabled": False
+    },
+    "duplicate_text": {  # done
+        "enabled": False
+    },
+    "message_spam": {  # done
+        "enabled": False
+    },
+    "invites": {  # done
+        "enabled": False
+    },
+    "links": {  # done
+        "enabled": False,
+        "whitelist": []
+    },
+    "mass_mentions": {  # done
+        "enabled": False
+    },
+    "emoji_spam": {
+        "enabled": False
+    },
+    "zalgo_text": {  # done
+        "enabled": False
+    },
 
     "ignored_channels": [],
     "allowed_roles": []
 }
 
-DEFAULT_BANNED_WORDS = []  # filled with very bad words
+DEFAULT_BANNED_WORDS = [
+    'nigg', 'n1gg', 'n*gg',
+    'cunt', 'bitch', 'dick',
+    'pussy', 'asshole', 'b1tch',
+    'b!tch', 'b*tch', 'blowjob',
+    'cock', 'c0ck', 'faggot',
+    'whore', 'negro', 'retard',
+    'slut', 'rape', 'n i g g '
+]
 
-GLOBAL_CHAT_RULES = """your amazing global chat rules"""
+GLOBAL_CHAT_RULES = """
+**Global chat rules:**
+
+- No Racism, Sexism, Homophobia or anything stupid.
+- No NSFW messages or pictures or emotes.
+- Do not be rude to anyone.
+- No spamming.
+- No self promo.
+- No malicious links.
+
+**If your message has a "❌" reaction added, that means your message was not sent because you broke one of these rules.**
+
+**If you break any of these rules, you WILL get blacklisted and won't be able to use the bot.**
+If you see anyone breaking these rules please report them using the `report` command.
+"""
 
 ANTIHOIST_CHARS = "!@#$%^&*()_+-=.,/?;:[]{}`~\"'\\|<>"
