@@ -2,3 +2,6 @@ __pycache__
 .vscode
 .idea
 config.py
+
+assets/fonts/*
+assets/images/rank_cards/*
