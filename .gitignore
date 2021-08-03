@@ -2,6 +2,7 @@ __pycache__
 .vscode
 .idea
 config.py
+testing.py
 
 assets/fonts/*
 assets/images/rank_cards/*
