@@ -1,5 +1,5 @@
 <h2 align="center">
-  <img src="https://cdn.discordapp.com/attachments/770679803635433473/827107391844778024/circle-cropped5.png" height='100px' width='100px'>
+  <img src="https://cdn.discordapp.com/attachments/859335247547990026/872115930484842496/epicbot_circle.png" height='100px' width='100px'>
 </h2>
 
 <h1 align="center">EpicBot 🏅</h1>
@@ -15,12 +15,9 @@
   <a href="https://top.gg/bot/751100444188737617">
       <img src="https://top.gg/api/widget/upvotes/751100444188737617.svg" alt="EpicBot 🏅" />
   </a><br>
-  <img src="https://img.shields.io/badge/discord.py-1.6-blue?style=flat" />
-  <img src="https://img.shields.io/badge/Python-3.8.6-green?style=flat&logo=python" />
+  <img src="https://img.shields.io/badge/discord.py-2.0-blue?style=flat" />
+  <img src="https://img.shields.io/badge/Python-3.9-green?style=flat&logo=python" />
 </h1>
-
-<h2><img src="https://cdn.discordapp.com/emojis/649313301645361153.gif" height="20px"> • IMPORTANT!</h2>
-<h4>EpicBot is currently being rewritten.</h4>
 
 <h2><img src="https://cdn.discordapp.com/emojis/766498653753049109.png?v=1" height="20px"> • Info</h2>
 
@@ -28,15 +25,19 @@
 
 <h2><img src="https://cdn.discordapp.com/emojis/818758128329556018.gif?v=1" height="20px"> • Features</h2>
 <ul>
-  <li>📌 Over 130+ commands!</li>
+  <li>📌 Over 180+ commands!</li>
   <li>🔼 99%+ uptime.</li>
   <li>🟢 Low latency, super fast response time.</li>
-  <li>💻 Web dashboard! (coming soon)</li>
+  <li>💻 Web dashboard!</li>
+  <li>🛠️ Custom Commands.</li>
+  <li>✨ Level up system, with leveling roles.</li>
+  <li>📨 Autoposting (automeme, autowaifu, etc...)</li>
   <li>🎶 Extremely high quality Music playback.</li>
+  <li>🌍 Global chat.</li>
   <li>🎊 Welcome and Leave messages, Autorole.</li>
-  <li>✨ Level up system.</li>
-  <li>🎉 Giveaway commands.</li>
-  <li>🔨 Powerful moderation.</li>
+  <li>🔨 Powerful moderation, with automod, antihoisting and modlogs.</li>
+  <li>🌟 Customizable Starboard.</li>
+  <li>☺️ Lots and lots of fun commands and image commands.</li>
   <li>🎀 Regularly updated and maintained.</li>
 </ul>
 
@@ -53,17 +54,6 @@
   <li>Submit a pull request</li>
 </ol>
 
-<h2><img src="https://cdn.discordapp.com/emojis/759148342704865323.png?v=1" height="20px"> • Contributors</h2>
-<ul>
-  <li><b><img src="https://cdn.discordapp.com/emojis/802082546875498499.png?v=1" height="18px"> - <a href="https://github.com/Nirlep5252">Nirlep_5252_</a></b> - Owner, Head Developer - Pretty much the whole bot.</li>
-  <li><b><img src="https://cdn.discordapp.com/emojis/802082858696048660.png?v=1" height="18px"> - <a href="https://github.com/TheUndeadBowman">TheUndeadBowman</a></b> - Admin, Supporter, Helper - Some bot commands.</li>
-  <li><b><img src="https://cdn.discordapp.com/emojis/818795789215203358.png?v=1" height="18px"> - <a href="https://github.com/KittyKart">CAT</a></b> - Admin, Supporter, Helper - Some bot commands.</li>
-  <li><b><img src="https://cdn.discordapp.com/emojis/818753430796763146.png?v=1" height="18px"> - <a href="https://github.com/Craftzman7">Craftzman7</a></b> - Supporter, Helper - A few NSFW commands. <img src="https://cdn.discordapp.com/emojis/755471640434966628.gif?v=1" height="18px"></li>
-  <li><b><img src="https://cdn.discordapp.com/attachments/749996055369875459/818796810436476948/circle-cropped1.png" height="18px"> - <a href="https://github.com/Motzumoto">Motzumoto</a></b> - Helper - Eval command.</li>
-  <li><b><img src="https://cdn.discordapp.com/attachments/749996055369875459/818797459488243773/circle-cropped2.png" height="18px"> - <a href="https://github.com/WindowsCmd">WindowsCmd</a></b> - Supporter, Helper - Something, I am not too sure.</li>
-  <li><b><img src="https://cdn.discordapp.com/attachments/749996055369875459/818797641302278144/circle-cropped3.png" height="18px"> - <a href="https://github.com/imkrvishal">Vishal Kumar</a></b> - Helper - Website screenshot command!</li>
-  <li><b><img src="https://avatars.githubusercontent.com/u/76996596?s=460&u=5f8e887f821963ad26b5bb7a5fe2a1f8b310b827&v=4" height="18px"> - <a href="https://github.com/ELEXR">ELEXR</a></b> - Helper - Weather command.</li>
-</ul>
-<p>Contributing to the repo = We give you a special role on Discord, we kiss you on the cheeks and thank you 💖</p>
+<h4><b>Note:</b> We do not provide support for self hosting. If you are unable to self host EpicBot by yourself, just use EpicBot which we put lot's of work into.</h4>
 
 <h3 align="center"><a href="https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847">Invite EpicBot</a> | <a href="https://discord.gg/Zj7h8Fp">Discord Server</a> | <a href="https://epic-bot.com">Website</a></h3>
