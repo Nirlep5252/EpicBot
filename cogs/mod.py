@@ -706,8 +706,8 @@ Here are you settings:
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_guild_permissions(ban_members=True, embed_links=True)
-    @commands.command(help="Ban someone from your server!")
-    async def ban(self, ctx: commands.Context, user: discord.Member = None, *, reason="No Reason Provided"):
+    @commands.command(help="Ban someone from your server!", aliases=['hackban'])
+    async def ban(self, ctx: commands.Context, user: Union[discord.Member, discord.User, int, str] = None, *, reason="No Reason Provided"):
         PREFIX = ctx.clean_prefix
         if user is None:
             ctx.command.reset_cooldown(ctx)
@@ -715,18 +715,28 @@ Here are you settings:
                 f"{EMOJIS['tick_no']} Invalid Usage!",
                 f"Please enter a user to ban.\nCorrect Usage: `{PREFIX}ban @user [reason]`"
             ))
+        if isinstance(user, str):
+            raise commands.UserNotFound(user)
+        if isinstance(user, int):
+            try:
+                await ctx.guild.ban(discord.Object(id=user), reason=f"{ctx.author} - {ctx.author.id}: {reason}")
+                await ctx.reply(embed=success_embed(f"{EMOJIS['tick_yes']}", "They have been banned."))
+            except Exception as e:
+                ctx.command.reset_cooldown(ctx)
+                return await ctx.reply(embed=error_embed(f"{EMOJIS['tick_no']} Unable to ban", e))
         if user == ctx.author:
             ctx.command.reset_cooldown(ctx)
             return await ctx.message.reply("Don't ban yourself :(")
         if user == self.client.user:
             ctx.command.reset_cooldown(ctx)
             return await ctx.message.reply("Bruh why u wanna ban me :(")
-        if int(user.top_role.position) >= int(ctx.author.top_role.position):
-            ctx.command.reset_cooldown(ctx)
-            return await ctx.message.reply(embed=error_embed(
-                f"{EMOJIS['tick_no']} No!",
-                f"You cannot ban **{escape_markdown(str(user))}** because they are a mod/admin."
-            ))
+        if isinstance(user, discord.Member):
+            if int(user.top_role.position) >= int(ctx.author.top_role.position):
+                ctx.command.reset_cooldown(ctx)
+                return await ctx.message.reply(embed=error_embed(
+                    f"{EMOJIS['tick_no']} No!",
+                    f"You cannot ban **{escape_markdown(str(user))}** because they are a mod/admin."
+                ))
         try:
             await user.ban(reason=f"{ctx.author} - {ctx.author.id}: {reason}")
             try:
