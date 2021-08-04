@@ -738,7 +738,7 @@ Here are you settings:
                     f"You cannot ban **{escape_markdown(str(user))}** because they are a mod/admin."
                 ))
         try:
-            await user.ban(reason=f"{ctx.author} - {ctx.author.id}: {reason}")
+            await ctx.guild.ban(user, reason=f"{ctx.author} - {ctx.author.id}: {reason}")
             try:
                 await user.send(embed=discord.Embed(
                     title="You have been banned!",
