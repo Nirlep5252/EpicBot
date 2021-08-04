@@ -39,7 +39,8 @@ client = EpicBot(
     allowed_mentions=AllowedMentions.none(),
     strip_after_prefix=True,
     help_command=EpicBotHelp(),
-    cached_messages=10000
+    cached_messages=10000,
+    activity=Activity(type=ActivityType.playing, name="e/help | beta.epic-bot.com")
 )
 environ.setdefault("JISHAKU_HIDE", "1")
 environ.setdefault("JISHAKU_NO_UNDERSCORE", "1")
@@ -89,23 +90,22 @@ async def on_message_edit(before, after):
 @client.event
 async def on_ready():
     print(f"Logged in as {client.user}")
-    await client.change_presence(activity=Activity(
-        type=ActivityType.playing,
-        name="e/help | beta.epic-bot.com"
-    ))
 
-    client.add_view(TicketView())
+    if not client.views_loaded:
+        client.add_view(TicketView())
+        client.views_loaded = True
 
-    client.load_extension('jishaku')
-    print("Loaded jsk!")
+    if not client.cache_loaded:
+        await client.get_cache()
+        await client.get_blacklisted_users()
+        client.cache_loaded = True
 
-    await client.get_cache()
-    await client.get_blacklisted_users()
-    client.cache_loaded = True
-
-    await client.load_extensions('./cogs')
-    await client.load_extensions('./cogs_hidden')
-    client.load_extension('how_slash')
+    if not client.cogs_loaded:
+        client.load_extension('jishaku')
+        print("Loaded jsk!")
+        await client.load_extensions('./cogs')
+        await client.load_extensions('./cogs_hidden')
+        client.cogs_loaded = True
 
 if __name__ == '__main__':
     client.run(BOT_TOKEN)
