@@ -61,35 +61,38 @@ class Twitch(commands.Cog):
             if e['twitch']['username'] is not None and e['twitch']['channel_id'] is not None:
                 channel = self.client.get_channel(e['twitch']['channel_id'])
                 if channel is not None:
-                    status = await self.check_live_user(e['twitch']['username'])
-                    await asyncio.sleep(1)
-                    if not status and not e['twitch']['currently_live']:
-                        e['twitch'].update({"currently_live": True})
-                        nice = "**🎮  Game:** " + status['game'] + '\n'
-                        nice += "**" + EMOJIS['members'] + "  Viewers:** " + str(status['viewers']) + '\n'
-                        nice += "**" + EMOJIS['ramaziHeart'] + "  Followers:** " + str(status['channel']['followers']) + '\n'
-                        embed = discord.Embed(
-                            title=status['channel']['status'],
-                            description=nice,
-                            url=f"https://twitch.tv/{e['twitch']['username']}",
-                            color=0x9147fe
-                        )
-                        embed.set_thumbnail(url=status['channel']['logo'])
-                        embed.set_image(url=status['preview']['large'])
-                        embed.set_author(name=e['twitch']['username'], icon_url=status['channel']['logo'], url=f"https://twitch.tv/{e['twitch']['username']}")
-                        await channel.send(
-                            f"Poggers! **{e['twitch']['username']}** is now live! Go check them out! <https://twitch.tv/{e['twitch']['username']}>" if e['twitch']['message'] is None else e['twitch']['message'].replace(
-                                "{streamer}",
-                                f"**{e['twitch']['username']}**"
-                            ).replace(
-                                "{url}",
-                                "<https://twitch.tv/" + e['twitch']['username'] + ">"
-                            ),
-                            embed=embed,
-                            allowed_mentions=discord.AllowedMentions.all()
-                        )
-                    elif not status:
-                        e['twitch'].update({"currently_live": False})
+                    try:
+                        status = await self.check_live_user(e['twitch']['username'])
+                        await asyncio.sleep(1)
+                        if not status and not e['twitch']['currently_live']:
+                            e['twitch'].update({"currently_live": True})
+                            nice = "**🎮  Game:** " + status['game'] + '\n'
+                            nice += "**" + EMOJIS['members'] + "  Viewers:** " + str(status['viewers']) + '\n'
+                            nice += "**" + EMOJIS['ramaziHeart'] + "  Followers:** " + str(status['channel']['followers']) + '\n'
+                            embed = discord.Embed(
+                                title=status['channel']['status'],
+                                description=nice,
+                                url=f"https://twitch.tv/{e['twitch']['username']}",
+                                color=0x9147fe
+                            )
+                            embed.set_thumbnail(url=status['channel']['logo'])
+                            embed.set_image(url=status['preview']['large'])
+                            embed.set_author(name=e['twitch']['username'], icon_url=status['channel']['logo'], url=f"https://twitch.tv/{e['twitch']['username']}")
+                            await channel.send(
+                                f"Poggers! **{e['twitch']['username']}** is now live! Go check them out! <https://twitch.tv/{e['twitch']['username']}>" if e['twitch']['message'] is None else e['twitch']['message'].replace(
+                                    "{streamer}",
+                                    f"**{e['twitch']['username']}**"
+                                ).replace(
+                                    "{url}",
+                                    "<https://twitch.tv/" + e['twitch']['username'] + ">"
+                                ),
+                                embed=embed,
+                                allowed_mentions=discord.AllowedMentions.all()
+                            )
+                        elif not status:
+                            e['twitch'].update({"currently_live": False})
+                    except Exception:
+                        pass
 
 
 def setup(client):
