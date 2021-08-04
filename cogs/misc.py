@@ -31,13 +31,13 @@ class misc(commands.Cog, description="Commands mostly related to the bot!"):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(category="misc", help="Check bot's ping.")
     async def ping(self, ctx):
-        time1 = time.time()
+        time1 = time.perf_counter()
         msg = await ctx.message.reply(embed=discord.Embed(title=f"Pinging... {EMOJIS['loading']}", color=MAIN_COLOR))
-        time2 = time.time()
+        time2 = time.perf_counter()
 
-        db_time1 = time.time()
+        db_time1 = time.perf_counter()
         await self.client.prefixes.find_one({"_id": ctx.guild.id})
-        db_time2 = time.time()
+        db_time2 = time.perf_counter()
 
         shard_text = ""
         for shard, latency in self.client.latencies:
