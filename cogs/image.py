@@ -54,9 +54,11 @@ class image(commands.Cog, description="Cool image commands!"):
         if -25 > intensity > 25:
             ctx.command.reset_cooldown(ctx)
             return await ctx.reply(f"{EMOJIS['tick_no']}The blur intensity can't be greater than `25`")
-        return await ctx.reply(
-            file=discord.File(await effects.blur(await user.avatar.replace(format='png', size=256).read(), intensity))
-        )
+        avatar_bytes = await user.avatar.replace(format='png', size=256).read()
+        async with ctx.channel.typing():
+            await ctx.reply(
+                file=discord.File(await self.client.loop.run_in_executor(None, functools.partial(effects.blur, avatar_bytes, intensity)))
+            )
 
     @commands.command(help="Enhance your image... or maybe deepfry it!")
     @commands.bot_has_permissions(attach_files=True)
@@ -98,13 +100,13 @@ class image(commands.Cog, description="Cool image commands!"):
                     break
         else:
             avatar_bytes = await user.avatar.replace(format='png', size=512).read()
-        return await ctx.reply(file=discord.File(await effects.enhance(avatar_bytes, **amogus)))
+        async with ctx.channel.typing():
+            await ctx.reply(file=discord.File(await self.client.loop.run_in_executor(None, functools.partial(effects.enhance, avatar_bytes, **amogus))))
 
     @commands.command(help="Wiggle your friends...")
     @commands.cooldown(1, 60, commands.BucketType.user)
     @commands.max_concurrency(1, commands.BucketType.user)
     @commands.bot_has_permissions(attach_files=True)
-    @commands.is_owner()
     async def wiggle(self, ctx: commands.Context, *, thing: Optional[Union[discord.Member, discord.PartialEmoji]] = None):
         thingy_bytes = None
 
@@ -123,9 +125,13 @@ class image(commands.Cog, description="Cool image commands!"):
                 thingy_bytes = await thing.read()
 
         async with ctx.channel.typing():
-            thing = functools.partial(effects.wiggle, img=thingy_bytes)
-            output = await self.client.loop.run_in_executor(None, thing)
-            await ctx.reply(file=discord.File(output))
+            await ctx.reply(
+                file=discord.File(
+                    await self.client.loop.run_in_executor(
+                        None, functools.partial(effects.wiggle, img=thingy_bytes)
+                    )
+                )
+            )
 
     @commands.command(help="Why...", aliases=['why'])
     @commands.bot_has_permissions(attach_files=True)
@@ -133,10 +139,8 @@ class image(commands.Cog, description="Cool image commands!"):
     async def disappointed(self, ctx: commands.Context, *, sentences: str = None):
         async def why_u_do_this():
             ctx.command.reset_cooldown(ctx)
-            return await ctx.reply(file=discord.File(await memes.disappointed(
-                f"{ctx.author.name} is using this command",
-                "But they don't know how to use it"
-            )))
+            thing = functools.partial(memes.disappointed, f"{ctx.author.name} is using this command", "But they don't know how to use it")
+            return await ctx.reply(file=discord.File(await self.client.loop.run_in_executor(None, thing)))
         if sentences is None:
             return await why_u_do_this()
         thingies = sentences.split(",", 1)
@@ -144,11 +148,11 @@ class image(commands.Cog, description="Cool image commands!"):
             return await why_u_do_this()
         if len(thingies[0]) > 100 or len(thingies[1]) > 100:
             ctx.command.reset_cooldown(ctx)
-            return await ctx.reply(file=discord.File(await memes.disappointed(
-                f"{ctx.author.name} is using this command",
-                "They put more than 100 characters"
-            )))
-        return await ctx.reply(file=discord.File(await memes.disappointed(thingies[0], thingies[1])))
+            thing = functools.partial(memes.disappointed, f"{ctx.author.name} is using this command", "They put more than 100 characters")
+            return await ctx.reply(file=discord.File(await self.client.loop.run_in_executor(None, thing)))
+
+        thing = functools.partial(memes.disappointed, thingies[0], thingies[1])
+        return await ctx.reply(file=discord.File(await self.client.loop.run_in_executor(None, thing)))
 
     @commands.command(help="Panik... Kalm... PANIK!!!!", aliases=['kalm', 'panic'])
     @commands.bot_has_permissions(attach_files=True)
@@ -156,11 +160,13 @@ class image(commands.Cog, description="Cool image commands!"):
     async def panik(self, ctx: commands.Context, *, sentences: str = None):
         async def why_u_do_this():
             ctx.command.reset_cooldown(ctx)
-            path = await memes.panik(
+            thing = functools.partial(
+                memes.panik,
                 f"{ctx.author.name} is using the panik command",
                 "They don't know how to use it",
                 "THEY DON'T KNOW HOW TO USE IT"
             )
+            path = await self.client.loop.run_in_executor(None, thing)
             return await ctx.reply(file=discord.File(path))
         if sentences is None:
             return await why_u_do_this()
@@ -169,13 +175,17 @@ class image(commands.Cog, description="Cool image commands!"):
             return await why_u_do_this()
         if len(thingies[0]) > 100 or len(thingies[1]) > 100 or len(thingies[2]) > 100:
             ctx.command.reset_cooldown(ctx)
-            path = await memes.panik(
+            thing = functools.partial(
+                memes.panik,
                 f"{ctx.author.name} is using the panik command",
                 "They put more than 100 characters",
                 "THEY PUT MORE THAN 100 CHARACTERS"
             )
+            path = await self.client.loop.run_in_executor(None, thing)
             return await ctx.reply(file=discord.File(path))
-        return await ctx.reply(file=discord.File(await memes.panik(thingies[0], thingies[1], thingies[2])))
+        thing = functools.partial(memes.panik, thingies[0], thingies[1], thingies[2])
+        path = await self.client.loop.run_in_executor(None, thing)
+        return await ctx.reply(file=discord.File(path))
 
     @commands.command(help="My heart when...", aliases=['myheart'])
     @commands.bot_has_permissions(attach_files=True)
@@ -183,10 +193,13 @@ class image(commands.Cog, description="Cool image commands!"):
     async def my_heart(self, ctx: commands.Context, *, sentences: str = None):
         async def why_u_do_this():
             ctx.command.reset_cooldown(ctx)
-            path = await memes.my_heart(
-                "No one is using this command",
-                f"{ctx.author.name} is using this command",
-                "THEY DON'T KNOW HOW TO USE IT"
+            path = await self.client.loop.run_in_executor(
+                None, functools.partial(
+                    memes.my_heart,
+                    "No one is using this command",
+                    f"{ctx.author.name} is using this command",
+                    "THEY DON'T KNOW HOW TO USE IT"
+                )
             )
             return await ctx.reply(file=discord.File(path))
         if sentences is None:
@@ -196,13 +209,16 @@ class image(commands.Cog, description="Cool image commands!"):
             return await why_u_do_this()
         if len(thingies[0]) > 100 or len(thingies[1]) > 100 or len(thingies[2]) > 100:
             ctx.command.reset_cooldown(ctx)
-            path = await memes.my_heart(
-                "No one is using this command",
-                f"{ctx.author.name} is using this command",
-                "THEY PUT MORE THAN 100 CHARACTERS"
+            path = await self.client.loop.run_in_executor(
+                None, functools.partial(
+                    memes.my_heart,
+                    "No one is using this command",
+                    f"{ctx.author.name} is using this command",
+                    "THEY PUT MORE THAN 100 CHARACTERS"
+                )
             )
             return await ctx.reply(file=discord.File(path))
-        return await ctx.reply(file=discord.File(await memes.my_heart(thingies[0], thingies[1], thingies[2])))
+        return await ctx.reply(file=discord.File(await self.client.loop.run_in_executor(None, functools.partial(memes.my_heart, thingies[0], thingies[1], thingies[2]))))
 
     @commands.command(help="The flex tape meme.", aliases=['tape', 'flex_tape'])
     @commands.bot_has_permissions(attach_files=True)
@@ -210,25 +226,27 @@ class image(commands.Cog, description="Cool image commands!"):
     async def flextape(self, ctx: commands.Context, user: Optional[discord.Member] = None, *, sentences: str = None):
         if sentences is None:
             ctx.command.reset_cooldown(ctx)
-            path = await memes.flex_tape(
+            path = await self.client.loop.run_in_executor(None, functools.partial(
+                memes.flex_tape,
                 "Leaving the command empty",
                 "Please type some sentences while using this command",
                 "EpicBot"
-            )
+            ))
             return await ctx.reply(file=discord.File(path))
         thingies = sentences.split(',', 1)
         if len(thingies) < 2:
             ctx.command.reset_cooldown(ctx)
-            path = await memes.flex_tape(
+            path = await self.client.loop.run_in_executor(None, functools.partial(
+                memes.flex_tape,
                 "Someone doesn't know how to use the flex tape command",
                 "Please put 2 sentences seperated with a comma",
                 "EpicBot"
-            )
+            ))
             return await ctx.reply(file=discord.File(path))
         if len(thingies[0]) > 100 or len(thingies[1]) > 100:
             ctx.command.reset_cooldown(ctx)
             return await ctx.reply(f"{EMOJIS['tick_no']}The maximum length of a sentence is **100** characters.")
-        return await ctx.reply(file=discord.File(await memes.flex_tape(thingies[0], thingies[1], None if not user else user.name)))
+        return await ctx.reply(file=discord.File(await self.client.loop.run_in_executor(None, functools.partial(memes.flex_tape, thingies[0], thingies[1], None if not user else user.name))))
 
     @commands.command(help="I am once again asking for...", aliases=['asking', 'once_again', 'onceagain'])
     @commands.bot_has_permissions(attach_files=True)
@@ -239,7 +257,7 @@ class image(commands.Cog, description="Cool image commands!"):
         if len(text) > 100:
             ctx.command.reset_cooldown(ctx)
             return await ctx.reply(f"{EMOJIS['tick_no']}A bit too much there... max character limit is **100**.")
-        return await ctx.reply(file=discord.File(await memes.bernie(text)))
+        return await ctx.reply(file=discord.File(await self.client.loop.run_in_executor(None, functools.partial(memes.bernie, text))))
 
     @commands.command(help="The Drake meme.")
     @commands.bot_has_permissions(attach_files=True)
@@ -247,23 +265,25 @@ class image(commands.Cog, description="Cool image commands!"):
     async def drake(self, ctx: commands.Context, *, sentences: str = None):
         if sentences is None:
             ctx.command.reset_cooldown(ctx)
-            path = await memes.drake(
+            path = await self.client.loop.run_in_executor(None, functools.partial(
+                memes.drake,
                 "Putting 2 sentences seperated with a comma in EpicBot's drake command",
                 "Leaving it empty"
-            )
+            ))
             return await ctx.reply(file=discord.File(path))
         thingies = sentences.split(',', 1)
         if len(thingies) < 2:
             ctx.command.reset_cooldown(ctx)
-            path = await memes.drake(
+            path = await self.client.loop.run_in_executor(None, functools.partial(
+                memes.drake,
                 "Putting 2 sentences seperated with a comma in EpicBot's drake command",
                 "Putting only 1"
-            )
+            ))
             return await ctx.reply(file=discord.File(path))
         if len(thingies[0]) > 100 or len(thingies[1]) > 100:
             ctx.command.reset_cooldown(ctx)
             return await ctx.reply(f"{EMOJIS['tick_no']}The maximum length of a sentence is **100** characters.")
-        return await ctx.reply(file=discord.File(await memes.drake(thingies[0], thingies[1])))
+        return await ctx.reply(file=discord.File(await self.client.loop.run_in_executor(None, functools.partial(memes.drake, thingies[0], thingies[1]))))
 
     @commands.command(help="Create the Buff Doge vs. Cheems meme!", aliases=['cheems'])
     @commands.bot_has_permissions(attach_files=True)
@@ -271,23 +291,25 @@ class image(commands.Cog, description="Cool image commands!"):
     async def doge(self, ctx: commands.Context, *, sentences: str = None):
         if sentences is None:
             ctx.command.reset_cooldown(ctx)
-            path = await memes.doge(
+            path = await self.client.loop.run_in_executor(None, functools.partial(
+                memes.doge,
                 "Putting 2 sentences seperated with a comma",
                 "Being a lazy idiot and not putting any"
-            )
+            ))
             return await ctx.reply(file=discord.File(path))
         thingies = sentences.split(',', 1)
         if len(thingies) < 2:
             ctx.command.reset_cooldown(ctx)
-            path = await memes.doge(
+            path = await self.client.loop.run_in_executor(None, functools.partial(
+                memes.doge,
                 "Putting 2 sentences seperated with a comma",
                 "Putting only 1"
-            )
+            ))
             return await ctx.reply(file=discord.File(path))
         if len(thingies[0]) > 100 or len(thingies[1]) > 100:
             ctx.command.reset_cooldown(ctx)
             return await ctx.reply(f"{EMOJIS['tick_no']}The maximum length of a sentence is **100** characters.")
-        path = await memes.doge(thingies[0], thingies[1])
+        path = await self.client.loop.run_in_executor(None, functools.partial(memes.doge, thingies[0], thingies[1]))
         return await ctx.reply(file=discord.File(path))
 
     @commands.cooldown(1, 5, commands.BucketType.user)
