@@ -105,7 +105,7 @@ class image(commands.Cog, description="Cool image commands!"):
 
     @commands.command(help="Wiggle your friends...")
     @commands.cooldown(1, 60, commands.BucketType.user)
-    @commands.max_concurrency(1, commands.BucketType.user)
+    @commands.max_concurrency(1, commands.BucketType.guild)
     @commands.bot_has_permissions(attach_files=True)
     async def wiggle(self, ctx: commands.Context, *, thing: Optional[Union[discord.Member, discord.PartialEmoji]] = None):
         thingy_bytes = None
