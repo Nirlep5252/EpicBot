@@ -125,8 +125,8 @@ class config(commands.Cog, description="Configure your server with amazing EpicB
         for e in self.client.serverconfig_cache:
             for ee in e['autoposting']:
                 channel = self.client.get_channel(ee['channel_id'])
-                webhook = await self.get_webhook_autopost(channel.id)
                 if channel is not None:
+                    webhook = await self.get_webhook_autopost(channel.id)
                     if ee['nsfw'] and not channel.is_nsfw():
                         try:
                             embed = error_embed(
