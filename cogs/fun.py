@@ -101,7 +101,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         return await ctx.reply(f"You should: **{random.choice(options)}**")
 
     @commands.command(help="Pay respects! F", aliases=['press_f', 'pressf'])
-    @commands.bot_has_permissions(add_reactions=True)
+    @commands.bot_has_guild_permissions(add_reactions=True)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def f(self, ctx):
         if ctx.channel.id in self.f_channels:
@@ -614,6 +614,19 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         embed.set_footer(text=funny_text)
 
         await msg.edit(embed=embed)
+
+    @commands.command(help="Only E are allowed!", aliases=['ee'])
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def e(self, ctx, *,text=None):
+        if not text:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed("Bruh!", "Please provide some text!"))
+        
+        output = text.replace("|", "")
+        output = "||" + output + "||"
+        output = output.replace("e", "||e||")
+        output = output.replace("||||","")
+        await ctx.reply(output)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(aliases=['simpfor', 'simp'], help="Simp for someone!")
