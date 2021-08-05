@@ -123,7 +123,7 @@ class image(commands.Cog, description="Cool image commands!"):
                 thingy_bytes = await thing.read()
 
         async with ctx.channel.typing():
-            thing = functools.partial(effects.wiggle(thingy_bytes))
+            thing = functools.partial(effects.wiggle, img=thingy_bytes)
             output = await self.client.loop.run_in_executor(None, thing)
             await ctx.reply(file=discord.File(output))
 
