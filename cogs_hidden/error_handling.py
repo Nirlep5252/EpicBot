@@ -126,8 +126,8 @@ class ErrorHandling(commands.Cog):
             )
             await ctx.reply(embed=error_embed(
                 f"{EMOJIS['tick_no']} No!",
-                "Only **Nirlep\_5252\_#0001** can use this command."
-            ).set_footer(text="Get lost loser."))
+                "Sowwi cutie but you cannot use this command!~"
+            ))
         elif isinstance(error, commands.MemberNotFound):
             ctx.command.reset_cooldown(ctx)
             await ctx.reply(embed=error_embed(
