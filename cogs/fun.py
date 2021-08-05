@@ -101,7 +101,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         return await ctx.reply(f"You should: **{random.choice(options)}**")
 
     @commands.command(help="Pay respects! F", aliases=['press_f', 'pressf'])
-    @commands.bot_has_permissions(add_reactions=True)
+    @commands.bot_has_guild_permissions(add_reactions=True)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def f(self, ctx):
         if ctx.channel.id in self.f_channels:
