@@ -26,5 +26,5 @@ DiscordUtils
 git+https://github.com/nirlep5252/Discord-Games.git
 git+https://github.com/nirlep5252/discord-ext-events
 
-# git+https://github.com/Nirlep5252/epicbot-images/
-epicbot-images
+git+https://github.com/Nirlep5252/epicbot-images/
+# epicbot-images
