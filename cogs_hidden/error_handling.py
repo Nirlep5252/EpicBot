@@ -91,7 +91,7 @@ class ErrorHandling(commands.Cog):
         elif isinstance(error, commands.MaxConcurrencyReached):
             await ctx.reply(embed=error_embed(
                 f"{EMOJIS['tick_no']} Limit reached!",
-                f"An instance of this command is already running...\nYou can only run `{error.nuber}` instances at the same time."
+                f"An instance of this command is already running...\nYou can only run `{error.number}` instances at the same time."
             ))
         elif isinstance(error, commands.MissingPermissions):
             if ctx.author.id == 558861606063308822:
