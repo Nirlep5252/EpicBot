@@ -615,6 +615,19 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
 
         await msg.edit(embed=embed)
 
+    @commands.command(help="Only E are allowed!", aliases=['ee'])
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def e(self, ctx, *,text=None):
+        if not text:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed("Bruh!", "Please provide some text!"))
+        
+        output = text.replace("|", "")
+        output = "||" + output + "||"
+        output = output.replace("e", "||e||")
+        output = output.replace("||||","")
+        await ctx.reply(output)
+
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(aliases=['simpfor', 'simp'], help="Simp for someone!")
     async def simp_for(self, ctx: commands.Context, user: discord.Member = None):
