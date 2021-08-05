@@ -100,19 +100,19 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             return await ctx.reply("Are you dumb? They all are the same options!")
         return await ctx.reply(f"You should: **{random.choice(options)}**")
 
-    @commands.command(help = "Pay respects! F", aliases=['press_f'])
+    @commands.command(help="Pay respects! F", aliases=['press_f', 'pressf'])
     @commands.bot_has_permissions(add_reactions=True)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def f(self, ctx):
         if ctx.channel.id in self.f_channels:
             msgg = await ctx.channel.fetch_message(int(self.f_channels[ctx.channel.id]['msg_id']))
             return await ctx.reply(embed=success_embed(
-                "A pay respect event is already active!", 
+                "A pay respect event is already active!",
                 f"[Click Here To Go There]({msgg.jump_url})"
             ))
-        
+
         msg = await ctx.send("**It's Time To Pay Respects**\n\nLet us all pay respects here!")
-        await msg.add_reaction("\U0001f1eb")
+        await msg.add_reaction("🇫")
         self.f_channels[ctx.channel.id] = {"msg_id": msg.id, "reacted": []}
         await asyncio.sleep(30)
         amount = len(self.f_channels[ctx.channel.id]["reacted"])
@@ -128,12 +128,11 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             return
         if user.id == self.client.user.id:
             return
-        if reaction.emoji != "\U0001f1eb":
-            return 
+        if reaction.emoji != "🇫":
+            return
         if user.id not in self.f_channels[reaction.message.channel.id]["reacted"]:
             await reaction.message.channel.send(f"**{user.name}** has paid their respects.")
             self.f_channels[reaction.message.channel.id]["reacted"].append(user.id)
-
 
     @commands.command(help="Start a beer party!", aliases=['beerparty'])
     async def beer(self, ctx: commands.Context):
