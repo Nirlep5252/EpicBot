@@ -22,6 +22,7 @@ humanfriendly
 pillow
 typing
 DiscordUtils
+async-google-trans-new
 
 git+https://github.com/nirlep5252/Discord-Games.git
 git+https://github.com/nirlep5252/discord-ext-events

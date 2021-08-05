@@ -93,24 +93,28 @@ class config(commands.Cog, description="Configure your server with amazing EpicB
             print(f"ERROR in getting image for {url} in autoposting: {e}")
             return 'pain'
 
-
-    async def get_webhook_autopost(self, hh):
-        channel = self.client.get_channel(int(hh))
-        webhooks = await channel.webhooks()
-        WEW = discord.utils.get(webhooks, name = "EpicBot Autoposting", user=self.client.user)
-        if not WEW:
+    async def get_webhook_autopost(self, channel_id: int):
+        channel = self.client.get_channel(channel_id)
+        if not channel:
+            return False
+        try:
+            webhooks = await channel.webhooks()
+        except Exception:
+            return False
+        webhook = discord.utils.get(webhooks, name="EpicBot Autoposting", user=self.client.user)
+        if not webhook:
             try:
-                WEW = await channel.create_webhook(
-                    name = "EpicBot Autoposting",
-                    reason = "EpicBot Autoposting!"
+                webhook = await channel.create_webhook(
+                    name="EpicBot Autoposting",
+                    reason="EpicBot Autoposting!"
                 )
-            except:
-                return False 
-        return WEW
+            except Exception:
+                return False
+        return webhook
 
     async def send_from_webhook_autopost(self, webhook, embed):
         await webhook.send(
-            embed=embed, 
+            embed=embed,
             avatar_url=self.client.user.avatar.url
         )
 
@@ -121,16 +125,16 @@ class config(commands.Cog, description="Configure your server with amazing EpicB
         for e in self.client.serverconfig_cache:
             for ee in e['autoposting']:
                 channel = self.client.get_channel(ee['channel_id'])
-                webhook_lel = await self.get_webhook_autopost(channel.id)
+                webhook = await self.get_webhook_autopost(channel.id)
                 if channel is not None:
                     if ee['nsfw'] and not channel.is_nsfw():
                         try:
-                            embed=error_embed(
+                            embed = error_embed(
                                 f"{EMOJIS['tick_no']} Autoposting Error!",
                                 f"Please mark this channel as **NSFW** for `{ee['name']}` autoposting to work."
-                            ))
-                            if webhook_lel != False:
-                                await self.send_from_webhook_autopost(webhook_lel, embed)
+                            )
+                            if webhook:
+                                await self.send_from_webhook_autopost(webhook, embed)
                             else:
                                 await channel.send(embed=embed)
                         except Exception as e:
@@ -155,8 +159,8 @@ class config(commands.Cog, description="Configure your server with amazing EpicB
                         uwu_embed.set_image(url=image_url)
                     try:
                         if ee['nsfw'] and channel.is_nsfw() or not ee['nsfw']:
-                            if webhook_lel != False:
-                                await self.send_from_webhook_autopost(webhook_lel, owo_embed if image_url == 'pain' else uwu_embed)
+                            if webhook:
+                                await self.send_from_webhook_autopost(webhook, owo_embed if image_url == 'pain' else uwu_embed)
                             else:
                                 await channel.send(embed=owo_embed if image_url == 'pain' else uwu_embed)
                             await asyncio.sleep(1)
