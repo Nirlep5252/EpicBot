@@ -114,8 +114,6 @@ class config(commands.Cog, description="Configure your server with amazing EpicB
             avatar_url=self.client.user.avatar.url
         )
 
-
-
     @tasks.loop(seconds=autoposting_delay)
     async def actual_autoposting_lmao(self):
         image_cache = {}
