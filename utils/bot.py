@@ -264,26 +264,28 @@ class EpicBot(commands.AutoShardedBot):
             return 0 if type_ != 'all' else [0, 0, 0]
         return pain[type_]
 
-    async def get_inviter(self, user_id):  # put the id of the user who got invited
+    async def get_inviter(self, user_id, guild_id):  # put the id of the user who got invited
         user = await self.invites.find_one({"_id": user_id})
         if user is None:
             return 'Unknown'
-        if "inviter" not in user:
+        if "inviters" not in user:
             return 'Unknown'
-        return user["inviter"]
+        if str(guild_id) not in user['inviters']:
+            return 'Unknown'
+        return user["inviters"][str(guild_id)]
 
-    async def update_inviter(self, user_id, inviter_id):
+    async def update_inviter(self, user_id, inviter_id, guild_id):
         user = await self.invites.find_one({"_id": user_id})
         if user is None:
             return await self.invites.insert_one({
                 "_id": user_id,
                 "guilds": {},
-                "inviter": inviter_id
+                "inviters": {str(guild_id): inviter_id}
             })
         await self.invites.update_one(
             filter={"_id": user_id},
             update={"$set": {
-                "inviter": inviter_id
+                "inviters": {str(guild_id): inviter_id} if 'inviters' not in user else user['inviters'].update({str(guild_id): inviter_id})
             }}
         )
 

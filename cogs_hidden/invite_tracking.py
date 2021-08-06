@@ -68,7 +68,7 @@ class InviteTracking(commands.Cog):
                 else:
                     inviter = 'Unknown'
 
-        await self.client.update_inviter(member.id, inviter)
+        await self.client.update_inviter(member.id, inviter, member.guild.id)
         await self.client.update_guild_before_invites(guild.id)
         if inviter != "Unknown":
             current_invites_of_user = await self.client.fetch_invites(inviter, guild.id, 'real')
@@ -99,9 +99,9 @@ class InviteTracking(commands.Cog):
         channel_id = leave_config['channel_id']
         embed = leave_config['embed']
 
-        inviter = await self.client.get_inviter(member.id)
+        inviter = await self.client.get_inviter(member.id, member.guild.id)
 
-        await self.client.update_inviter(member.id, inviter)
+        await self.client.update_inviter(member.id, inviter, member.guild.id)
         await self.client.update_guild_before_invites(guild.id)
         if inviter != "Unknown":
             current_invites_of_user = await self.client.fetch_invites(inviter, guild.id, 'left')

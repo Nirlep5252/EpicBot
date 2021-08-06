@@ -232,7 +232,7 @@ class music(commands.Cog, description="Jam to some awesome tunes! 🎶"):
         except DiscordUtils.NotPlaying:
             return await ctx.reply("I am not playing any songs ._.")
         if song.is_looping:
-            await ctx.reply("🔁 Looping `{song.name}`.")
+            await ctx.reply(f"🔁 Looping `{song.name}`.")
         else:
             await ctx.reply("🔁 Loop disabled.")
 

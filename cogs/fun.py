@@ -617,16 +617,24 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
 
     @commands.command(help="Only E are allowed!", aliases=['ee'])
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def e(self, ctx, *,text=None):
+    async def e(self, ctx: commands.Context, *, text=None):
         if not text:
             ctx.command.reset_cooldown(ctx)
-            return await ctx.reply(embed=error_embed("Bruh!", "Please provide some text!"))
-        
+            return await ctx.reply(embed=error_embed(f"{EMOJIS['tick_no']} Invalid Usage!", f"Please provide some text!\nCorrect Usage: `{ctx.clean_prefix}e <text>`"))
+
         output = text.replace("|", "")
         output = "||" + output + "||"
         output = output.replace("e", "||e||")
-        output = output.replace("||||","")
-        await ctx.reply(output)
+        output = output.replace("||||", "")
+        try:
+            await ctx.reply(output)
+        except Exception:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(f"{EMOJIS['tick_no']}Message too big, please enter shorter message.")
+        try:
+            await ctx.send(f"```{output}```")
+        except Exception:
+            pass
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(aliases=['simpfor', 'simp'], help="Simp for someone!")

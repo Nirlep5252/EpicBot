@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import operator
+from typing import Optional
 import discord
 import time
 
@@ -86,6 +87,22 @@ class user(commands.Cog, description="Commands related to the user!"):
             color=MAIN_COLOR
         ).set_author(name=user, icon_url=user.avatar.url)
         await ctx.reply(embed=embed)
+
+    @commands.command(help="Check who invited this member.")
+    @commands.cooldown(3, 30, commands.BucketType.user)
+    async def whoinvited(self, ctx: commands.Context, user: Optional[discord.Member] = None):
+        user = user or ctx.author
+        inviters = await self.client.get_inviter(user.id, ctx.guild.id)
+        inviter_id = 'Unknown' if str(ctx.guild.id) not in inviters else inviters[str(ctx.guild.id)]
+        if inviter_id == 'Unknown':
+            return await ctx.reply(embed=discord.Embed(
+                description=f"{user.mention} was invited by {inviter_id}\n\nThey either joined via a vanity URL.\nOr were invited before I was here.",
+                color=MAIN_COLOR
+            ).set_author(name=user, icon_url=user.avatar.url))
+        invites = await self.client.fetch_invites(inviter_id, ctx.guild.id)
+        return await ctx.reply(embed=discord.Embed(
+            description=f"{user.mention} was invited by <@{inviter_id}>.\nThey have **{invites}** invites."
+        ))
 
     @commands.cooldown(3, 30, commands.BucketType.user)
     @commands.command(aliases=['lb'], help="Check the leaderboard!")
@@ -381,86 +398,87 @@ Make sure to upload image as an attachment.
 
         user_profile = await self.client.get_user_profile_(user_.id)
 
-        await ctx.invoke(
-            self.client.get_command('rank_from_template'),
-            member=user_,
-            template=user_profile['rank_card_template'],
-            reply=False
-        )
+        async with ctx.typing():
+            await ctx.invoke(
+                self.client.get_command('rank_from_template'),
+                member=user_,
+                template=user_profile['rank_card_template'],
+                reply=False
+            )
 
-        nice = f"""
-{user_profile['description']}
+            nice = f"""
+    {user_profile['description']}
 
-**{'Single 💔' if not user_profile['married_to'] else 'Married to <@'+str(user_profile['married_to'])+'> 💞'}**
-{'**Married at:** <t:' + str(user_profile['married_at']) + ':D> <t:' + str(user_profile['married_at']) + ':R>' if user_profile['married_to'] else ''}
+    **{'Single 💔' if not user_profile['married_to'] else 'Married to <@'+str(user_profile['married_to'])+'> 💞'}**
+    {'**Married at:** <t:' + str(user_profile['married_at']) + ':D> <t:' + str(user_profile['married_at']) + ':R>' if user_profile['married_to'] else ''}
 
-Commands Used: `{user_profile['cmds_used']}`
-Bugs reported: `{user_profile['bugs_reported']}`
-Suggestions given: `{user_profile['suggestions_submitted']}`
+    Commands Used: `{user_profile['cmds_used']}`
+    Bugs reported: `{user_profile['bugs_reported']}`
+    Suggestions given: `{user_profile['suggestions_submitted']}`
 
-Thanked by **{user_profile['times_thanked']}** user{'s' if user_profile['times_thanked'] != 1 else ''}!
-Simped by **{user_profile['times_simped']}** simp{'s' if user_profile['times_simped'] != 1 else ''}!
+    Thanked by **{user_profile['times_thanked']}** user{'s' if user_profile['times_thanked'] != 1 else ''}!
+    Simped by **{user_profile['times_simped']}** simp{'s' if user_profile['times_simped'] != 1 else ''}!
 
-Global chat nick: `{user_profile['gc_nick']}`
-Global chat avatar: [`{'Click Me' if user_profile['gc_avatar'] is not None else 'None'}`]({user_profile['gc_avatar'] if user_profile['gc_avatar'] is not None else ''})
-                """
-        badge_text = ""
-        badge_text2 = ""
-        badge_text3 = ""
-        badge_text4 = ""
-        badge_text5 = ""
+    Global chat nick: `{user_profile['gc_nick']}`
+    Global chat avatar: [`{'Click Me' if user_profile['gc_avatar'] is not None else 'None'}`]({user_profile['gc_avatar'] if user_profile['gc_avatar'] is not None else ''})
+                    """
+            badge_text = ""
+            badge_text2 = ""
+            badge_text3 = ""
+            badge_text4 = ""
+            badge_text5 = ""
 
-        h = await self.get_badges(user_.id)
+            h = await self.get_badges(user_.id)
 
-        for e in user_profile['badges']:
-            h.append(e)
+            for e in user_profile['badges']:
+                h.append(e)
 
-        i = 1
+            i = 1
 
-        for e in h:
-            hee = BADGE_EMOJIS[e] + f"  {e.title().replace('_', ' ')}\n"
-            if e == "Big_PP" or e == "No_PP":
-                hee = BADGE_EMOJIS[e] + f"  {e.replace('_', ' ')}\n"
-            pain = 5
-            if i <= pain:
-                badge_text += hee
-            if i > pain and i <= 2 * pain:
-                badge_text2 += hee
-            if i > 2 * pain and i <= 3 * pain:
-                badge_text3 += hee
-            if i > 3 * pain and i <= 4 * pain:
-                badge_text4 += hee
-            if i > 4 * pain and i <= 5 * pain:
-                badge_text5 += hee
-            i += 1
+            for e in h:
+                hee = BADGE_EMOJIS[e] + f"  {e.title().replace('_', ' ')}\n"
+                if e == "Big_PP" or e == "No_PP":
+                    hee = BADGE_EMOJIS[e] + f"  {e.replace('_', ' ')}\n"
+                pain = 5
+                if i <= pain:
+                    badge_text += hee
+                if i > pain and i <= 2 * pain:
+                    badge_text2 += hee
+                if i > 2 * pain and i <= 3 * pain:
+                    badge_text3 += hee
+                if i > 3 * pain and i <= 4 * pain:
+                    badge_text4 += hee
+                if i > 4 * pain and i <= 5 * pain:
+                    badge_text5 += hee
+                i += 1
 
-        f = discord.File("assets/temp/rank.png", filename="rank.png")
-        embed = discord.Embed(
-            description=nice,
-            color=MAIN_COLOR
-        ).set_author(name=user_.name, icon_url=user_.avatar.url
-        ).set_image(url="attachment://rank.png")
+            f = discord.File("assets/temp/rank.png", filename="rank.png")
+            embed = discord.Embed(
+                description=nice,
+                color=MAIN_COLOR
+            ).set_author(name=user_.name, icon_url=user_.avatar.url
+            ).set_image(url="attachment://rank.png")
 
-        embed.add_field(name="Badges:", value=badge_text, inline=True)
+            embed.add_field(name="Badges:", value=badge_text, inline=True)
 
-        if badge_text2 != "":
-            embed.add_field(name=EMPTY_CHARACTER, value=badge_text2, inline=True)
-        if badge_text3 != "":
-            embed.add_field(name=EMPTY_CHARACTER, value=EMPTY_CHARACTER, inline=True)
-            embed.add_field(name=EMPTY_CHARACTER, value=badge_text3, inline=True)
-        if badge_text4 != "":
-            embed.add_field(name=EMPTY_CHARACTER, value=badge_text4, inline=True)
-            embed.add_field(name=EMPTY_CHARACTER, value=EMPTY_CHARACTER, inline=True)
-        if badge_text5 != "":
-            embed.add_field(name=EMPTY_CHARACTER, value=badge_text5, inline=True)
+            if badge_text2 != "":
+                embed.add_field(name=EMPTY_CHARACTER, value=badge_text2, inline=True)
+            if badge_text3 != "":
+                embed.add_field(name=EMPTY_CHARACTER, value=EMPTY_CHARACTER, inline=True)
+                embed.add_field(name=EMPTY_CHARACTER, value=badge_text3, inline=True)
+            if badge_text4 != "":
+                embed.add_field(name=EMPTY_CHARACTER, value=badge_text4, inline=True)
+                embed.add_field(name=EMPTY_CHARACTER, value=EMPTY_CHARACTER, inline=True)
+            if badge_text5 != "":
+                embed.add_field(name=EMPTY_CHARACTER, value=badge_text5, inline=True)
 
-        embed.add_field(
-            name=EMPTY_CHARACTER,
-            value=f"Your current rankcard template is `{user_profile['rank_card_template']}`:",
-            inline=False
-        ).set_thumbnail(url=user_.avatar.url)
+            embed.add_field(
+                name=EMPTY_CHARACTER,
+                value=f"Your current rankcard template is `{user_profile['rank_card_template']}`:",
+                inline=False
+            ).set_thumbnail(url=user_.avatar.url)
 
-        await ctx.reply(embed=embed, file=f)
+            await ctx.reply(embed=embed, file=f)
 
     @commands.command(help="Edit your profile.", aliases=['eprofile', 'editp'])
     @commands.cooldown(3, 30, commands.BucketType.user)

@@ -62,7 +62,7 @@ async def edit_msg_multiple_times(ctx, time_, first_msg, other_msgs, final_emb):
 async def replace_things_in_string_fancy_lemao(bot, array, string_):
     author = array[0]
     guild = array[1]
-    inviter_id = await bot.get_inviter(author.id)
+    inviter_id = await bot.get_inviter(author.id, guild.id)
 
     if inviter_id == 'Unknown':
         inviter_name = 'Unknown'
