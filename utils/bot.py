@@ -285,7 +285,7 @@ class EpicBot(commands.AutoShardedBot):
         await self.invites.update_one(
             filter={"_id": user_id},
             update={"$set": {
-                "inviters": user['inviters'].update({str(guild_id): inviter_id})
+                "inviters": {str(guild_id): inviter_id} if 'inviters' not in user else user['inviters'].update({str(guild_id): inviter_id})
             }}
         )
 
