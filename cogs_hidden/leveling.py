@@ -281,7 +281,7 @@ rank_card_templates = {
         "username_y": 150,
         "username_font": ImageFont.truetype("assets/fonts/Roboto-Bold.ttf", size=55),
 
-        "rank_xy": (760, 15),
+        "rank_xy": (750, 15),
         "level_xy": (870, 15),
         "xp_xy": (720, 245),
         "no_xp_text": False,
