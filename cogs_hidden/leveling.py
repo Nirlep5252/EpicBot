@@ -381,6 +381,8 @@ class Leveling(commands.Cog):
     async def add_xp(self, message: Message):
         if message.author.bot:
             return
+        if not message.guild:
+            return
         guild_config = await self.client.get_guild_config(message.guild.id)
         if not guild_config['leveling']['enabled']:
             return
@@ -428,6 +430,8 @@ class Leveling(commands.Cog):
     @commands.Cog.listener(name="on_message")
     async def add_messages(self, message: Message):
         if message.author.bot:
+            return
+        if not message.guild:
             return
         guild_config = await self.client.get_guild_config(message.guild.id)
         if not guild_config['leveling']['enabled']:
