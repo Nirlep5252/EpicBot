@@ -658,12 +658,14 @@ Here are you settings:
         m = await ctx.reply("Are you sure you want to lock the whole server?", view=v)
         await v.wait()
         if not v.value:
-            return await m.delete()
+            return
+        await m.delete()
         async with ctx.typing():
             i = 0
             for channel in ctx.guild.channels:
                 if isinstance(channel, discord.TextChannel):
                     await ctx.invoke(self.client.get_command('lock'), channel=channel)
+                    await asyncio.sleep(0.5)
                     i += 1
             await ctx.send(f"**{EMOJIS['tick_yes']} {i} channels have been locked.**")
 
@@ -691,12 +693,14 @@ Here are you settings:
         m = await ctx.reply("Are you sure you want to unlock the whole server?", view=v)
         await v.wait()
         if not v.value:
-            return await m.delete()
+            return
+        await m.delete()
         async with ctx.typing():
             i = 0
             for channel in ctx.guild.channels:
                 if isinstance(channel, discord.TextChannel):
                     await ctx.invoke(self.client.get_command('unlock'), channel=channel)
+                    await asyncio.sleep(0.5)
                     i += 1
             await ctx.send(f"**{EMOJIS['tick_yes']} {i} channels have been unlocked.**")
 
