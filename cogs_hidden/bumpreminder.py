@@ -40,7 +40,7 @@ class BumpReminder(commands.Cog):
 
     @commands.Cog.listener("on_message")
     async def on_bump_message(self, message):
-        if message.author.id != self.disboard_id or len(message.embeds) == 0:
+        if message.author.id != self.disboard_id or len(message.embeds) == 0 or not message.guild:
             return
         if self.auth_str not in str(message.embeds[0].description).lower():
             return

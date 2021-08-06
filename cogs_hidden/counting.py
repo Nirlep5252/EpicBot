@@ -25,7 +25,7 @@ class Counting(commands.Cog):
 
     @commands.Cog.listener("on_message")
     async def count_go_brr(self, message: discord.Message):
-        if message.author.bot:
+        if message.author.bot or not message.guild:
             return
         g = await self.client.get_guild_config(message.guild.id)
         if not g['counting']:
