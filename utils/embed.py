@@ -20,7 +20,6 @@ import json as json_but_pain
 
 from discord import Embed
 from config import MAIN_COLOR, RED_COLOR
-from utils.bot import EpicBot
 
 
 def success_embed(title, description):
@@ -60,7 +59,7 @@ async def edit_msg_multiple_times(ctx, time_, first_msg, other_msgs, final_emb):
     await msg.edit(embed=final_emb)
 
 
-async def replace_things_in_string_fancy_lemao(bot: EpicBot, array, string_):
+async def replace_things_in_string_fancy_lemao(bot, array, string_):
     author = array[0]
     guild = array[1]
     inviter_id = await bot.get_inviter(author.id, guild.id)
