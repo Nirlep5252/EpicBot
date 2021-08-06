@@ -623,7 +623,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             return await ctx.reply(embed=error_embed(f"{EMOJIS['tick_no']} Invalid Usage!", f"Please provide some text!\nCorrect Usage: `{ctx.clean_prefix}e <text>`"))
 
         output = text.replace("|", "\|")
-        output = "||" + output + "||"
+        output = "|| " + output + " ||"
         output = output.replace("e", "||e||")
         output = output.replace("||||", "")
         try:
