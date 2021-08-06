@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from utils.ui import Confirm
 import discord
 import asyncio
 
@@ -638,15 +639,33 @@ Here are you settings:
         if ctx.guild.default_role not in channel.overwrites:
             overwrites = {ctx.guild.default_role: discord.PermissionOverwrite(send_messages=False)}
             await channel.edit(overwrites=overwrites)
-            await ctx.reply(f"{EMOJIS['tick_yes']} {channel.mention} has now been locked.")
+            await ctx.send(f"{EMOJIS['tick_yes']} {channel.mention} has now been locked.")
 
         elif channel.overwrites[ctx.guild.default_role].send_messages or channel.overwrites[ctx.guild.default_role].send_messages is None:
             overwrites = channel.overwrites[ctx.guild.default_role]
             overwrites.send_messages = False
             await channel.set_permissions(ctx.guild.default_role, overwrite=overwrites)
-            await ctx.reply(f"{EMOJIS['tick_yes']} {channel.mention} has now been locked.")
+            await ctx.send(f"{EMOJIS['tick_yes']} {channel.mention} has now been locked.")
         else:
-            await ctx.reply("This channel is already locked ._.")
+            await ctx.send(f"{EMOJIS['tick_no']} {channel.mention} is already locked ._.")
+
+    @commands.command(help="Lock the whole server.")
+    @commands.has_permissions(manage_guild=True, manage_channels=True, manage_roles=True)
+    @commands.bot_has_permissions(manage_guild=True, manage_channels=True, manage_roles=True)
+    @commands.cooldown(1, 60, commands.BucketType.user)
+    async def lockdown(self, ctx: commands.Context):
+        v = Confirm(ctx, 60)
+        m = await ctx.reply("Are you sure you want to lock the whole server?", view=v)
+        await v.wait()
+        if not v.value:
+            return await m.delete()
+        async with ctx.typing():
+            i = 0
+            for channel in ctx.guild.channels:
+                if isinstance(channel, discord.TextChannel):
+                    await ctx.invoke(self.client.get_command('lock'), channel=channel)
+                    i += 1
+            await ctx.send(f"**{EMOJIS['tick_yes']} {i} channels have been locked.**")
 
     @commands.cooldown(3, 30, commands.BucketType.user)
     @commands.has_permissions(manage_channels=True, manage_roles=True)
@@ -659,9 +678,27 @@ Here are you settings:
             overwrites = channel.overwrites[ctx.guild.default_role]
             overwrites.send_messages = None
             await channel.set_permissions(ctx.guild.default_role, overwrite=overwrites)
-            await ctx.reply(f"{EMOJIS['tick_yes']} {channel.mention} has now been unlocked.")
+            await ctx.send(f"{EMOJIS['tick_yes']} {channel.mention} has now been unlocked.")
         else:
-            await ctx.reply("This channel is already unlocked ._.")
+            await ctx.send(f"{EMOJIS['tick_no']} {channel.mention} is already unlocked ._.")
+
+    @commands.command(help="Lock the whole server.")
+    @commands.has_permissions(manage_guild=True, manage_channels=True, manage_roles=True)
+    @commands.bot_has_permissions(manage_guild=True, manage_channels=True, manage_roles=True)
+    @commands.cooldown(1, 60, commands.BucketType.user)
+    async def unlockdown(self, ctx: commands.Context):
+        v = Confirm(ctx, 60)
+        m = await ctx.reply("Are you sure you want to unlock the whole server?", view=v)
+        await v.wait()
+        if not v.value:
+            return await m.delete()
+        async with ctx.typing():
+            i = 0
+            for channel in ctx.guild.channels:
+                if isinstance(channel, discord.TextChannel):
+                    await ctx.invoke(self.client.get_command('unlock'), channel=channel)
+                    i += 1
+            await ctx.send(f"**{EMOJIS['tick_yes']} {i} channels have been unlocked.**")
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.has_permissions(kick_members=True)
