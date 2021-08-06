@@ -18,6 +18,7 @@ import discord
 import random
 import asyncio
 import pyfiglet
+import functools
 
 from discord.ext import commands
 from typing import Optional, Union
@@ -803,7 +804,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         if isinstance(text, str):
             res = pyfiglet.figlet_format(text)
         else:
-            res = await effects.ascii(file_bytes)
+            res = await self.client.loop.run_in_executor(None, functools.partial(effects.ascii, file_bytes))
 
         try:
             await ctx.reply(f"```{res}```")
