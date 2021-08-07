@@ -657,6 +657,30 @@ class GuildLogs(commands.Cog):
         ).set_footer(text=f"ID: {thread.id}")
         await self.send_from_webhook(w, e)
 
+    @commands.Cog.listener("on_thread_update")
+    async def thread_update_log(self, before: discord.Thread, after: discord.Thread):
+        g = await self.check_enabled(after.guild.id)
+        if not g:
+            return
+        w = await self.get_log_webhook(g['logging'])
+        e = discord.Embed(
+            description="**Thread updated**",
+            color=MAIN_COLOR,
+            timestamp=datetime.datetime.utcnow()
+        ).set_author(name=after.owner, icon_url=after.owner.avatar.url if after.owner is not None else "https://amogus.org/amogus.png"
+        ).set_footer(text=f"ID: {after.id}")
+
+        if before.archived != after.archived:
+            e.add_field(name="Archived:", value=f"`{before.archived}` ➜ `{after.archived}`", inline=False)
+        if before.auto_archive_duration != after.auto_archive_duration:
+            e.add_field(name="Auto Archive Duration:", value=f"`{format_timespan(before.auto_archive_duration)}` ➜ `{format_timespan(after.auto_archive_duration)}`", inline=False)
+        if before.name != after.name:
+            e.add_field(name="Name:", value=f"`{before.name}` ➜ `{after.name}`", inline=False)
+        if before.slowmode_delay != after.slowmode_delay:
+            e.add_field(name="Slowmode:", value=f"`{format_timespan(before.slowmode_delay)}` ➜ `{format_timespan(after.slowmode_delay)}`", inline=False)
+
+        await self.send_from_webhook(w, e)
+
 # ---------- custom events ----------
 
     # @commands.Cog.listener("on_member_kick")
