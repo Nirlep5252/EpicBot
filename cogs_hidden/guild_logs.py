@@ -21,7 +21,7 @@ from discord.ext import commands
 from discord.utils import escape_markdown
 from humanfriendly import format_timespan
 from config import (
-    MAIN_COLOR, RED_COLOR
+    EMOJIS, MAIN_COLOR, RED_COLOR
 )
 from utils.bot import EpicBot
 from typing import List
@@ -625,12 +625,36 @@ class GuildLogs(commands.Cog):
             return
         w = await self.get_log_webhook(g['logging'])
         e = discord.Embed(
-            description=f"**Thread created: {thread.mention} `#{thread.name}`**",
+            description=f"""
+**Thread created: {thread.mention} `#{thread.name}`**
+
+**Private:** {EMOJIS['tick_no'] if isinstance(thread.type, discord.ChannelType.private_thread) else EMOJIS['tick_yes']}
+**Archived:** {EMOJIS['tick_yes'] if thread.archived else EMOJIS['tick_no']}
+            """,
             timestamp=datetime.datetime.utcnow(),
             color=MAIN_COLOR
         ).set_author(name=thread.owner, icon_url=thread.owner.avatar.url if thread.owner is not None else "https://amogus.org/amogus.png"
         ).set_footer(text=f"ID: {thread.id}"
         ).add_field(name="Auto Archive Duration:", value=format_timespan(thread.auto_archive_duration), inline=False)
+        await self.send_from_webhook(w, e)
+
+    @commands.Cog.listener("on_thread_delete")
+    async def thread_deleted_log(self, thread: discord.Thread):
+        g = await self.check_enabled(thread.guild.id)
+        if not g:
+            return
+        w = await self.get_log_webhook(g['logging'])
+        e = discord.Embed(
+            description=f"""
+**Thread deleted: `#{thread.name}`**
+
+**Private:** {EMOJIS['tick_no'] if isinstance(thread.type, discord.ChannelType.private_thread) else EMOJIS['tick_yes']}
+**Archived:** {EMOJIS['tick_yes'] if thread.archived else EMOJIS['tick_no']}
+            """,
+            timestamp=datetime.datetime.utcnow(),
+            color=RED_COLOR
+        ).set_author(name=thread.owner, icon_url=thread.owner.avatar.url if thread.owner is not None else "https://amogus.org/amogus.png"
+        ).set_footer(text=f"ID: {thread.id}")
         await self.send_from_webhook(w, e)
 
 # ---------- custom events ----------

@@ -84,6 +84,10 @@ async def on_message_edit(before, after):
         return
     if before.author.bot:
         return
+    if not client.cache_loaded:
+        return
+    if not client.cogs_loaded:
+        return
     client.dispatch("message", after)
 
 
