@@ -24,6 +24,7 @@ from config import (
     MAIN_COLOR, RED_COLOR
 )
 from utils.bot import EpicBot
+from typing import List
 
 
 class GuildLogs(commands.Cog):
@@ -46,7 +47,7 @@ class GuildLogs(commands.Cog):
             w = await channel.create_webhook(name="EpicBot Logs")
         return w
 
-    async def send_from_webhook(self, webhook, embed, files=[], embeds=[]):
+    async def send_from_webhook(self, webhook: discord.Webhook, embed: discord.Webhook, files: List[discord.File] = [], embeds: List[discord.Embed] = []):
         if embed is None:
             await webhook.send(
                 allowed_mentions=self.no_mentions,
@@ -615,6 +616,21 @@ class GuildLogs(commands.Cog):
                 value=f"`{before.system_channel}` ➜ `{after.system_channel}`",
                 inline=False
             )
+        await self.send_from_webhook(w, e)
+
+    @commands.Cog.listener("on_thread_join")
+    async def thread_created_or_joined(self, thread: discord.Thread):
+        g = await self.check_enabled(thread.guild.id)
+        if not g:
+            return
+        w = await self.get_log_webhook(g['logging'])
+        e = discord.Embed(
+            description=f"**Thread created: {thread.mention} `#{thread.name}`**",
+            timestamp=datetime.datetime.utcnow(),
+            color=MAIN_COLOR
+        ).set_author(name=thread.owner, icon_url=thread.owner.avatar.url if thread.owner is not None else "https://amogus.org/amogus.png"
+        ).set_footer(text=f"ID: {thread.id}"
+        ).add_field(name="Auto Archive Duration:", value=format_timespan(thread.auto_archive_duration), inline=False)
         await self.send_from_webhook(w, e)
 
 # ---------- custom events ----------

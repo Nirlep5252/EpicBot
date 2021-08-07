@@ -88,6 +88,10 @@ class GlobalChat(commands.Cog):
         for e in self.client.blacklisted_cache:
             if message.author.id == e['_id']:
                 return
+
+        if message.edited_at is not None:
+            return
+
         if not p['gc_rules_accepted']:
             await message.add_reaction('❌')
             bucket_ = self.confirmation_cooldown.get_bucket(message)

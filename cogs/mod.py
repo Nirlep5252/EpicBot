@@ -195,7 +195,7 @@ Type `cancel` to cancel the command.
                 try:
                     lul_channel = await commands.TextChannelConverter().convert(ctx=ctx, argument=m.content)
                     log_channel = lul_channel.id
-                except Exception:
+                except commands.ChannelNotFound:
                     return await msg.reply(content="", embed=error_embed(
                         f"{EMOJIS['tick_no']} Not found!",
                         f"I wasn't able to find the channel {m.content}, please try again."
@@ -652,7 +652,7 @@ Here are you settings:
     @commands.command(help="Lock the whole server.")
     @commands.has_permissions(manage_guild=True, manage_channels=True, manage_roles=True)
     @commands.bot_has_permissions(manage_guild=True, manage_channels=True, manage_roles=True)
-    @commands.cooldown(1, 60, commands.BucketType.user)
+    @commands.cooldown(1, 60, commands.BucketType.guild)
     async def lockdown(self, ctx: commands.Context):
         v = Confirm(ctx, 60)
         m = await ctx.reply("Are you sure you want to lock the whole server?", view=v)
@@ -687,7 +687,7 @@ Here are you settings:
     @commands.command(help="Lock the whole server.")
     @commands.has_permissions(manage_guild=True, manage_channels=True, manage_roles=True)
     @commands.bot_has_permissions(manage_guild=True, manage_channels=True, manage_roles=True)
-    @commands.cooldown(1, 60, commands.BucketType.user)
+    @commands.cooldown(1, 60, commands.BucketType.guild)
     async def unlockdown(self, ctx: commands.Context):
         v = Confirm(ctx, 60)
         m = await ctx.reply("Are you sure you want to unlock the whole server?", view=v)
