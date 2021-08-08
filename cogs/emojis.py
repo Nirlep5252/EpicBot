@@ -127,6 +127,8 @@ class emojis(commands.Cog, description="Emoji related commands!"):
     async def on_message(self, message: discord.Message):
         if message.author.bot:
             return
+        if not message.guild:
+            return
         guild_config = await self.client.get_guild_config(message.guild.id)
         if not guild_config['nqn']:
             return
