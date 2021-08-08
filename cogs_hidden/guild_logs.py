@@ -175,7 +175,7 @@ class GuildLogs(commands.Cog):
         await self.send_from_webhook(w, e, f)
 
     @commands.Cog.listener("on_message_edit")
-    async def send_edit_msg(self, before, after):
+    async def send_edit_msg(self, before: discord.Message, after: discord.Message):
         if before.author.bot:
             return
         if before.content == after.content and len(before.attachments) == 0:
@@ -521,7 +521,7 @@ class GuildLogs(commands.Cog):
         await self.send_from_webhook(w, e)
 
     @commands.Cog.listener("on_guild_update")
-    async def guild_update_log(self, before, after):
+    async def guild_update_log(self, before: discord.Guild, after: discord.Guild):
         g = await self.check_enabled(before.id)
         if not g:
             return
@@ -547,7 +547,7 @@ class GuildLogs(commands.Cog):
         if before.banner != after.banner:
             e.add_field(
                 name="Banner updated!",
-                value=f"{'`None`' if before.banner is None else '[`Before`]('+str(before.banner_url)+')'} ➜ {'`None`' if after.banner is None else '[`After`]('+str(after.banner_url)+')'}",
+                value=f"{'`None`' if before.banner is None else '[`Before`]('+str(before.banner.url)+')'} ➜ {'`None`' if after.banner is None else '[`After`]('+str(after.banner.url)+')'}",
                 inline=False
             )
         if before.default_notifications != after.default_notifications:
@@ -607,7 +607,7 @@ class GuildLogs(commands.Cog):
         if before.splash != after.splash:
             e.add_field(
                 name="Invite splash banner:",
-                value=f"{'`None`' if before.splash is None else '[`Before`]('+str(before.splash_url)+')'} ➜ {'`None`' if after.splash is None else '[`After`]('+str(after.splash_url)+')'}",
+                value=f"{'`None`' if before.splash is None else '[`Before`]('+str(before.splash.url)+')'} ➜ {'`None`' if after.splash is None else '[`After`]('+str(after.splash.url)+')'}",
                 inline=False
             )
         if before.system_channel != after.system_channel:
