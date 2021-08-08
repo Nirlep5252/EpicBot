@@ -537,6 +537,8 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             return
         if message.content == "":
             return
+        if not message.guild:
+            return
         g_conf = await self.client.get_guild_config(message.guild.id)
         if g_conf['chatbot'] != message.channel.id:
             return
