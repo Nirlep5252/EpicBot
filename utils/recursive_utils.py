@@ -13,7 +13,7 @@ async def prepare_emojis_and_roles(ctx: Context, roles: List[Role], message: Mes
     for role in roles:
         embed = message.embeds[0]
         embed.clear_fields()
-        embed.add_field(name="Role:", value=role.mention, inline=False)
+        embed.add_field(name=f"Role ({roles.index(role) + 1}/{len(roles)}):", value=role.mention, inline=False)
         await message.edit(embed=embed)
 
         reaction, user = await ctx.bot.wait_for("reaction_add", check=check)
@@ -24,7 +24,7 @@ async def prepare_emojis_and_roles(ctx: Context, roles: List[Role], message: Mes
             return await prepare_emojis_and_roles(ctx, roles, message)
 
         output.update({
-            role.id: str(reaction.emoji)
+            str(role.id): str(reaction.emoji)
         })
 
     return output

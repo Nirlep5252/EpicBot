@@ -114,11 +114,11 @@ class SelfRoleOptionSelecter(discord.ui.View):
     async def uwu(self, select: discord.ui.Select, interaction: discord.Interaction):
         self.value = select.values[0]
 
-    @discord.ui.button(emoji='▶️', style=discord.ButtonStyle.blurple)
+    @discord.ui.button(label="Continue", style=discord.ButtonStyle.blurple)
     async def go_ahead(self, b: discord.Button, i: discord.Interaction):
         self.stop()
 
-    @discord.ui.button(emoji='⏹️', style=discord.ButtonStyle.red)
+    @discord.ui.button(label="Stop", style=discord.ButtonStyle.red)
     async def cancel(self, b: discord.Button, i: discord.Interaction):
         self.value = None
         self.stop()
@@ -127,3 +127,58 @@ class SelfRoleOptionSelecter(discord.ui.View):
         if interaction.user != self.ctx.author:
             return False
         return True
+
+
+class SelfRoleButton(discord.ui.Button):
+    def __init__(self, guild: discord.Guild, emoji: str, role_id: int):
+        super().__init__(emoji=emoji, style=discord.ButtonStyle.blurple, custom_id='selfrole-button')
+        self.guild = guild
+        self.emoji = emoji
+        self.role = guild.get_role(role_id)
+
+    async def callback(self, interaction: discord.Interaction):
+        if self.role is None:
+            return
+        if self.role in interaction.user.roles:
+            await interaction.user.remove_roles(self.role, reason="EpicBot Selfroles")
+            await interaction.response.send_message(f"Removed the {self.role.mention} role.", ephemeral=True)
+        else:
+            await interaction.user.add_roles(self.role, reason="EpicBot Selfroles")
+            await interaction.response.send_message(f"Gave you the {self.role.mention} role.", ephemeral=True)
+
+
+class ButtonSelfRoleView(discord.ui.View):
+    def __init__(self, guild: discord.Guild, stuff: dict):
+        super().__init__(timeout=None)
+        for role_id, emoji in stuff.items():
+            button = SelfRoleButton(guild, emoji, role_id)
+            self.add_item(button)
+
+
+class DropDownSelfRoleSelect(discord.ui.Select):
+    def __init__(self, guild: discord.Guild, stuff: dict):
+        options = []
+        for role_id, emoji in stuff.items():
+            role = guild.get_role(role_id)
+            if role is not None:
+                options.append(
+                    discord.SelectOption(label=role.name, emoji=emoji, value=str(role_id))
+                )
+        super().__init__(placeholder="Please select a role.", options=options, custom_id='selfrole-dropdown')
+
+    async def callback(self, interaction: discord.Interaction):
+        role = self.guild.get_role(int(self.values[0]))
+        if role is None:
+            return
+        if role in interaction.user.roles:
+            await interaction.user.remove_roles(role, reason="EpicBot Selfroles")
+            await interaction.response.send_message(f"Removed the {role.mention} role.", ephemeral=True)
+        else:
+            await interaction.user.add_roles(role, reason="EpicBot Selfroles")
+            await interaction.response.send_message(f"Gave you the {role.mention} role.", ephemeral=True)
+
+
+class DropDownSelfRoleView(discord.ui.View):
+    def __init__(self, guild: discord.Guild, stuff: dict):
+        super().__init__(timeout=None)
+        self.add_item(DropDownSelfRoleSelect(guild, stuff))

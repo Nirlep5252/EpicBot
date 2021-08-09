@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from utils.reactions import prepare_rolemenu
 import discord
 import asyncio
 import json
@@ -247,7 +248,7 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                 for role_text in roles_text_list:
                     try:
                         role = await commands.RoleConverter().convert(ctx, role_text)
-                        if role.position < ctx.guild.me.top_role.position:
+                        if role.position < ctx.guild.me.top_role.position and (role.position < ctx.author.top_role.position or ctx.author == ctx.guild.owner) and role not in roles:
                             roles.append(role)
                     except Exception:
                         pass
@@ -262,17 +263,20 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                     f"I have found **{len(roles)}** in your message.\n\n{' '.join(role.mention for role in roles)}\n\nNow you need to react to this message with the corresponding emojis for the rolemenu to be complete!"
                 ), view=None)
                 final_output = await prepare_emojis_and_roles(ctx, roles, main_msg)
+                msg_id = await prepare_rolemenu(ctx, final_output, text_channel, self_role_type)
+                role_menus = guild_self_roles['role_menus']
+                role_menus.update({
+                    str(msg_id): {
+                        "type": self_role_type,
+                        "channel": text_channel.id,
+                        "stuff": final_output
+                    }
+                })
                 await self.client.self_roles.update_one(
                     filter={"_id": ctx.guild.id},
-                    update={
-                        "$set": {
-                            "type": self_role_type,
-                            "channel": text_channel.id,
-                            "roles": final_output
-                        }
-                    }
+                    update={"$set": {"role_menus": role_menus}}
                 )
-                return await ctx.send("ok everything went well, i will send the rolemenu when nirlep codes it")
+                return
             if option in ['delete', 'remove']:
                 return await ctx.reply("soon")
             if option in ['show', 'list']:

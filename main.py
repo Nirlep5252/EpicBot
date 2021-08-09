@@ -26,7 +26,7 @@ from utils.embed import success_embed
 from utils.bot import EpicBot
 from utils.help import EpicBotHelp
 from os import environ
-from utils.ui import TicketView
+from utils.ui import ButtonSelfRoleView, DropDownSelfRoleView, TicketView
 
 basicConfig(level=INFO)
 
@@ -95,10 +95,6 @@ async def on_message_edit(before, after):
 async def on_ready():
     print(f"Logged in as {client.user}")
 
-    if not client.views_loaded:
-        client.add_view(TicketView())
-        client.views_loaded = True
-
     if not client.cache_loaded:
         await client.get_cache()
         await client.get_blacklisted_users()
@@ -110,6 +106,27 @@ async def on_ready():
         await client.load_extensions('./cogs')
         await client.load_extensions('./cogs_hidden')
         client.cogs_loaded = True
+
+    if not client.views_loaded:
+        client.add_view(TicketView())
+        client.views_loaded = True
+        print("Ticket view has been loaded.")
+
+    if not client.rolemenus_loaded:
+        i = 0
+        for guild in client.guilds:
+            amogus = await client.self_roles.find_one({"_id": guild.id})
+            if amogus is not None:
+                role_menus = amogus['role_menus']
+                for msg_id, menu in role_menus:
+                    if menu['type'] == 'dropdown':
+                        client.add_view(DropDownSelfRoleView(guild, menu['stuff']), int(msg_id))
+                        i += 1
+                    if menu['type'] == 'button':
+                        client.add_view(ButtonSelfRoleView(guild, menu['stuff']), int(msg_id))
+                        i += 1
+
+        print(f"{i} Self role views has been loaded.")
 
 if __name__ == '__main__':
     client.run(BOT_TOKEN)
