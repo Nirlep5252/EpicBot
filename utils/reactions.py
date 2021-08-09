@@ -16,7 +16,7 @@ async def prepare_rolemenu(ctx: Context, stuff: dict, channel: TextChannel, type
     )
     if type_ == 'reaction':
         msg = await channel.send(embed=embed)
-        for role_id, emoji in stuff:
+        for role_id, emoji in stuff.items():
             await msg.add_reaction(emoji)
         return msg.id
 
