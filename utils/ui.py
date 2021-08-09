@@ -162,6 +162,8 @@ class DropDownSelfRoleSelect(discord.ui.Select):
             role = guild.get_role(int(role_id))
             options.append(discord.SelectOption(label=role.name, emoji=emoji, value=str(role_id)))
         super().__init__(placeholder="Please select a role.", options=options, custom_id='selfrole-dropdown')
+        self.guild = guild
+        self.stuff = stuff
 
     async def callback(self, interaction: discord.Interaction):
         role = self.guild.get_role(int(self.values[0]))
