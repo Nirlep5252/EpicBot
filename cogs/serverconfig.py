@@ -265,9 +265,11 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                 await self.client.self_roles.update_one(
                     filter={"_id": ctx.guild.id},
                     update={
-                        "type": self_role_type,
-                        "channel": text_channel.id,
-                        "roles": final_output
+                        "$set": {
+                            "type": self_role_type,
+                            "channel": text_channel.id,
+                            "roles": final_output
+                        }
                     }
                 )
                 return await ctx.send("ok everything went well, i will send the rolemenu when nirlep codes it")

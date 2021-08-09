@@ -122,3 +122,8 @@ class SelfRoleOptionSelecter(discord.ui.View):
     async def cancel(self, b: discord.Button, i: discord.Interaction):
         self.value = None
         self.stop()
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user != self.ctx.author:
+            return False
+        return True

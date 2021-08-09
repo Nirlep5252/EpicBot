@@ -20,7 +20,8 @@ async def prepare_emojis_and_roles(ctx: Context, roles: List[Role], message: Mes
 
         if isinstance(reaction.emoji, PartialEmoji):
             await ctx.send("Please only use the emojis that I can access.", delete_after=5)
-            return prepare_emojis_and_roles(ctx, roles, message)
+            await message.remove_reaction(reaction, user)
+            return await prepare_emojis_and_roles(ctx, roles, message)
 
         output.update({
             role.id: str(reaction.emoji)
