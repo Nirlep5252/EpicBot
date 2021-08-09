@@ -31,8 +31,10 @@ from config import (
 )
 from utils.embed import error_embed, success_embed, process_embeds_from_json
 from utils.bot import EpicBot
-from utils.ui import Confirm, TicketView
+from utils.ui import Confirm, SelfRoleOptionSelecter, TicketView
 from utils.converters import AddRemoveConverter, Lower
+from utils.message import wait_for_msg
+from utils.recursive_utils import prepare_emojis_and_roles
 
 autoposting_delay = 300
 
@@ -173,12 +175,115 @@ class config(commands.Cog, description="Configure your server with amazing EpicB
                 return e
         return False
 
+    @commands.command(help="Configure self roles for members in your server!", aliases=['selfrole', 'reactionrole', 'rr', 'rrole', 'reactionroles', 'rolemenu'])
+    @commands.has_permissions(manage_guild=True, manage_roles=True)
+    @commands.bot_has_permissions(administrator=True)
+    @commands.cooldown(3, 120, commands.BucketType.guild)
+    @commands.max_concurrency(1, commands.BucketType.guild)
+    @commands.is_owner()
+    async def selfroles(self, ctx: commands.Context, option: Lower = None):
+        async with ctx.typing():
+            prefix = ctx.clean_prefix
+            guild_self_roles = await self.client.self_roles.find_one({"_id": ctx.guild.id})
+            if guild_self_roles is None:
+                await self.client.self_roles.insert_one({
+                    "_id": ctx.guild.id,
+                    "role_menus": {}
+                })
+                guild_self_roles = await self.client.self_roles.find_one({"_id": ctx.guild.id})
+            role_menus = guild_self_roles['role_menus']
+            info_embed = success_embed(
+                f"{EMOJIS['reaction']} Self Roles",
+                f"""
+The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) != 1 else ''}.
+
+**You can use the following commands to configure role menus:**
+
+- `{prefix}selfrole create` - Creates a new rolemenu.
+- `{prefix}selfrole edit` - Edits an existing rolemenu.
+- `{prefix}selfrole delete` - Deletes an existing rolemenu.
+- `{prefix}selfrole list` - Shows all the current rolemenus.
+                """
+            )
+            if not option:
+                ctx.command.reset_cooldown(ctx)
+                return await ctx.reply(embed=info_embed)
+            if option in ['create', 'new']:
+                view = SelfRoleOptionSelecter(ctx)
+                main_msg = await ctx.reply(embed=success_embed(
+                    f"{EMOJIS['loading']} Rolemenu creation...",
+                    "Please select a rolemenu type for this rolemenu!"
+                ), view=view)
+                await view.wait()
+                if view.value is None:
+                    ctx.command.reset_cooldown(ctx)
+                    return await main_msg.edit(content=f"{EMOJIS['tick_no']}Command cancelled.", embed=None, view=None)
+                self_role_type = view.value
+                await main_msg.edit(embed=success_embed(
+                    f"{EMOJIS['loading']} Rolemenu creation...",
+                    "Please send the channel in which you want the rolemenu to be in."
+                ), view=None)
+                m = await wait_for_msg(ctx, 60, main_msg)
+                if m == 'pain':
+                    ctx.command.reset_cooldown(ctx)
+                    return
+                try:
+                    text_channel = await commands.TextChannelConverter().convert(ctx, m.content)
+                except Exception:
+                    await main_msg.delete()
+                    raise commands.ChannelNotFound(m.content)
+                if self_role_type == 'reaction':
+                    pass
+                    # i'll make the bot ask for a message ID by a human being instead of the bot sending the menu everytime.
+                await main_msg.edit(embed=success_embed(
+                    f"{EMOJIS['loading']} Rolemenu creation...",
+                    "Please send all the roles separated with a comma `,`.\n\nExample: `@Artist, @Foodie, @Music Lover, @Cutie`\nPlease follow this format."
+                ))
+                m = await wait_for_msg(ctx, 60, main_msg)
+                if m == 'pain':
+                    return
+                roles_text_list = m.content.replace(" ", "").split(",")
+                roles = []
+                for role_text in roles_text_list:
+                    try:
+                        role = await commands.RoleConverter().convert(ctx, role_text)
+                        if role.position < ctx.guild.me.top_role.position:
+                            roles.append(role)
+                    except Exception:
+                        pass
+                if len(roles) == 0:
+                    ctx.command.reset_cooldown(ctx)
+                    return await main_msg.edit(embed=error_embed(
+                        f"{EMOJIS['tick_no']} Error!",
+                        f"Looks like no roles were found in your message.\nOr all the roles were above my top role.\nYou can join our **[Support Server]({SUPPORT_SERVER_LINK})** for help."
+                    ))
+                await main_msg.edit(content="", embed=success_embed(
+                    f"{len(roles)} Roles found!",
+                    f"I have found **{len(roles)}** in your message.\n\n{' '.join(role.mention for role in roles)}\n\nNow you need to react to this message with the corresponding emojis for the rolemenu to be complete!"
+                ), view=None)
+                final_output = await prepare_emojis_and_roles(ctx, roles, main_msg)
+                await self.client.self_roles.update_one(
+                    filter={"_id": ctx.guild.id},
+                    update={
+                        "type": self_role_type,
+                        "channel": text_channel.id,
+                        "roles": final_output
+                    }
+                )
+                return await ctx.send("ok everything went well, i will send the rolemenu when nirlep codes it")
+            if option in ['delete', 'remove']:
+                return await ctx.reply("soon")
+            if option in ['show', 'list']:
+                return await ctx.reply("soon")
+
+            await ctx.reply(embed=info_embed)
+
     @commands.command(help="Setup everything you'll ever need.")
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(administrator=True)
     @commands.cooldown(3, 30, commands.BucketType.user)
     @commands.max_concurrency(1, commands.BucketType.guild)
-    async def setup(self, ctx):
+    async def setup(self, ctx: commands.Context):
         return await ctx.reply("work in progress")
 
     @commands.cooldown(3, 60, commands.BucketType.user)

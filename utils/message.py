@@ -1,8 +1,9 @@
 import discord
 import asyncio
-from discord.ext import commands 
-from config import MAIN_COLOR, RED_COLOR, EMOJIS
-from utils.embed import success_embed, error_embed
+from discord.ext import commands
+from config import RED_COLOR, EMOJIS
+from utils.embed import error_embed
+
 
 async def wait_for_msg(ctx: commands.Context, timeout: int, msg_to_edit: discord.Message):
     def c(m):
@@ -11,7 +12,7 @@ async def wait_for_msg(ctx: commands.Context, timeout: int, msg_to_edit: discord
         msg = await ctx.bot.wait_for("message", timeout=timeout, check=c)
         try:
             await msg.delete()
-        except:
+        except Exception:
             pass
         if msg.content.lower() == 'cancel':
             ctx.command.reset_cooldown(ctx)
@@ -29,7 +30,7 @@ async def wait_for_msg(ctx: commands.Context, timeout: int, msg_to_edit: discord
             content="",
             embed=error_embed(
                 f"{EMOJIS['tick_no']} Too late!",
-                f"You didn't answer in time! Please re-run the command."
+                "You didn't answer in time! Please re-run the command."
             )
         )
         return 'pain'

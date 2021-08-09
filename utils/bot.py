@@ -60,6 +60,7 @@ class EpicBot(commands.AutoShardedBot):
         self.user_profile_db = self.db['user_profile']
         self.starboard = self.db['starboard']
         self.bookmarks = self.db['bookmarks']
+        self.self_roles = self.db['self_roles']
 
         self.prefixes_cache = []
         self.blacklisted_cache = []

@@ -15,8 +15,9 @@ limitations under the License.
 """
 
 import discord
-from typing import Optional, Union
+from typing import Optional, Union, List
 from discord.ext import commands
+from discord import SelectOption
 
 
 class Confirm(discord.ui.View):
@@ -42,7 +43,7 @@ class Confirm(discord.ui.View):
 
 
 class Paginator(discord.ui.View):
-    def __init__(self, ctx, embeds):
+    def __init__(self, ctx: commands.Context, embeds: List[discord.Embed]):
         super().__init__(timeout=None)
         self.ctx = ctx
         self.embeds = embeds
@@ -97,3 +98,27 @@ class TicketView(discord.ui.View):
             users=True,
             replied_user=False
         ))
+
+
+class SelfRoleOptionSelecter(discord.ui.View):
+    def __init__(self, ctx: commands.Context, timeout: Optional[int] = 300):
+        super().__init__(timeout=timeout)
+        self.ctx = ctx
+        self.value = None
+
+    @discord.ui.select(placeholder="Please select a selfrole option.", options=[
+        SelectOption(label='Reactions', description="Users will react to get roles.", value='reaction'),
+        SelectOption(label='Dropdowns', description="Users will select roles from a dropdown menu like this!", value='dropdown'),
+        SelectOption(label='Buttons', description="Users will get roles by clicking buttons.", value='button')
+    ])
+    async def uwu(self, select: discord.ui.Select, interaction: discord.Interaction):
+        self.value = select.values[0]
+
+    @discord.ui.button(emoji='▶️', style=discord.ButtonStyle.blurple)
+    async def go_ahead(self, b: discord.Button, i: discord.Interaction):
+        self.stop()
+
+    @discord.ui.button(emoji='⏹️', style=discord.ButtonStyle.red)
+    async def cancel(self, b: discord.Button, i: discord.Interaction):
+        self.value = None
+        self.stop()
