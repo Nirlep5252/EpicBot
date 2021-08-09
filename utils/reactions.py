@@ -6,7 +6,7 @@ from utils.embed import success_embed
 
 async def prepare_rolemenu(ctx: Context, stuff: dict, channel: TextChannel, type_: str = 'reaction') -> int:
     text = ""
-    for role_id, emoji in stuff:
+    for role_id, emoji in stuff.items():
         role = ctx.guild.get_role(int(role_id))
         if role is not None:
             text += f"{emoji} - {role.mention}\n"

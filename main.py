@@ -114,17 +114,18 @@ async def on_ready():
 
     if not client.rolemenus_loaded:
         i = 0
-        for guild in client.guilds:
-            amogus = await client.self_roles.find_one({"_id": guild.id})
-            if amogus is not None:
-                role_menus = amogus['role_menus']
-                for msg_id, menu in role_menus:
-                    if menu['type'] == 'dropdown':
-                        client.add_view(DropDownSelfRoleView(guild, menu['stuff']), int(msg_id))
-                        i += 1
-                    if menu['type'] == 'button':
-                        client.add_view(ButtonSelfRoleView(guild, menu['stuff']), int(msg_id))
-                        i += 1
+        cursor = client.self_roles.find({})
+        h = await cursor.to_list(length=None)
+        for amogus in h:
+            guild = client.get_guild(amogus['_id'])
+            role_menus = amogus['role_menus']
+            for msg_id, menu in role_menus.items():
+                if menu['type'] == 'dropdown':
+                    client.add_view(DropDownSelfRoleView(guild, menu['stuff']), int(msg_id))
+                    i += 1
+                if menu['type'] == 'button':
+                    client.add_view(ButtonSelfRoleView(guild, menu['stuff']), int(msg_id))
+                    i += 1
 
         print(f"{i} Self role views has been loaded.")
 
