@@ -275,6 +275,8 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                 return await ctx.reply("soon")
             if option in ['show', 'list']:
                 return await ctx.reply("soon")
+            if option in ['edit']:
+                return await ctx.reply("soon")
 
             await ctx.reply(embed=info_embed)
 
