@@ -121,10 +121,10 @@ async def on_ready():
             role_menus = amogus['role_menus']
             for msg_id, menu in role_menus.items():
                 if menu['type'] == 'dropdown':
-                    client.add_view(DropDownSelfRoleView(guild, menu['stuff']), int(msg_id))
+                    client.add_view(DropDownSelfRoleView(guild, menu['stuff']), message_id=int(msg_id))
                     i += 1
                 if menu['type'] == 'button':
-                    client.add_view(ButtonSelfRoleView(guild, menu['stuff']), int(msg_id))
+                    client.add_view(ButtonSelfRoleView(guild, menu['stuff']), message_id=int(msg_id))
                     i += 1
         client.rolemenus_loaded = True
 
