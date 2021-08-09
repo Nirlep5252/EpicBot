@@ -28,3 +28,7 @@ class ReactionRoles(commands.Cog):
                 if role is not None:
                     await payload.member.add_roles(role, reason="EpicBot Selfroles")
                     return
+
+
+def setup(client: EpicBot):
+    client.add_cog(ReactionRoles(client))
