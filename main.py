@@ -126,6 +126,7 @@ async def on_ready():
                 if menu['type'] == 'button':
                     client.add_view(ButtonSelfRoleView(guild, menu['stuff']), int(msg_id))
                     i += 1
+        client.rolemenus_loaded = True
 
         print(f"{i} Self role views has been loaded.")
 

@@ -276,7 +276,7 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                     filter={"_id": ctx.guild.id},
                     update={"$set": {"role_menus": role_menus}}
                 )
-                return
+                return await main_msg.edit(content=f"The rolemenu has been setup in {text_channel.mention}", embed=None, view=None)
             if option in ['delete', 'remove']:
                 return await ctx.reply("soon")
             if option in ['show', 'list']:

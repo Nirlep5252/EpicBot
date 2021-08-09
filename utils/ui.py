@@ -134,7 +134,7 @@ class SelfRoleButton(discord.ui.Button):
         super().__init__(emoji=emoji, style=discord.ButtonStyle.blurple, custom_id='selfrole-button')
         self.guild = guild
         self.emoji = emoji
-        self.role = guild.get_role(role_id)
+        self.role = guild.get_role(int(role_id))
 
     async def callback(self, interaction: discord.Interaction):
         if self.role is None:
@@ -151,7 +151,7 @@ class ButtonSelfRoleView(discord.ui.View):
     def __init__(self, guild: discord.Guild, stuff: dict):
         super().__init__(timeout=None)
         for role_id, emoji in stuff.items():
-            button = SelfRoleButton(guild, emoji, role_id)
+            button = SelfRoleButton(guild, emoji, int(role_id))
             self.add_item(button)
 
 
@@ -159,11 +159,8 @@ class DropDownSelfRoleSelect(discord.ui.Select):
     def __init__(self, guild: discord.Guild, stuff: dict):
         options = []
         for role_id, emoji in stuff.items():
-            role = guild.get_role(role_id)
-            if role is not None:
-                options.append(
-                    discord.SelectOption(label=role.name, emoji=emoji, value=str(role_id))
-                )
+            role = guild.get_role(int(role_id))
+            options.append(discord.SelectOption(label=role.name, emoji=emoji, value=str(role_id)))
         super().__init__(placeholder="Please select a role.", options=options, custom_id='selfrole-dropdown')
 
     async def callback(self, interaction: discord.Interaction):
