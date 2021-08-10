@@ -299,7 +299,15 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                 if message_id is None:
                     ctx.command.reset_cooldown(ctx)
                     return await ctx.reply(embed=error_embed(f"{EMOJIS['tick_no']} Invalid Usage!", "Please mention a message ID."))
-                return await ctx.reply("soon")
+                if str(message_id) not in role_menus:
+                    ctx.command.reset_cooldown(ctx)
+                    return await ctx.reply(embed=error_embed(f"{EMOJIS['tick_no']} Not found!", "This rolemenu doesn't exist."))
+                role_menus.pop(str(message_id))
+                await self.client.self_roles.update_one(
+                    filter={"_id": ctx.guild.id},
+                    update={"$set": {"role_menus": role_menus}}
+                )
+                return await ctx.reply(embed=success_embed(f"{EMOJIS['tick_no']} Rolemenu removed!", "The rolemenu has been removed from the database, you can now delete the message."))
             if option in ['show', 'list']:
                 embed = success_embed(
                     f"{EMOJIS['tick_yes']} Your rolemenus!",
@@ -313,7 +321,8 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
 **Menu type:** {menu['type'].title()}
 **Roles:** {len(menu['stuff'])}
 **Channel:** <#{menu['channel']}>
-                        """
+                        """,
+                        inline=False
                     )
                 return await ctx.reply(embed=embed)
             if option in ['edit']:
