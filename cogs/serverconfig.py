@@ -181,7 +181,6 @@ class config(commands.Cog, description="Configure your server with amazing EpicB
     @commands.bot_has_permissions(administrator=True)
     @commands.cooldown(3, 120, commands.BucketType.guild)
     @commands.max_concurrency(1, commands.BucketType.guild)
-    @commands.is_owner()
     async def selfroles(self, ctx: commands.Context, option: Lower = None, message_id: t.Optional[int] = None):
         async with ctx.typing():
             prefix = ctx.clean_prefix
@@ -307,7 +306,7 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                     filter={"_id": ctx.guild.id},
                     update={"$set": {"role_menus": role_menus}}
                 )
-                return await ctx.reply(embed=success_embed(f"{EMOJIS['tick_no']} Rolemenu removed!", "The rolemenu has been removed from the database, you can now delete the message."))
+                return await ctx.reply(embed=success_embed(f"{EMOJIS['tick_yes']} Rolemenu removed!", "The rolemenu has been removed from the database, you can now delete the message."))
             if option in ['show', 'list']:
                 embed = success_embed(
                     f"{EMOJIS['tick_yes']} Your rolemenus!",
