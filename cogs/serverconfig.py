@@ -305,7 +305,7 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                     f"{EMOJIS['tick_yes']} Your rolemenus!",
                     f"This server has a total of **{len(role_menus)}** rolemenus."
                 )
-                for msg_id, menu in role_menus:
+                for msg_id, menu in role_menus.items():
                     embed.add_field(
                         name=msg_id,
                         value=f"""
