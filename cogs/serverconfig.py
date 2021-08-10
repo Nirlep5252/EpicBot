@@ -210,6 +210,8 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                 ctx.command.reset_cooldown(ctx)
                 return await ctx.reply(embed=info_embed)
             if option in ['create', 'new']:
+                if len(role_menus) >= 10:
+                    return await ctx.reply("You can only have max `10` rolemenus.")
                 view = SelfRoleOptionSelecter(ctx)
                 main_msg = await ctx.reply(embed=success_embed(
                     f"{EMOJIS['loading']} Rolemenu creation...",
@@ -299,7 +301,21 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                     return await ctx.reply(embed=error_embed(f"{EMOJIS['tick_no']} Invalid Usage!", "Please mention a message ID."))
                 return await ctx.reply("soon")
             if option in ['show', 'list']:
-                return await ctx.reply("soon")
+                embed = success_embed(
+                    f"{EMOJIS['tick_yes']} Your rolemenus!",
+                    f"This server has a total of **{len(role_menus)}** rolemenus."
+                )
+                for msg_id, menu in role_menus:
+                    embed.add_field(
+                        name=msg_id,
+                        value=f"""
+**Message:** [Click me](https://discord.com/channels/{ctx.guild.id}/{menu['channel']}/{msg_id})
+**Menu type:** {menu['type'].title()}
+**Roles:** {len(menu['stuff'])}
+**Channel:** <#{menu['channel']}>
+                        """
+                    )
+                return await ctx.reply(embed=embed)
             if option in ['edit']:
                 return await ctx.reply("soon")
 
