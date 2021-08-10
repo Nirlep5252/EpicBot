@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from utils.reactions import prepare_rolemenu
 import discord
 import asyncio
 import json
@@ -36,6 +35,7 @@ from utils.ui import Confirm, SelfRoleOptionSelecter, TicketView
 from utils.converters import AddRemoveConverter, Lower
 from utils.message import wait_for_msg
 from utils.recursive_utils import prepare_emojis_and_roles
+from utils.reactions import prepare_rolemenu
 
 autoposting_delay = 300
 
@@ -182,7 +182,7 @@ class config(commands.Cog, description="Configure your server with amazing EpicB
     @commands.cooldown(3, 120, commands.BucketType.guild)
     @commands.max_concurrency(1, commands.BucketType.guild)
     @commands.is_owner()
-    async def selfroles(self, ctx: commands.Context, option: Lower = None):
+    async def selfroles(self, ctx: commands.Context, option: Lower = None, message_id: t.Optional[int] = None):
         async with ctx.typing():
             prefix = ctx.clean_prefix
             guild_self_roles = await self.client.self_roles.find_one({"_id": ctx.guild.id})
@@ -234,8 +234,24 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                     await main_msg.delete()
                     raise commands.ChannelNotFound(m.content)
                 if self_role_type == 'reaction':
-                    pass
-                    # i'll make the bot ask for a message ID by a human being instead of the bot sending the menu everytime.
+                    await main_msg.edit(embed=success_embed(
+                        f"{EMOJIS['loading']} Rolemenu creation...",
+                        "If you would like to have the rolemenu in an already sent message, please enter the message ID of that message.\n\nYou can send `none` to skip this step."
+                    ))
+                    m = await wait_for_msg(ctx, 60, main_msg)
+                    if m == 'pain':
+                        return
+                    if m.content.lower() != 'none':
+                        try:
+                            custom_msg = await text_channel.fetch_message(int(m.content.lower()))
+                            custom_msg_id = custom_msg.id
+                        except Exception:
+                            custom_msg_id = None
+                            await ctx.send("I wasn't able to find the message from your message ID, so I will create a rolemenu message for you.")
+                    else:
+                        custom_msg_id = None
+                else:
+                    custom_msg_id = None
                 await main_msg.edit(embed=success_embed(
                     f"{EMOJIS['loading']} Rolemenu creation...",
                     "Please send all the roles separated with a comma `,`.\n\nExample: `@Artist, @Foodie, @Music Lover, @Cutie`\nPlease follow this format."
@@ -263,7 +279,7 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                     f"I have found **{len(roles)}** in your message.\n\n{' '.join(role.mention for role in roles)}\n\nNow you need to react to this message with the corresponding emojis for the rolemenu to be complete!"
                 ), view=None)
                 final_output = await prepare_emojis_and_roles(ctx, roles, main_msg)
-                msg_id = await prepare_rolemenu(ctx, final_output, text_channel, self_role_type)
+                msg_id = await prepare_rolemenu(ctx, final_output, text_channel, self_role_type, custom_msg_id)
                 role_menus = guild_self_roles['role_menus']
                 role_menus.update({
                     str(msg_id): {
@@ -278,6 +294,9 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                 )
                 return await main_msg.edit(content=f"The rolemenu has been setup in {text_channel.mention}", embed=None, view=None)
             if option in ['delete', 'remove']:
+                if message_id is None:
+                    ctx.command.reset_cooldown(ctx)
+                    return await ctx.reply(embed=error_embed(f"{EMOJIS['tick_no']} Invalid Usage!", "Please mention a message ID."))
                 return await ctx.reply("soon")
             if option in ['show', 'list']:
                 return await ctx.reply("soon")

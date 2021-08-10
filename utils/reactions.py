@@ -4,7 +4,7 @@ from utils.ui import ButtonSelfRoleView, DropDownSelfRoleView
 from utils.embed import success_embed
 
 
-async def prepare_rolemenu(ctx: Context, stuff: dict, channel: TextChannel, type_: str = 'reaction') -> int:
+async def prepare_rolemenu(ctx: Context, stuff: dict, channel: TextChannel, type_: str = 'reaction', msg_id=None) -> int:
     text = ""
     for role_id, emoji in stuff.items():
         role = ctx.guild.get_role(int(role_id))
@@ -15,7 +15,10 @@ async def prepare_rolemenu(ctx: Context, stuff: dict, channel: TextChannel, type
         text
     )
     if type_ == 'reaction':
-        msg = await channel.send(embed=embed)
+        if msg_id is None:
+            msg = await channel.send(embed=embed)
+        else:
+            msg = await channel.fetch_message(int(msg_id))
         for role_id, emoji in stuff.items():
             await msg.add_reaction(emoji)
         return msg.id

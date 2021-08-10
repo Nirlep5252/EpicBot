@@ -27,4 +27,5 @@ async def prepare_emojis_and_roles(ctx: Context, roles: List[Role], message: Mes
             str(role.id): str(reaction.emoji)
         })
 
+    await message.clear_reactions()
     return output
