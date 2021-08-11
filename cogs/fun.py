@@ -320,7 +320,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
 
     @commands.cooldown(1, 15, commands.BucketType.user)
     @not_opted_out()
-    @voter_only()
+    # @voter_only()
     @commands.command(aliases=['s'], help="Snipe the last deleted message.")
     async def snipe(self, ctx: commands.Context, amount='1', channel: discord.TextChannel = None):
         prefix = ctx.clean_prefix
@@ -370,7 +370,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
 
     @commands.cooldown(1, 15, commands.BucketType.user)
     @not_opted_out()
-    @voter_only()
+    # @voter_only()
     @commands.command(aliases=['es'], help="Snipe the last edited message.")
     async def editsnipe(self, ctx: commands.Context, amount=1, channel: discord.TextChannel = None):
         prefix = ctx.clean_prefix
