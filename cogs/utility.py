@@ -233,7 +233,7 @@ class utility(commands.Cog, description="Commands that make your Discord experie
         if not ref:
             stickers = ctx.message.stickers
         else:
-            msg = await ctx.fetch_message(ref.id)
+            msg = await ctx.fetch_message(ref.message_id)
             stickers = msg.stickers
         if len(stickers) == 0:
             ctx.command.reset_cooldown(ctx)
