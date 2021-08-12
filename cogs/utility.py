@@ -28,7 +28,7 @@ from utils.time import convert
 from utils.random import gen_random_string
 from discord.ext import commands, tasks
 from discord.utils import escape_markdown
-from utils.ui import Confirm
+from utils.ui import Confirm, Paginator
 from utils.bot import EpicBot
 from utils.message import wait_for_msg
 
@@ -226,6 +226,59 @@ class utility(commands.Cog, description="Commands that make your Discord experie
     #         embed.set_footer(text=f"You can delete alarms using {prefix}delalarm <id>")
     #     await ctx.reply(embed=embed)
 
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.command(help="Get info about stickers in a message!", help=['stickers', 'stickerinfo'])
+    async def sticker(self, ctx: commands.Context):
+        ref = ctx.message.reference
+        if not ref:
+            stickers = ctx.message.stickers
+        else:
+            msg = await ctx.fetch_message(ref.id)
+            stickers = ctx.message.stickers
+        if len(stickers) == 0:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} No Stickers!",
+                "There are no stickers in this message."
+            ))
+        embeds = []
+        for sticker in stickers:
+            sticker = await sticker.fetch()
+            embed = discord.Embed(
+                title=f"{EMOJIS['sticker']} Sticker Info",
+                description=f"""
+**Name:** {sticker.name}
+**ID:** {sticker.id}
+**Description:** {sticker.description}
+**URL:** [Link]({sticker.url})
+{"**Related Emoji:** "+":"+sticker.emoji+":" if isinstance(sticker, discord.GuildSticker) else "**Tags:** "+', '.join(sticker.tags)}
+                """,
+                color=MAIN_COLOR
+            ).set_thumbnail(url=sticker.url)
+            if isinstance(sticker, discord.GuildSticker):
+                embed.add_field(
+                    name="Guild ID:",
+                    value=f"{sticker.guild_id}",
+                )
+            else:
+                pack = await sticker.pack(
+                embed.add_field(
+                    name="Pack Info:",
+                    value=f"""
+**Name:** {pack.name}
+**ID:** {pack.id}
+**Stickers:** {len(pack.stickers)}
+**Description:** {pack.description}
+**Banner:** [Click me]{pack.banner.url}
+                    """,
+                )
+
+        if len(embeds) == 1:
+            await ctx.reply(embed=embeds[0])
+        else:
+            view = Paginator(ctx, embeds)
+            await ctx.reply(embed=embeds, view=view)
+
     @commands.cooldown(3, 30, commands.BucketType.user)
     @commands.command(help="Bookmark a message!", aliases=['bukmark'])
     async def bookmark(self, ctx):
@@ -236,7 +289,7 @@ class utility(commands.Cog, description="Commands that make your Discord experie
         bookmarks = await self.client.bookmarks.find_one({"_id": ctx.author.id})
         if bookmarks is not None and len(bookmarks['bookmarks']) >= 25:
             return await ctx.reply("You cannot bookmarks more than `25` messages.")
-        msg = await ctx.channel.fetch_message(ref.message_id)
+        msg = await ctx.fetch_message(ref.message_id)
         em = discord.Embed(
             title="Bookmark added!",
             url=msg.jump_url,
