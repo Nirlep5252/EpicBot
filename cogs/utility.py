@@ -245,7 +245,7 @@ class utility(commands.Cog, description="Commands that make your Discord experie
         for sticker in stickers:
             sticker = await sticker.fetch()
             embed = discord.Embed(
-                title=f"{EMOJIS['sticker']} Sticker Info",
+                title=f"{EMOJIS['tick_yes']} Sticker Info",
                 description=f"""
 **Name:** {sticker.name}
 **ID:** {sticker.id}
