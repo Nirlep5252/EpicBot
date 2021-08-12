@@ -28,7 +28,7 @@ from config import (
     CHAT_API_KEY, PINK_COLOR_2
 )
 from utils.embed import success_embed, error_embed, edit_msg_multiple_times
-from utils.custom_checks import voter_only, not_opted_out
+from utils.custom_checks import not_opted_out
 from utils.random import email_fun, passwords, DMs, discord_servers
 from utils.reddit import pick_random_url_from_reddit
 from owotext import OwO
