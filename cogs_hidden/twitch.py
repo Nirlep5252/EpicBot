@@ -66,7 +66,7 @@ class TwitchNotifs(commands.Cog):
                     try:
                         status = await self.check_live_user(e['twitch']['username'])
                         await asyncio.sleep(1)
-                        if not status and not e['twitch']['currently_live']:
+                        if status and not e['twitch']['currently_live']:
                             e['twitch'].update({"currently_live": True})
                             nice = "**🎮  Game:** " + status['game'] + '\n'
                             nice += "**" + EMOJIS['members'] + "  Viewers:** " + str(status['viewers']) + '\n'
@@ -93,8 +93,8 @@ class TwitchNotifs(commands.Cog):
                             )
                         elif not status:
                             e['twitch'].update({"currently_live": False})
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        print(f"ERROR in twitch loop: {e}")
 
 
 def setup(client):
