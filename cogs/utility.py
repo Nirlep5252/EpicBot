@@ -227,7 +227,7 @@ class utility(commands.Cog, description="Commands that make your Discord experie
     #     await ctx.reply(embed=embed)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
-    @commands.command(help="Get info about stickers in a message!", help=['stickers', 'stickerinfo'])
+    @commands.command(help="Get info about stickers in a message!", aliases=['stickers', 'stickerinfo'])
     async def sticker(self, ctx: commands.Context):
         ref = ctx.message.reference
         if not ref:
