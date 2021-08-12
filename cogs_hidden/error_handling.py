@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from utils.converters import InvalidTimeZone
 import discord
 import traceback
 import json
@@ -180,6 +181,12 @@ class ErrorHandling(commands.Cog):
             await ctx.reply(embed=error_embed(
                 f"{EMOJIS['tick_no']} No!",
                 f"You cannot snipe, because you opted out!\nPlease use `{prefix}optout` to be able to snipe again."
+            ))
+        elif isinstance(error, InvalidTimeZone):
+            ctx.command.reset_cooldown(ctx)
+            await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Invalid Timezone!",
+                f"Please use a valid timezone.\nClick **[here](https://github.com/nirlep5252/epicbot/tree/main/other/timezones.txt)** to see the list of valid timezones.\n\nYou can also set your timezone using `{ctx.clean_prefix}settimezone <timezone>` for all commands."
             ))
         elif isinstance(error, commands.CheckFailure):
             ctx.command.reset_cooldown(ctx)

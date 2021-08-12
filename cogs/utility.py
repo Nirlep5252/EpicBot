@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from utils.converters import TimeZone
 import discord
 import datetime
 import time
@@ -60,7 +61,7 @@ class utility(commands.Cog, description="Commands that make your Discord experie
 
     @commands.cooldown(2, 30, commands.BucketType.user)
     @commands.command(help="I will remind you whatever you tell me to.", aliases=['remind', 'remind_me', 'reminder'])
-    async def remindme(self, ctx: commands.Context, time__=None, *, reminder=None):
+    async def remindme(self, ctx: commands.Context, time__=None, *, reminder: str = None):
         prefix = ctx.clean_prefix
         example = f"`{prefix}remindme 10h message egirl`"
         usage = f"`{prefix}remindme <time> <reminder>`"
@@ -75,7 +76,7 @@ class utility(commands.Cog, description="Commands that make your Discord experie
             ctx.command.reset_cooldown(ctx)
             return await ctx.reply(embed=error_embed(
                 f"{EMOJIS['tick_no']} Invalid Unit of time.",
-                f"Please enter a valid unit of time.\nValid units are: `s, m, h, d, w, m, y`\nExample: {example}"
+                f"Please enter a valid unit of time.\nValid units are: `s, m, h, d, w, y`\nExample: {example}"
             ))
         if time_ == -2:
             ctx.command.reset_cooldown(ctx)
@@ -169,6 +170,60 @@ class utility(commands.Cog, description="Commands that make your Discord experie
                     inline=False
                 )
             embed.set_footer(text=f"You can delete reminders using {prefix}delreminder <id>")
+        await ctx.reply(embed=embed)
+
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.command(help="Set an alarm!", aliases=['setalarm'])
+    async def alarm(self, ctx: commands.Context, time_: int = None, timezone: TimeZone = None, *, text: str = None):
+        pass
+
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.command(help="Delete an alarm!")
+    async def delalarm(self, ctx: commands.Context, id_: str):
+        prefix = ctx.clean_prefix
+        if id_ is None:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Invalid Usage!",
+                f"Please enter an id.\nCorrect Usage: `{prefix}delalarm <id>`\nExample: `{prefix}delalarm s0MUcHp41N`"
+            ))
+        for e in self.client.alarms:
+            if e["_id"] == id_ and e['user_id'] == ctx.author.id:
+                await ctx.reply(embed=success_embed(
+                    f"{EMOJIS['tick_yes']} Deleted!",
+                    f"The alarm with ID: `{id_}` has been deleted."
+                ))
+                self.client.alarms.pop(self.client.alarms.index(e))
+                await self.client.alarms_db.delete_one({"_id": id_, "user_id": ctx.author.id})
+                return
+        return await ctx.reply(embed=error_embed(
+            f"{EMOJIS['tick_no']} Not found!",
+            f"The alarm with ID: `{id_}` does not exist."
+        ))
+
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.command(help="Check your current alarms!")
+    async def alarms(self, ctx: commands.Context):
+        prefix = ctx.clean_prefix
+        embed = discord.Embed(
+            title=f"{EMOJIS['reminder']} Your Alarms!",
+            color=MAIN_COLOR
+        )
+        ah_yes = self.client.alarms
+        pain = []
+        for e in ah_yes:
+            if e['user_id'] == ctx.author.id:
+                pain.append(e)
+        if len(pain) == 0:
+            embed.description = f"You don't have any alarms set.\nYou can use `{prefix}alarm <time> <text>` to set an alarm."
+        else:
+            for aa in pain:
+                embed.add_field(
+                    name=f"ID: `{aa['_id']}`",
+                    value=f"{aa['text']} - <t:{aa['time']}:t>",
+                    inline=False
+                )
+            embed.set_footer(text=f"You can delete alarms using {prefix}delalarm <id>")
         await ctx.reply(embed=embed)
 
     @commands.cooldown(3, 30, commands.BucketType.user)

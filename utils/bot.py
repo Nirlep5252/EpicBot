@@ -57,6 +57,7 @@ class EpicBot(commands.AutoShardedBot):
         self.before_invites = self.db['before_invites']
         self.invites = self.db['invites']
         self.reminders_db = self.db['reminders']
+        self.alarms_db = self.db['alarms']
         self.leveling_db = self.db['leveling']
         self.user_profile_db = self.db['user_profile']
         self.starboard = self.db['starboard']
@@ -70,6 +71,7 @@ class EpicBot(commands.AutoShardedBot):
         self.user_profile_cache = []
 
         self.reminders = []
+        self.alarms = []
 
         self.update_prefixes_db.start()
         self.update_serverconfig_db.start()

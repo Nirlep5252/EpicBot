@@ -83,6 +83,7 @@ VIP_ROLE = 746202728031584366
 
 BADGE_EMOJIS = {
     "normie": "<:members:853203090001887232>",
+    "cutevi": "<:avi:875400894919872562>",
     "bot_mod": "<:certifiedmod:857158455269130242>",
     "owner_of_epicness": "👑",
     "staff_member": "<:staff:857194745289113641>",

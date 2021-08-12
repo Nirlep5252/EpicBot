@@ -15,9 +15,14 @@ limitations under the License.
 """
 
 from discord.ext.commands import Converter, Context, BadArgument
+import pytz
 
 
 class InvalidAddRemoveArgument(BadArgument):
+    pass
+
+
+class InvalidTimeZone(BadArgument):
     pass
 
 
@@ -34,3 +39,12 @@ class AddRemoveConverter(Converter):
 class Lower(Converter):
     async def convert(self, ctx: Context, argument: str):
         return argument.lower()
+
+
+class TimeZone(Converter):
+    async def convert(self, ctx: Context, argument: str):
+        try:
+            timezone = pytz.timezone(argument)
+            return timezone
+        except pytz.exceptions.UnknownTimeZoneError:
+            raise InvalidTimeZone(argument)
