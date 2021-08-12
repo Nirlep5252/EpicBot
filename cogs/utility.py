@@ -234,7 +234,7 @@ class utility(commands.Cog, description="Commands that make your Discord experie
             stickers = ctx.message.stickers
         else:
             msg = await ctx.fetch_message(ref.id)
-            stickers = ctx.message.stickers
+            stickers = msg.stickers
         if len(stickers) == 0:
             ctx.command.reset_cooldown(ctx)
             return await ctx.reply(embed=error_embed(
@@ -259,9 +259,10 @@ class utility(commands.Cog, description="Commands that make your Discord experie
                 embed.add_field(
                     name="Guild ID:",
                     value=f"{sticker.guild_id}",
+                    inline=False
                 )
             else:
-                pack = await sticker.pack(
+                pack = await sticker.pack()
                 embed.add_field(
                     name="Pack Info:",
                     value=f"""
@@ -271,13 +272,15 @@ class utility(commands.Cog, description="Commands that make your Discord experie
 **Description:** {pack.description}
 **Banner:** [Click me]{pack.banner.url}
                     """,
+                    inline=False
                 )
+            embeds.append(embed)
 
         if len(embeds) == 1:
             await ctx.reply(embed=embeds[0])
         else:
             view = Paginator(ctx, embeds)
-            await ctx.reply(embed=embeds, view=view)
+            await ctx.reply(embed=embeds[0], view=view)
 
     @commands.cooldown(3, 30, commands.BucketType.user)
     @commands.command(help="Bookmark a message!", aliases=['bukmark'])
