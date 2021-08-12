@@ -91,7 +91,7 @@ class TicketView(discord.ui.View):
             if t.name == f'ticket-{interaction.user.id}' and not t.archived:
                 return await interaction.response.send_message(f'You already have a ticket {t.mention}', ephemeral=True)
         channel = interaction.channel
-        thread = await channel.start_thread(name=f'ticket-{interaction.user.id}')
+        thread = await channel.create_thread(name=f'ticket-{interaction.user.id}')
         await thread.send(f"📂 {interaction.user.mention} has created a ticket.", allowed_mentions=discord.AllowedMentions(
             everyone=False,
             roles=False,
