@@ -159,7 +159,7 @@ class SelfRoleEditor(discord.ui.View):
 
 class SelfRoleButton(discord.ui.Button):
     def __init__(self, guild: discord.Guild, emoji: str, role_id: int):
-        super().__init__(emoji=emoji, style=discord.ButtonStyle.blurple, custom_id='selfrole-button')
+        super().__init__(emoji=emoji, style=discord.ButtonStyle.blurple, custom_id=str(role_id))
         self.guild = guild
         self.emoji = emoji
         self.role = guild.get_role(int(role_id))

@@ -387,7 +387,7 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                         return await main_msg.edit(embed=error_embed(
                             f"{EMOJIS['tick_no']} Error!",
                             "There's only one role in the rolemenu! You cannot remove that!"
-                        ))
+                        ), view=None)
                     await main_msg.edit(embed=success_embed(
                         f"{EMOJIS['loading']} Rolemenu edit...",
                         f"{EMOJIS['tick_yes']} Please send the roles separated with a comma `,`.\n\nExample: `@Artist, @Foodie, @Music Lover, @Cutie`\nPlease follow this format."
@@ -2648,6 +2648,13 @@ Counting is currently **{'Disabled' if not enabled else 'set in <#'+str(g['count
         before_count = g['counting']['count']
         g['counting'].update({"count": number})
         return await ctx.reply(f"The count has been updated: `{before_count}` ➜ `{number}`")
+
+    @commands.command(help="Setup server counters!")
+    @commands.has_permissions(manage_guild=True, manage_channels=True)
+    @commands.bot_has_permissions(manage_channels=True, manage_messages=True)
+    @commands.cooldown(3, 30, commands.BucketType.guild)
+    async def counters(self, ctx: commands.Context):
+        pass
 
     @commands.command(help="Configure automod for your server!", aliases=['am'])
     @commands.has_permissions(administrator=True)
