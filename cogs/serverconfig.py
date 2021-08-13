@@ -341,7 +341,10 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                     ctx.command.reset_cooldown()
                     return await main_msg.edit(content=f"{EMOJIS['tick_no']}Command cancelled.", embed=None, view=None)
                 if view.value == 'add':
-                    await main_msg.edit(content=f"{EMOJIS['tick_yes']} Please send the roles separated with a comma `,`.\n\nExample: `@Artist, @Foodie, @Music Lover, @Cutie`\nPlease follow this format.", embed=None, view=None)
+                    await main_msg.edit(embed=success_embed(
+                        f"{EMOJIS['loading']} Rolemenu edit...",
+                        f"{EMOJIS['tick_yes']} Please send the roles separated with a comma `,`.\n\nExample: `@Artist, @Foodie, @Music Lover, @Cutie`\nPlease follow this format."
+                    ), view=None)
                     m = await wait_for_msg(ctx, 60, main_msg)
                     if m == 'pain':
                         return
@@ -376,9 +379,43 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                         update={"$set": {"role_menus": role_menus}}
                     )
                     await prepare_rolemenu(ctx, stuff, self.client.get_channel(current_role_menu['channel']), current_role_menu['type'], message_id, edit=True)
-                    return await main_msg.edit(f"{EMOJIS['tick_no']}The rolemenu has been updated!", embed=None, view=None)
+                    return await main_msg.edit(f"{EMOJIS['tick_yes']}The rolemenu has been updated!", embed=None, view=None)
                 if view.value == 'remove':
-                    return await main_msg.edit("soon", embed=None, view=None)
+                    await main_msg.edit(embed=success_embed(
+                        f"{EMOJIS['loading']} Rolemenu edit...",
+                        f"{EMOJIS['tick_yes']} Please send the roles separated with a comma `,`.\n\nExample: `@Artist, @Foodie, @Music Lover, @Cutie`\nPlease follow this format."
+                    ), view=None)
+                    m = await wait_for_msg(ctx, 60, main_msg)
+                    if m == 'pain':
+                        return
+                    roles_text_list = m.content.replace(" ", "").split(",")
+                    roles = []
+                    for role_text in roles_text_list:
+                        try:
+                            role = await commands.RoleConverter().convert(ctx, role_text)
+                            if str(role.id) in role_menus[str(message_id)]['stuff']:
+                                roles.append(role)
+                        except Exception:
+                            pass
+                    if len(roles) == 0:
+                        ctx.command.reset_cooldown(ctx)
+                        return await main_msg.edit(embed=error_embed(
+                            f"{EMOJIS['tick_no']} Error!",
+                            f"Looks like no roles were found in your message.\nOr all the roles were above my top role.\nYou can join our **[Support Server]({SUPPORT_SERVER_LINK})** for help."
+                        ))
+                    current_role_menu = role_menus[str(message_id)]
+                    stuff = current_role_menu['stuff']
+                    for role in roles:
+                        if str(role.id) in stuff:
+                            stuff.pop(str(role.id))
+                    current_role_menu.update({"stuff": stuff})
+                    role_menus.update({str(message_id): current_role_menu})
+                    await self.client.self_roles.update_one(
+                        filter={"_id": ctx.guild.id},
+                        update={"$set": {"role_menus": role_menus}}
+                    )
+                    await prepare_rolemenu(ctx, stuff, self.client.get_channel(current_role_menu['channel']), current_role_menu['type'], message_id, edit=True)
+                    return await main_msg.edit(f"{EMOJIS['tick_yes']}The rolemenu has been updated!", embed=None, view=None)
 
             await ctx.reply(embed=info_embed)
 
