@@ -333,7 +333,7 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                     return await ctx.reply(embed=error_embed(f"{EMOJIS['tick_no']} Not found!", "This rolemenu doesn't exist."))
                 view = SelfRoleEditor(ctx)
                 main_msg = await ctx.reply(embed=success_embed(
-                    f"{EMOJIS['loading']} What would you like to edit?"
+                    f"{EMOJIS['loading']} What would you like to edit?",
                     "Please select an option!"
                 ), view=view)
                 await view.wait()
