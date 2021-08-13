@@ -129,6 +129,34 @@ class SelfRoleOptionSelecter(discord.ui.View):
         return True
 
 
+class SelfRoleEditor(discord.ui.View):
+    def __init__(self, ctx: commands.Context, timeout: Optional[int] = 300):
+        super().__init__(timeout=timeout)
+        self.ctx = ctx
+        self.value = None
+
+    @discord.ui.select(placeholder="Please select an option to modify!", options=[
+        SelectOption(label='Add', description="Add roles to the list.", value='add'),
+        SelectOption(label='Remove', description="Remove roles from the list.", value='remove')
+    ])
+    async def uwu(self, select: discord.ui.Select, interaction: discord.Interaction):
+        self.value = select.values[0]
+
+    @discord.ui.button(label="Continue", style=discord.ButtonStyle.blurple)
+    async def go_ahead(self, b: discord.Button, i: discord.Interaction):
+        self.stop()
+
+    @discord.ui.button(label="Stop", style=discord.ButtonStyle.red)
+    async def cancel(self, b: discord.Button, i: discord.Interaction):
+        self.value = None
+        self.stop()
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user != self.ctx.author:
+            return False
+        return True
+
+
 class SelfRoleButton(discord.ui.Button):
     def __init__(self, guild: discord.Guild, emoji: str, role_id: int):
         super().__init__(emoji=emoji, style=discord.ButtonStyle.blurple, custom_id='selfrole-button')
