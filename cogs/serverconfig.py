@@ -381,6 +381,13 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                     await prepare_rolemenu(ctx, stuff, self.client.get_channel(current_role_menu['channel']), current_role_menu['type'], message_id, edit=True)
                     return await main_msg.edit(f"{EMOJIS['tick_yes']}The rolemenu has been updated!", embed=None, view=None)
                 if view.value == 'remove':
+                    current_role_menu = role_menus[str(message_id)]
+                    if len(current_role_menu['stuff']) == 1:
+                        ctx.command.reset_cooldown(ctx)
+                        return await main_msg.edit(embed=error_embed(
+                            f"{EMOJIS['tick_no']} Error!",
+                            "There's only one role in the rolemenu! You cannot remove that!"
+                        ))
                     await main_msg.edit(embed=success_embed(
                         f"{EMOJIS['loading']} Rolemenu edit...",
                         f"{EMOJIS['tick_yes']} Please send the roles separated with a comma `,`.\n\nExample: `@Artist, @Foodie, @Music Lover, @Cutie`\nPlease follow this format."
@@ -403,7 +410,6 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                             f"{EMOJIS['tick_no']} Error!",
                             f"Looks like no roles were found in your message.\nOr all the roles were above my top role.\nYou can join our **[Support Server]({SUPPORT_SERVER_LINK})** for help."
                         ))
-                    current_role_menu = role_menus[str(message_id)]
                     stuff = current_role_menu['stuff']
                     for role in roles:
                         if str(role.id) in stuff:
