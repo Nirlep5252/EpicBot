@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from utils.converters import TimeZone
 import discord
 import datetime
 import time
@@ -270,10 +269,10 @@ class utility(commands.Cog, description="Commands that make your Discord experie
 **ID:** {pack.id}
 **Stickers:** {len(pack.stickers)}
 **Description:** {pack.description}
-**Banner:** [Click me]{pack.banner.url}
                     """,
                     inline=False
                 )
+                embed.set_image(url=pack.banner.url)
             embeds.append(embed)
 
         if len(embeds) == 1:
