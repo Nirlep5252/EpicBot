@@ -241,7 +241,8 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             "author": message.author,
             "channel": message.channel,
             "time": message.created_at.replace(tzinfo=None),
-            "attachments": msg_attachments
+            "attachments": msg_attachments,
+            "stickers": message.stickers
         }
         if message.channel.id not in self.sniped_msgs:
             return self.sniped_msgs.update({message.channel.id: [thing]})
@@ -271,7 +272,8 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             "author": before.author,
             "channel": before.channel,
             "time": before.created_at.replace(tzinfo=None),
-            "attachments": msg_attachments
+            "attachments": msg_attachments,
+            "stickers": before.stickers
         }
         if before.channel.id not in self.edited_msgs:
             return self.edited_msgs.update({before.channel.id: [thing]})
@@ -366,6 +368,13 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             timestamp=thing['time']
         ).set_author(name=thing['author'].name, icon_url=thing['author'].avatar.url)
 
+        for sticker in thing['stickers']:
+            embed.add_field(
+                name=f"Sticker: `{sticker.name}`",
+                value=f"ID: [`{sticker.id}`]({sticker.url})"
+            )
+        if len(thing['stickers']) == 1:
+            embed.set_thumbnail(url=thing['stickers'][0].url)
         await ctx.send(embed=embed, files=thing['attachments'])
 
     @commands.cooldown(1, 15, commands.BucketType.user)
@@ -416,6 +425,14 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         ).set_author(name=thing['author'].name, icon_url=thing['author'].avatar.url
         ).add_field(name="Before:", value=thing['before'] if len(thing['before']) <= 1024 else thing['before'][0: 1023], inline=False
         ).add_field(name="After:", value=thing['after'] if len(thing['after']) <= 1024 else thing['after'][0: 1023], inline=False)
+
+        for sticker in thing['stickers']:
+            embed.add_field(
+                name=f"Sticker: `{sticker.name}`",
+                value=f"ID: [`{sticker.id}`]({sticker.url})"
+            )
+        if len(thing['stickers']) == 1:
+            embed.set_thumbnail(url=thing['stickers'][0].url)
 
         await ctx.send(embed=embed, files=thing['attachments'])
 
