@@ -198,7 +198,6 @@ class ErrorHandling(commands.Cog):
                 f"{EMOJIS['tick_no']} An unknown error occured!",
                 error
             ).set_footer(text=f"ERROR ID: {random_error_id}"))
-            traceback.print_exception(etype=type(error), value=error, tb=error.__traceback__)
             error_text = "".join(traceback.format_exception(etype=type(error), value=error, tb=error.__traceback__))[:2000]
             error_embed_ = discord.Embed(
                 title="Traceback",
@@ -209,7 +208,10 @@ class ErrorHandling(commands.Cog):
             ).add_field(name="Server", value=f"```{ctx.guild}({ctx.guild.id})```", inline=False
             ).set_footer(text=f"ERROR ID: {random_error_id}")
 
-            await self.client.get_channel(ERROR_LOG_CHANNEL).send(embed=error_embed_)
+            try:
+                await self.client.get_channel(ERROR_LOG_CHANNEL).send(embed=error_embed_)
+            except Exception:
+                traceback.print_exception(etype=type(error), value=error, tb=error.__traceback__)
 
 
 def setup(client):
