@@ -2895,8 +2895,8 @@ Counting is currently **{'Disabled' if not enabled else 'set in <#'+str(g['count
             f"""
 Bump reminders are currently **{'Enabled' if enabled else 'Disabled'}** for this server.
 
-Ping role: {"<@&"+str(g['bump_reminders']['role'])+">" if g['bump_reminders']['role'] is not None else "None"}
-Reward role: {"<@&"+str(g['bump_reminders'].get('reward'))+">" if g['bump_reminders'].get('reward') is not None else "None"}
+**Ping role:** {'None' if not enabled else "<@&"+str(g['bump_reminders']['role'])+">" if g['bump_reminders']['role'] is not None else "None"}
+**Reward role:** {"None" if not enabled else "<@&"+str(g['bump_reminders'].get('reward'))+">" if g['bump_reminders'].get('reward') is not None else "None"}
 
 **You can use the following commands to configure it!**
 
