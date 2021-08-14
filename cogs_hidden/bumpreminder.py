@@ -75,7 +75,7 @@ class BumpReminder(commands.Cog):
 
         await lemao_bumper.add_roles(role)
         await message.channel.send(
-            f"{bumper.mention} You have been rewarded the {role.mention} role for **2 hours**.",
+            f"{lemao_bumper.mention} You have been rewarded the {role.mention} role for **2 hours**.",
             delete_after=5
         )
 
