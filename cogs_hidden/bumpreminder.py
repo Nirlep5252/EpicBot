@@ -69,7 +69,7 @@ class BumpReminder(commands.Cog):
             return
         if bumper is None:
             return
-        lemao_bumper = message.guild.get_members(bumper)
+        lemao_bumper = message.guild.get_member(bumper)
         if lemao_bumper is None:
             return
 
