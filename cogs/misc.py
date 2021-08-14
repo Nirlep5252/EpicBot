@@ -141,11 +141,15 @@ Database : {round((db_time2-db_time1)*1000)}ms
         user_profile = await self.client.get_user_profile_(ctx.author.id)
         user_profile.update({"suggestions_submitted": user_profile['suggestions_submitted'] + 1})
 
+        files = []
+        for file in ctx.message.attachments:
+            files.append(await file.to_file())
+
         embed = success_embed("Suggestion!", suggestion
                 ).set_author(name=ctx.author, icon_url=ctx.author.avatar.url
                 ).set_footer(text=f"User ID: {ctx.author.id} | Guild ID: {ctx.guild.id}")
 
-        msg = await self.client.get_channel(SUGGESTION_CHANNEL).send(embed=embed)
+        msg = await self.client.get_channel(SUGGESTION_CHANNEL).send(embed=embed, files=files)
         await msg.add_reaction('👍')
         await msg.add_reaction('👎')
         await ctx.reply(embed=success_embed(
