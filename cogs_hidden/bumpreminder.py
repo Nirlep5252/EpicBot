@@ -60,17 +60,24 @@ class BumpReminder(commands.Cog):
             'bumper': message.author.id if bumper is None else bumper
         })
         await message.add_reaction("⏱️")
-        reward_id = g['reward']
+
+        reward_id = g['bump_reminders'].get('reward')
+        if reward_id is None:
+            return
         role = message.guild.get_role(reward_id)
-        if role is not None:
-            if bumper is not None:
-                lemao_bumper = message.guild.get_members(bumper)
-                if lemao_bumper is not None:
-                    await lemao_bumper.add_roles(role)
-                    await message.channel.send(
-                        f"{bumper.mention} You have been rewarded the {role.mention} role for **2 hours**.",
-                        delete_after=5
-                    )
+        if role is None:
+            return
+        if bumper is None:
+            return
+        lemao_bumper = message.guild.get_members(bumper)
+        if lemao_bumper is None:
+            return
+
+        await lemao_bumper.add_roles(role)
+        await message.channel.send(
+            f"{bumper.mention} You have been rewarded the {role.mention} role for **2 hours**.",
+            delete_after=5
+        )
 
     @tasks.loop(seconds=30)
     async def bumploop(self):
