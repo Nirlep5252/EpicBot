@@ -60,6 +60,17 @@ class BumpReminder(commands.Cog):
             'bumper': message.author.id if bumper is None else bumper
         })
         await message.add_reaction("⏱️")
+        reward_id = g['reward']
+        role = message.guild.get_role(reward_id)
+        if role is not None:
+            if bumper is not None:
+                lemao_bumper = message.guild.get_members(bumper)
+                if lemao_bumper is not None:
+                    await lemao_bumper.add_roles(role)
+                    await message.channel.send(
+                        f"{bumper.mention} You have been rewarded the {role.mention} for **2 hours**.",
+                        delete_after=5
+                    )
 
     @tasks.loop(seconds=30)
     async def bumploop(self):
@@ -78,6 +89,13 @@ class BumpReminder(commands.Cog):
                                 allowed_mentions=self.peng
                             )
                             e.update({"time": None})
+                        role_id = e.get("reward")
+                        if role_id is not None:
+                            guild = self.client.get_guild(e['guild_id'])
+                            role = guild.get_role(role_id)
+                            member = guild.get_member(e.get('bumper'))
+                            if role is not None and member is not None:
+                                await member.remove_roles(role)
         except Exception:
             cancer_error = traceback.format_exc()
             await self.error_channel.send(f"ERROR IN BUMP LOOP ```py\n{cancer_error}\n```")

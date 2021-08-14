@@ -2892,7 +2892,18 @@ Counting is currently **{'Disabled' if not enabled else 'set in <#'+str(g['count
 
         em = success_embed(
             f"{EMOJIS['disboard']} Bump Reminders!",
-            f"Bump reminders are currently **{'Enabled' if enabled else 'Disabled'}** for this server.\nPlease use `{prefix}bumpreminder enable/disable`"
+            f"""
+Bump reminders are currently **{'Enabled' if enabled else 'Disabled'}** for this server.
+
+Ping role: {"<@&"+str(g['bump_reminders']['role'])+">" if g['bump_reminders']['role'] is not None else "None"}
+Reward role: {"<@&"+str(g['bump_reminders']['reward'])+">" if g['bump_reminders']['reward'] is not None else "None"}
+
+**You can use the following commands to configure it!**
+
+- `{prefix}bumpreminder enable/disable` - To enable/disable bumpreminders.
+- `{prefix}bumpreminder role @role` - To set a reminder role when bumps are available.
+- `{prefix}bumpreminder rewrad @role` - To set a reward role for bumpers.
+            """
         ).set_thumbnail(url="https://cdn.discordapp.com/emojis/861565998510637107.png?v=1")
 
         if choice is None:
@@ -2910,12 +2921,13 @@ Counting is currently **{'Disabled' if not enabled else 'set in <#'+str(g['count
                     "channel_id": None,
                     "time": None,
                     "bumper": None,
-                    "role": None
+                    "role": None,
+                    "reward": None
                 }
             })
             return await ctx.reply(embed=success_embed(
                 f"{EMOJIS['disboard']} Bump Reminders Enabled!",
-                f"Bump reminders have been enabled!\nYou can also set a bump role using `{prefix}bumpreminder role @role`\nThis role will get pinged when a bump is available."
+                f"Bump reminders have been enabled!\n\nYou can also set a bump role using `{prefix}bumpreminder role @role`\nThis role will get pinged when a bump is available.\nAnd you can use `{prefix}bumpreminder reward @role` to reward a role to bumpers!"
             ).set_thumbnail(url="https://cdn.discordapp.com/emojis/861565998510637107.png?v=1"))
         if choice.lower() in no:
             if not enabled:
@@ -2945,7 +2957,6 @@ Counting is currently **{'Disabled' if not enabled else 'set in <#'+str(g['count
             if isinstance(role, str) and role.lower() != 'none':
                 ctx.command.reset_cooldown(ctx)
                 raise commands.RoleNotFound(role)
-                return
             if isinstance(role, discord.Role):
                 g['bump_reminders'].update({
                     "role": role.id
@@ -2960,6 +2971,43 @@ Counting is currently **{'Disabled' if not enabled else 'set in <#'+str(g['count
             return await ctx.reply(embed=success_embed(
                 f"{EMOJIS['tick_yes']} Bump role removed!",
                 "The role won't be pinged when a bump is available."
+            ))
+        if choice.lower() in ['reward', 'give']:
+            if not enabled:
+                ctx.command.reset_cooldown(ctx)
+                return await ctx.reply(embed=error_embed(
+                    f"{EMOJIS['tick_no']} Not enabled!",
+                    "You need to enable bump reminders to configure the reward role."
+                ))
+            if role is None:
+                ctx.command.reset_cooldown(ctx)
+                return await ctx.reply(embed=error_embed(
+                    f"{EMOJIS['tick_no']} Invalid Usage!",
+                    f"Please use `{prefix}bumpreminder reward @role`"
+                ))
+            if isinstance(role, str) and role.lower() != 'none':
+                ctx.command.reset_cooldown(ctx)
+                raise commands.RoleNotFound(role)
+            if isinstance(role, discord.Role):
+                if role.position >= ctx.guild.me.top_role.position:
+                    ctx.command.reset_cooldown(ctx)
+                    return await ctx.reply(embed=error_embed(
+                        f"{EMOJIS['tick_no']} Give me a higher role!",
+                        f"I can't give roles higher than my top role ({ctx.guild.me.top_role.mention})."
+                    ))
+                g['bump_reminders'].update({
+                    "reward": role.id
+                })
+                return await ctx.reply(embed=success_embed(
+                    f"{EMOJIS['tick_yes']} Reward role updated!",
+                    f"The role {role.mention} will be rewarded to bumpers!"
+                ))
+            g['bump_reminders'].update({
+                "reward": None
+            })
+            return await ctx.reply(embed=success_embed(
+                f"{EMOJIS['tick_yes']} Reward role removed!",
+                "The role won't be given to bumpers."
             ))
         else:
             ctx.command.reset_cooldown(ctx)
