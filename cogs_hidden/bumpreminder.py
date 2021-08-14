@@ -91,7 +91,8 @@ class BumpReminder(commands.Cog):
                             e.update({"time": None})
                         role_id = e.get("reward")
                         if role_id is not None:
-                            guild = self.client.get_guild(e['guild_id'])
+                            channel = self.client.get_channel(e['channel_id'])
+                            guild = channel.guild
                             role = guild.get_role(role_id)
                             member = guild.get_member(e.get('bumper'))
                             if role is not None and member is not None:
