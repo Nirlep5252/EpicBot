@@ -65,34 +65,93 @@ async def get_command_help(ctx: commands.Context, command_name: str) -> discord.
     ).add_field(name=EMPTY_CHARACTER, value=f"[Invite EpicBot]({WEBSITE_LINK}/invite) | [Vote EpicBot]({WEBSITE_LINK}/vote) | [Support Server]({SUPPORT_SERVER_LINK})", inline=False)
 
 
-async def get_bot_help(ctx: commands.Context) -> discord.Embed:
-    return discord.Embed(color=MAIN_COLOR, timestamp=datetime.datetime.utcnow()
-        ).set_author(name=ctx.bot.user.name, icon_url=ctx.bot.user.avatar.url
-        ).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
+async def get_bot_help(ctx: commands.Context, mapping) -> discord.Embed:
+    return discord.Embed(
+        title="All the categories:",
+        description="\n".join(
+            [f"{EMOJIS_FOR_COGS[cog.qualified_name]} • **{cog.qualified_name.title()}**" for cog in mapping]),
+        color=MAIN_COLOR,
+        timestamp=datetime.datetime.utcnow()
+    ).set_author(name=ctx.bot.user.name, icon_url=ctx.bot.user.avatar.url
+    ).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url
+    ).add_field(name="Links:", value=f"""
+[Dashboard]({WEBSITE_LINK}) | [Support]({SUPPORT_SERVER_LINK}) | [Invite]({WEBSITE_LINK}/invite)
+    """, inline=False)
+
+
+async def get_commands_list(ctx: commands.Context, mapping) -> discord.Embed:
+    embed = discord.Embed(
+        title="All the commands:",
+        description=f"Please use `{ctx.clean_prefix}help <command>` for more info.",
+        color=MAIN_COLOR,
+        timestamp=datetime.datetime.utcnow()
+    ).set_author(name=ctx.bot.user.name, icon_url=ctx.bot.user.avatar.url
+    ).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
+
+    for cog, commands_ in mapping.items():
+        embed.add_field(
+            name=f"{EMOJIS_FOR_COGS[cog.qualified_name]} • {cog.qualified_name.title()}",
+            value=", ".join([f"`{command.name}`" for command in commands_]),
+            inline=False
+        )
+
+    embed.add_field(name="Links:", value=f"""
+[Dashboard]({WEBSITE_LINK}) | [Support]({SUPPORT_SERVER_LINK}) | [Invite]({WEBSITE_LINK}/invite)
+    """, inline=False)
+
+    return embed
+
+
+class HelpSelect(discord.ui.Select):
+    def __init__(self, ctx: commands.Context, options):
+        super().__init__(placeholder="Please select a category.", options=options)
+        self.ctx = ctx
+
+    async def callback(self, i: discord.Interaction):
+        self.view.children[0].disabled = False
+        embed = await get_cog_help(self.ctx, self.values[0])
+        await i.edit_original_message(embed=embed, view=self.view)
 
 
 class HelpMenu(discord.ui.View):
-    def __init__(self, ctx: commands.Context):
+    def __init__(self, ctx: commands.Context, mapping):
         super().__init__(timeout=None)
         self.ctx = ctx
+        self.mapping = mapping
 
-    @discord.ui.button(label="Home", emoji="🏠", style=discord.ButtonStyle.blurple)
-    async def home():
-        pass
+    @discord.ui.button(label="Home", emoji="🏠", style=discord.ButtonStyle.blurple, disabled=True)
+    async def home(self, button: discord.ui.Button, interaction: discord.Interaction):
+        for item in self.children:
+            item.disabled = False
+        button.disabled = True
+        embed = await get_bot_help(self.ctx, self.mapping)
+        await interaction.edit_original_message(embed=embed, view=self)
+
+    @discord.ui.button(label="Command List", emoji="📃", style=discord.ButtonStyle.blurple)
+    async def commands_list(self, button: discord.ui.Button, interaction: discord.Interaction):
+        for item in self.children:
+            item.disabled = False
+        button.disabled = True
+        embed = await get_commands_list(self.ctx, self.mapping)
+        await interaction.edit_original_message(embed=embed, view=self)
 
 
 class EpicBotHelp(commands.HelpCommand):
     async def send_bot_help(self, mapping):
-        pass
+        embed = await get_bot_help(self.context, mapping)
+        view = HelpMenu(self.context, mapping)
+        select = HelpSelect(self.context, [discord.SelectOption(label=cog.qualified_name.title(), emoji=EMOJIS_FOR_COGS[cog.qualified_name]) for cog, cmds in mapping.items()])
+        view.add_item(select)
+        await self.context.reply(embed=embed, view=view)
 
     async def send_cog_help(self, cog):
-        return super().send_cog_help(cog)
+        return await self.context.reply(embed=await get_cog_help(self.context, cog.qualified_name))
 
     async def send_command_help(self, command):
-        return super().send_command_help(command)
+        return await self.context.reply(embed=await get_command_help(self.context, command.name))
 
     async def send_error_message(self, error):
-        return super().send_error_message(error)
+        return await self.context.reply(embed=error_embed(f"{EMOJIS['tick_no']} Error", error))
 
     async def send_group_help(self, group):
         return super().send_group_help(group)
