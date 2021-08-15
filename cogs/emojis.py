@@ -47,20 +47,21 @@ class emojis(commands.Cog, description="Emoji related commands!"):
     @commands.command(help="Search for emojis!", aliases=['searchemoji', 'findemoji', 'emojifind'])
     async def emojisearch(self, ctx: commands.Context, name: Lower = None):
         if not name:
-            ctx.command.reset_cooldown()
+            ctx.command.reset_cooldown(ctx)
             return await ctx.reply(f"Please enter a query!\n\nExample: `{ctx.clean_prefix}emojisearch cat`")
         emojis = [str(emoji) for emoji in self.client.emojis if name in emoji.name.lower() and emoji.is_usable()]
         if len(emojis) == 0:
-            ctx.command.reset_cooldown()
+            ctx.command.reset_cooldown(ctx)
             return await ctx.reply(f"Couldn't find any results for `{name}`, please try again.")
 
-        paginator = commands.Paginator(prefix="", suffix="")
+        paginator = commands.Paginator(prefix="", suffix="", max_size=500)
         for emoji in emojis:
             paginator.add_line(emoji)
+        await ctx.reply(f"Found `{len(emojis)}` emojis.")
         if len(paginator.pages) == 1:
-            return await ctx.reply(paginator.pages[0])
+            return await ctx.send(paginator.pages[0])
         view = PaginatorText(ctx, paginator.pages)
-        await ctx.reply(paginator.pages[0], view=view)
+        await ctx.send(paginator.pages[0], view=view)
 
     @commands.command(help="Clone emojis!", aliases=['clone-emoji', 'cloneemoji'])
     @commands.has_permissions(manage_emojis=True)
