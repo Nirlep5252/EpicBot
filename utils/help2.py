@@ -90,11 +90,12 @@ async def get_commands_list(ctx: commands.Context, mapping) -> discord.Embed:
     ).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
 
     for cog, commands_ in mapping.items():
-        embed.add_field(
-            name=f"{EMOJIS_FOR_COGS[cog.qualified_name]} • {cog.qualified_name.title()}",
-            value=", ".join([f"`{command.name}`" for command in commands_]),
-            inline=False
-        )
+        if cog is not None and cog.qualified_name == cog.qualified_name.lower():
+            embed.add_field(
+                name=f"{EMOJIS_FOR_COGS[cog.qualified_name]} • {cog.qualified_name.title()}",
+                value=", ".join([f"`{command.name}`" for command in commands_]),
+                inline=False
+            )
 
     embed.add_field(name="Links:", value=f"""
 [Dashboard]({WEBSITE_LINK}) | [Support]({SUPPORT_SERVER_LINK}) | [Invite]({WEBSITE_LINK}/invite)
@@ -141,7 +142,7 @@ class EpicBotHelp(commands.HelpCommand):
     async def send_bot_help(self, mapping):
         embed = await get_bot_help(self.context, mapping)
         view = HelpMenu(self.context, mapping)
-        select = HelpSelect(self.context, [discord.SelectOption(label=cog.qualified_name.title(), emoji=EMOJIS_FOR_COGS[cog.qualified_name]) for cog, cmds in mapping.items() if cog is not None and cog.qualified_name == cog.qualified_name.lower()])
+        select = HelpSelect(self.context, [discord.SelectOption(label=cog.qualified_name.title(), emoji=EMOJIS_FOR_COGS[cog.qualified_name], value=cog.qualified_name) for cog, cmds in mapping.items() if cog is not None and cog.qualified_name == cog.qualified_name.lower()])
         view.add_item(select)
         await self.context.reply(embed=embed, view=view)
 
