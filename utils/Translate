@@ -15,7 +15,9 @@ import asyncio
 from google_translate_py import AsyncTranslator
 
 async def main():
-    print(await AsyncTranslator().translate("Hola!!", "", "en"))
+    print(await AsyncTranslator().translate("¡Hola!", "", "en"))
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
+
+>>> Hello!
