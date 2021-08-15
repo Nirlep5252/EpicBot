@@ -24,6 +24,7 @@ from utils.bot import EpicBot
 from utils.ui import Confirm, PaginatorText
 from utils.converters import Lower
 from utils.flags import StickerFlags
+from io import BytesIO
 
 
 class emojis(commands.Cog, description="Emoji related commands!"):
@@ -151,7 +152,7 @@ class emojis(commands.Cog, description="Emoji related commands!"):
     @commands.bot_has_permissions(manage_emojis_and_stickers=True)
     async def createsticker(self, ctx: commands.Context, emoji: Optional[Union[discord.Emoji, discord.PartialEmoji]] = None, *, emoji_flags: Optional[StickerFlags] = None):
         if emoji is not None:
-            file = discord.File(await emoji.read())
+            file = discord.File(BytesIO(await emoji.read()))
         else:
             if len(ctx.message.attachments) == 0:
                 ctx.command.reset_cooldown(ctx)
@@ -166,7 +167,7 @@ class emojis(commands.Cog, description="Emoji related commands!"):
         else:
             name = emoji_flags.name if len(emoji_flags.name) > 1 else "name"
             description = emoji_flags.description if emoji_flags.description is not None else f"Uploaded by {ctx.author}"
-            emoji = name
+            emoji = emoji_flags.emoji or name
 
         try:
             sticker = await ctx.guild.create_sticker(
@@ -176,7 +177,7 @@ class emojis(commands.Cog, description="Emoji related commands!"):
                 file=file,
                 reason=f"Command used by {ctx.author}"
             )
-            return await ctx.reply(f"{EMOJIS['tick_no']}Sticker uploaded!", stickers=[sticker])
+            return await ctx.reply(f"{EMOJIS['tick_yes']}Sticker uploaded!", stickers=[sticker])
         except Exception as e:
             ctx.command.reset_cooldown(ctx)
             return await ctx.reply(f"Sticker upload failed. Error: `{e}`\n\nIf this was unexpected please report it in our support server {SUPPORT_SERVER_LINK}")
