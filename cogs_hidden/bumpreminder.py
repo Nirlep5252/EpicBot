@@ -96,14 +96,14 @@ class BumpReminder(commands.Cog):
                                 allowed_mentions=self.peng
                             )
                             e.update({"time": None})
-                        role_id = e.get("reward")
-                        if role_id is not None:
-                            channel = self.client.get_channel(e['channel_id'])
-                            guild = channel.guild
-                            role = guild.get_role(role_id)
-                            member = guild.get_member(e.get('bumper'))
-                            if role is not None and member is not None:
-                                await member.remove_roles(role)
+                            role_id = e.get("reward")
+                            if role_id is not None:
+                                channel = self.client.get_channel(e['channel_id'])
+                                guild = channel.guild
+                                role = guild.get_role(role_id)
+                                member = guild.get_member(e.get('bumper'))
+                                if role is not None and member is not None:
+                                    await member.remove_roles(role)
         except Exception:
             cancer_error = traceback.format_exc()
             await self.error_channel.send(f"ERROR IN BUMP LOOP ```py\n{cancer_error}\n```")
