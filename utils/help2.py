@@ -141,7 +141,7 @@ class EpicBotHelp(commands.HelpCommand):
     async def send_bot_help(self, mapping):
         embed = await get_bot_help(self.context, mapping)
         view = HelpMenu(self.context, mapping)
-        select = HelpSelect(self.context, [discord.SelectOption(label=cog.qualified_name.title(), emoji=EMOJIS_FOR_COGS[cog.qualified_name]) for cog, cmds in mapping.items()])
+        select = HelpSelect(self.context, [discord.SelectOption(label=cog.qualified_name.title(), emoji=EMOJIS_FOR_COGS[cog.qualified_name]) for cog, cmds in mapping.items() if cog is not None and cog.qualified_name == cog.qualified_name.lower()])
         view.add_item(select)
         await self.context.reply(embed=embed, view=view)
 
