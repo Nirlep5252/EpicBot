@@ -17,12 +17,13 @@ limitations under the License.
 import discord
 
 from discord.ext import commands
-from typing import Union
+from typing import Union, Optional
 from utils.embed import error_embed, success_embed
-from config import EMOJIS, MAIN_COLOR
+from config import EMOJIS, MAIN_COLOR, SUPPORT_SERVER_LINK
 from utils.bot import EpicBot
 from utils.ui import Confirm, PaginatorText
 from utils.converters import Lower
+from utils.flags import StickerFlags
 
 
 class emojis(commands.Cog, description="Emoji related commands!"):
@@ -143,6 +144,40 @@ class emojis(commands.Cog, description="Emoji related commands!"):
             embed=None,
             view=None
         )
+
+    @commands.command(help="Create a sticker in your server!", aliases=['makesticker', 'create_sticker', 'make_sticker', 'create-sticker', 'make-sticker'])
+    @commands.cooldown(3, 60, commands.BucketType.user)
+    async def createsticker(self, ctx: commands.Context, emoji: Optional[Union[discord.Emoji, discord.PartialEmoji]] = None, *, emoji_flags: Optional[StickerFlags] = None):
+        if emoji is not None:
+            file = discord.File(await emoji.read())
+        else:
+            if len(ctx.message.attachments) == 0:
+                ctx.command.reset_cooldown(ctx)
+                return await ctx.reply(f"Please mention an emoji/upload a file to make a sticker!\n\nExample: `{ctx.clean_prefix}make-sticker :dance:`")
+            else:
+                file = await ctx.message.attachments[0].to_file()
+
+        if not emoji_flags:
+            name = file.filename.split(".")[0]
+            description = f"Uploaded by {ctx.author}"
+            emoji = name
+        else:
+            name = emoji_flags.name if len(emoji_flags.name) > 1 else "name"
+            description = emoji_flags.description if emoji_flags.description is not None else f"Uploaded by {ctx.author}"
+            emoji = name
+
+        try:
+            sticker = await ctx.guild.create_sticker(
+                name=name,
+                description=description,
+                emoji=emoji,
+                file=file,
+                reason=f"Command used by {ctx.author}"
+            )
+            return await ctx.reply(f"{EMOJIS['tick_no']}Sticker uploaded!", stickers=[sticker])
+        except Exception as e:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(f"Sticker upload failed. Error: `{e}`\n\nIf this was unexpected please report it in our support server {SUPPORT_SERVER_LINK}")
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):

@@ -148,7 +148,8 @@ EMOJIS = {
     'idle': '<:status_idle:862600144917364737> ',
     'dnd': '<:status_dnd:862600241851924480> ',
     'arrow': '<:Arrow:869101378822373417> ',
-    'reaction': '<:add_reaction:873891867610210304> '
+    'reaction': '<:add_reaction:873891867610210304> ',
+    'cmd_arrow': '<:join_arrow:876313929402417172> '
 }
 EMOJIS_FOR_COGS = {
     'actions': '<a:hugs:839739273083224104>',
