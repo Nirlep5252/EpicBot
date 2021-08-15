@@ -70,7 +70,7 @@ async def get_bot_help(ctx: commands.Context, mapping) -> discord.Embed:
     return discord.Embed(
         title="All the categories:",
         description="\n".join(
-            [f"{EMOJIS_FOR_COGS[cog.qualified_name]} • **{cog.qualified_name.title()}**" for cog, cmds in mapping.items() if cog.qualified_name == cog.qualified_name.lower()]),
+            [f"{EMOJIS_FOR_COGS[cog.qualified_name]} • **{cog.qualified_name.title()}**" for cog, cmds in mapping.items() if cog is not None and cog.qualified_name == cog.qualified_name.lower()]),
         color=MAIN_COLOR,
         timestamp=datetime.datetime.utcnow()
     ).set_author(name=ctx.bot.user.name, icon_url=ctx.bot.user.avatar.url
