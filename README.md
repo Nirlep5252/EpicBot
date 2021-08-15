@@ -1,6 +1,5 @@
 <h2 align="center">
-  <img src="
-https://cdn.discordapp.com/attachments/859335247547990026/876407358622928936/final.gif" height='100px' width='100px'>
+  <img src="https://cdn.discordapp.com/attachments/859335247547990026/872115930484842496/epicbot_circle.png" height='100px' width='100px'>
 </h2>
 
 <h1 align="center">EpicBot 🏅</h1>
