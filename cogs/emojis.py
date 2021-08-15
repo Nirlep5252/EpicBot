@@ -43,7 +43,7 @@ class emojis(commands.Cog, description="Emoji related commands!"):
             raise commands.EmojiNotFound(emoji)
         await ctx.reply(emoji.url)
 
-    @commands.command(2, 10, commands.BucketType.user)
+    @commands.cooldown(2, 10, commands.BucketType.user)
     @commands.command(help="Search for emojis!", aliases=['searchemoji', 'findemoji', 'emojifind'])
     async def emojisearch(self, ctx: commands.Context, name: Lower = None):
         if not name:
