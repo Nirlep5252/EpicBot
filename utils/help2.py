@@ -112,7 +112,7 @@ class HelpSelect(discord.ui.Select):
     async def callback(self, i: discord.Interaction):
         self.view.children[0].disabled = False
         embed = await get_cog_help(self.ctx, self.values[0])
-        await i.edit_original_message(embed=embed, view=self.view)
+        await i.message.edit(embed=embed, view=self.view)
 
 
 class HelpMenu(discord.ui.View):
@@ -127,7 +127,7 @@ class HelpMenu(discord.ui.View):
             item.disabled = False
         button.disabled = True
         embed = await get_bot_help(self.ctx, self.mapping)
-        await interaction.edit_original_message(embed=embed, view=self)
+        await interaction.message.edit(embed=embed, view=self)
 
     @discord.ui.button(label="Command List", emoji="📃", style=discord.ButtonStyle.blurple)
     async def commands_list(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -135,7 +135,7 @@ class HelpMenu(discord.ui.View):
             item.disabled = False
         button.disabled = True
         embed = await get_commands_list(self.ctx, self.mapping)
-        await interaction.edit_original_message(embed=embed, view=self)
+        await interaction.message.edit(embed=embed, view=self)
 
 
 class EpicBotHelp(commands.HelpCommand):
