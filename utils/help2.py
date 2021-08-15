@@ -70,7 +70,7 @@ async def get_bot_help(ctx: commands.Context, mapping) -> discord.Embed:
     return discord.Embed(
         title="All the categories:",
         description="\n".join(
-            [f"{EMOJIS_FOR_COGS[cog.qualified_name]} • **{cog.qualified_name.title()}**" for cog, cmds in mapping.items() if cog is not None and cog.qualified_name == cog.qualified_name.lower()]),
+            [f"{EMOJIS_FOR_COGS[cog.qualified_name]} • **{cog.qualified_name.title()}** [ `{len(cmds)}` ]" for cog, cmds in mapping.items() if cog is not None and cog.qualified_name == cog.qualified_name.lower()]),
         color=MAIN_COLOR,
         timestamp=datetime.datetime.utcnow()
     ).set_author(name=ctx.bot.user.name, icon_url=ctx.bot.user.avatar.url
@@ -121,7 +121,7 @@ class HelpButton(discord.ui.Button):
         self.ctx = ctx
 
     async def callback(self, i: discord.Interaction):
-        embed = await get_cog_help(self.ctx, self.custom_id)
+        embed = await get_cog_help(self.ctx, self.custom_id[:-1])
         await i.message.edit(embed=embed, view=self.view)
 
 
@@ -152,11 +152,14 @@ class HelpMenu(discord.ui.View):
         for item in self.children:
             item.disable = False
         button.disabled = True
-        self.children[3].disabled = True
+        select = self.children[3]
+        select.disabled = True
+        self.remove_item(select)
         for cog, commands_ in self.mapping.items():
             if cog is not None and cog.qualified_name == cog.qualified_name.lower():
-                cog_button = HelpButton(self.ctx, cog.qualified_name)
+                cog_button = HelpButton(self.ctx, cog.qualified_name + "_")
                 self.add_item(cog_button)
+        self.add_item(select)
 
     async def interaction_check(self, interaction: discord.Interaction):
         if interaction.user == self.ctx.author:
