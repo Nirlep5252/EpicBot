@@ -115,16 +115,6 @@ class HelpSelect(discord.ui.Select):
         await i.message.edit(embed=embed, view=self.view)
 
 
-class HelpButton(discord.ui.Button):
-    def __init__(self, ctx: commands.Context, name):
-        super().__init__(emoji=EMOJIS_FOR_COGS[name[:-1]], style=discord.ButtonStyle.blurple, custom_id=name)
-        self.ctx = ctx
-
-    async def callback(self, i: discord.Interaction):
-        embed = await get_cog_help(self.ctx, self.custom_id[:-1])
-        await i.message.edit(embed=embed, view=self.view)
-
-
 class HelpMenu(discord.ui.View):
     def __init__(self, ctx: commands.Context, mapping):
         super().__init__(timeout=None)
@@ -147,19 +137,9 @@ class HelpMenu(discord.ui.View):
         embed = await get_commands_list(self.ctx, self.mapping)
         await interaction.message.edit(embed=embed, view=self)
 
-    @discord.ui.button(label="Button View", emoji='🔘', style=discord.ButtonStyle.blurple)
-    async def button_view(self, button: discord.ui.Button, interaction: discord.Interaction):
-        for item in self.children:
-            item.disable = False
-        button.disabled = True
-        select = self.children[3]
-        select.disabled = True
-        self.remove_item(select)
-        for cog, commands_ in self.mapping.items():
-            if cog is not None and cog.qualified_name == cog.qualified_name.lower():
-                cog_button = HelpButton(self.ctx, cog.qualified_name + "_")
-                self.add_item(cog_button)
-        self.add_item(select)
+    @discord.ui.button(label="Delete Menu", emoji='🛑', style=discord.ButtonStyle.danger)
+    async def delete_menu(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.message.delete()
 
     async def interaction_check(self, interaction: discord.Interaction):
         if interaction.user == self.ctx.author:
