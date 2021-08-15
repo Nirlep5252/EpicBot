@@ -78,6 +78,40 @@ class Paginator(discord.ui.View):
         await interaction.response.send_message("Not your command ._.", ephemeral=True)
 
 
+class PaginatorText(discord.ui.View):
+    def __init__(self, ctx: commands.Context, stuff: List[str]):
+        super().__init__(timeout=None)
+        self.ctx = ctx
+        self.stuff = stuff
+        self.current = 0
+
+    async def edit(self, msg, pos):
+        await msg.edit(content=self.stuff[pos])
+
+    @discord.ui.button(emoji='◀️', style=discord.ButtonStyle.blurple)
+    async def bac(self, b, i):
+        if self.current == 0:
+            return
+        await self.edit(i.message, self.current - 1)
+        self.current -= 1
+
+    @discord.ui.button(emoji='⏹️', style=discord.ButtonStyle.blurple)
+    async def stap(self, b, i):
+        await i.message.delete()
+
+    @discord.ui.button(emoji='▶️', style=discord.ButtonStyle.blurple)
+    async def nex(self, b, i):
+        if self.current + 1 == len(self.stuff):
+            return
+        await self.edit(i.message, self.current + 1)
+        self.current += 1
+
+    async def interaction_check(self, interaction):
+        if interaction.user == self.ctx.author:
+            return True
+        await interaction.response.send_message("Not your command ._.", ephemeral=True)
+
+
 class TicketView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)

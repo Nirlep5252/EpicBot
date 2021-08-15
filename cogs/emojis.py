@@ -21,7 +21,8 @@ from typing import Union
 from utils.embed import error_embed, success_embed
 from config import EMOJIS, MAIN_COLOR
 from utils.bot import EpicBot
-from utils.ui import Confirm
+from utils.ui import Confirm, PaginatorText
+from utils.converters import Lower
 
 
 class emojis(commands.Cog, description="Emoji related commands!"):
@@ -41,6 +42,25 @@ class emojis(commands.Cog, description="Emoji related commands!"):
         if isinstance(emoji, str):
             raise commands.EmojiNotFound(emoji)
         await ctx.reply(emoji.url)
+
+    @commands.command(2, 10, commands.BucketType.user)
+    @commands.command(help="Search for emojis!", aliases=['searchemoji', 'findemoji', 'emojifind'])
+    async def emojisearch(self, ctx: commands.Context, name: Lower = None):
+        if not name:
+            ctx.command.reset_cooldown()
+            return await ctx.reply(f"Please enter a query!\n\nExample: `{ctx.clean_prefix}emojisearch cat`")
+        emojis = [str(emoji) for emoji in self.client.emojis if name in emoji.name.lower() and emoji.is_usable()]
+        if len(emojis) == 0:
+            ctx.command.reset_cooldown()
+            return await ctx.reply(f"Couldn't find any results for `{name}`, please try again.")
+
+        paginator = commands.Paginator(prefix="", suffix="")
+        for emoji in emojis:
+            paginator.add_line(emoji)
+        if len(paginator.pages) == 1:
+            return await ctx.reply(paginator.pages[0])
+        view = PaginatorText(ctx, paginator.pages)
+        await ctx.reply(paginator.pages[0], view=view)
 
     @commands.command(help="Clone emojis!", aliases=['clone-emoji', 'cloneemoji'])
     @commands.has_permissions(manage_emojis=True)
