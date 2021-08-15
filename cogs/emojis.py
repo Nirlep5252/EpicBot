@@ -147,6 +147,8 @@ class emojis(commands.Cog, description="Emoji related commands!"):
 
     @commands.command(help="Create a sticker in your server!", aliases=['makesticker', 'create_sticker', 'make_sticker', 'create-sticker', 'make-sticker'])
     @commands.cooldown(3, 60, commands.BucketType.user)
+    @commands.has_permissions(manage_emojis_and_stickers=True)
+    @commands.bot_has_permissions(manage_emojis_and_stickers=True)
     async def createsticker(self, ctx: commands.Context, emoji: Optional[Union[discord.Emoji, discord.PartialEmoji]] = None, *, emoji_flags: Optional[StickerFlags] = None):
         if emoji is not None:
             file = discord.File(await emoji.read())
