@@ -152,7 +152,7 @@ class emojis(commands.Cog, description="Emoji related commands!"):
     @commands.bot_has_permissions(manage_emojis_and_stickers=True)
     async def createsticker(self, ctx: commands.Context, emoji: Optional[Union[discord.Emoji, discord.PartialEmoji]] = None, *, emoji_flags: Optional[StickerFlags] = None):
         if emoji is not None:
-            file = discord.File(BytesIO(await emoji.read()))
+            file = discord.File(BytesIO(await emoji.read()), filename=f"{emoji.name}.png")
         else:
             if len(ctx.message.attachments) == 0:
                 ctx.command.reset_cooldown(ctx)
