@@ -536,7 +536,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
 
         await msg.edit(embed=embed)
 
-    @commands.command(help="Calculate how sus someone is!", aliases=['howsus', 'suscalculator'])
+    @commands.command(help="Calculate how sus someone is!", aliases=['suscalculator'])
     @commands.cooldown(1, 15, commands.BucketType.user)
     async def howsus(self, ctx, user: Optional[discord.Member] = None):
         user = user or ctx.author
