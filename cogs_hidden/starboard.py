@@ -70,6 +70,14 @@ class Starboard(commands.Cog):
         if atch_text != "":
             embed.add_field(name="Attachments:", value=atch_text, inline=False)
 
+        for sticker in msg.stickers:
+            embed.add_field(
+                name=f"Sticker: `{sticker.name}`",
+                value=f"ID: [`{sticker.id}`]({sticker.url})"
+            )
+        if len(msg.stickers) == 1:
+            embed.set_thumbnail(url=msg.stickers[0].url)
+
         embed.add_field(name="Original message:", value=f"[**Click to jump to message!**]({msg.jump_url})")
 
         starboard_msg = await self.client.starboard.find_one({"_id": msg.id})
@@ -140,6 +148,14 @@ class Starboard(commands.Cog):
             atch_text += f"**[{file.filename}]({file.url})**\n"
         if atch_text != "":
             embed.add_field(name="Attachments:", value=atch_text, inline=False)
+
+        for sticker in msg.stickers:
+            embed.add_field(
+                name=f"Sticker: `{sticker.name}`",
+                value=f"ID: [`{sticker.id}`]({sticker.url})"
+            )
+        if len(msg.stickers) == 1:
+            embed.set_thumbnail(url=msg.stickers[0].url)
 
         embed.add_field(name="Original message:", value=f"[**Click to jump to message!**]({msg.jump_url})")
 
