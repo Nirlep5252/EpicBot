@@ -536,6 +536,35 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
 
         await msg.edit(embed=embed)
 
+    @commands.command(help="Calculate how sus someone is!", aliases=['howsus', 'suscalculator'])
+    @commands.cooldown(1, 15, commands.BucketType.user)
+    async def howsus(self, ctx, user: Optional[discord.Member] = None):
+        user = user or ctx.author
+        msg = await ctx.reply(embed=discord.Embed(
+            title="Calculating how sus you are...",
+            color=MAIN_COLOR
+        ))
+        await asyncio.sleep(0.5)
+        sus_number = random.randint(0, 100)
+        if 0 <= sus_number <= 20:
+            embed_color_uwu = RED_COLOR
+            embed_footer = "Crewmate confirmed!"
+        if 20 < sus_number <= 50:
+            embed_color_uwu = ORANGE_COLOR
+            embed_footer = "Kinda sus"
+        if 50 < sus_number <= 100:
+            embed_color_uwu = MAIN_COLOR
+            embed_footer = "You are sus, uwu"
+        if sus_number == 100:
+            embed_color_uwu = PINK_COLOR
+            embed_footer = "YOU SUSSY BAKA!"
+        embed = discord.Embed(
+            title="Suspiciousness calculator!",
+            description=f"**{escape_markdown(str(user))}** is **{sus_number}%** sus!",
+            color=embed_color_uwu
+        ).set_footer(text=embed_footer)
+        await msg.edit(embed=embed)
+
     @commands.command(aliases=['fm', 'firstmsg', 'firstmessage', 'first_msg'], help="Get the first message of the channel.")
     @commands.cooldown(3, 30, commands.BucketType.user)
     @commands.bot_has_permissions(read_message_history=True)
