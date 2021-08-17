@@ -21,7 +21,7 @@ from typing import Union, Optional
 from utils.embed import error_embed, success_embed
 from config import EMOJIS, MAIN_COLOR, SUPPORT_SERVER_LINK
 from utils.bot import EpicBot
-from utils.ui import Confirm, PaginatorText
+from utils.ui import Confirm, Paginator, PaginatorText
 from utils.converters import Lower
 from utils.flags import StickerFlags
 from io import BytesIO
@@ -64,6 +64,30 @@ class emojis(commands.Cog, description="Emoji related commands!"):
             return await ctx.send(paginator.pages[0])
         view = PaginatorText(ctx, paginator.pages)
         await ctx.send(paginator.pages[0], view=view)
+
+    @commands.cooldown(2, 10, commands.BucketType.user)
+    @commands.command(help="Search for stickers!", aliases=['searchsticker', 'findsticker', 'stickerfind'])
+    async def stickersearch(self, ctx: commands.Context, name: Lower = None):
+        if not name:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(f"Please enter a query!\n\nExample: `{ctx.clean_prefix}stickersearch cat`")
+        stickers = [sticker for sticker in self.client.stickers if name in sticker.name.lower()]
+        if len(stickers) == 0:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(f"Couldn't find any results for `{name}`, please try again.")
+        embeds = []
+        for sticker in stickers:
+            embeds.append(discord.Embed(
+                title=sticker.name,
+                description=sticker.description,
+                color=MAIN_COLOR,
+                url=sticker.url
+            ).set_image(url=sticker.url))
+        await ctx.reply(f"Found `{len(embeds)}` stickers.")
+        if len(embeds) == 1:
+            return await ctx.send(embed=embeds[0])
+        view = Paginator(ctx, embeds)
+        return await ctx.send(embed=embeds[0], view=view)
 
     @commands.command(help="Clone emojis!", aliases=['clone-emoji', 'cloneemoji'])
     @commands.has_permissions(manage_emojis=True)
