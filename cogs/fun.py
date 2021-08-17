@@ -813,7 +813,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             return await ctx.reply(embed=success_embed(
                 "Random Fact",
                 data['fact']
-            ).set_thumbnail(random.choice(THINKING_EMOJI_URLS)))
+            ).set_thumbnail(url=random.choice(THINKING_EMOJI_URLS)))
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Get a random quote!")
