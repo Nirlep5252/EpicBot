@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from utils.reactions import prepare_rolemenu
 import discord
 import asyncio
 import json
@@ -32,10 +31,11 @@ from config import (
 )
 from utils.embed import error_embed, success_embed, process_embeds_from_json
 from utils.bot import EpicBot
-from utils.ui import Confirm, SelfRoleOptionSelecter, TicketView
+from utils.ui import Confirm, SelfRoleEditor, SelfRoleOptionSelecter, TicketView
 from utils.converters import AddRemoveConverter, Lower
 from utils.message import wait_for_msg
 from utils.recursive_utils import prepare_emojis_and_roles
+from utils.reactions import prepare_rolemenu
 
 autoposting_delay = 300
 
@@ -181,8 +181,7 @@ class config(commands.Cog, description="Configure your server with amazing EpicB
     @commands.bot_has_permissions(administrator=True)
     @commands.cooldown(3, 120, commands.BucketType.guild)
     @commands.max_concurrency(1, commands.BucketType.guild)
-    @commands.is_owner()
-    async def selfroles(self, ctx: commands.Context, option: Lower = None):
+    async def selfroles(self, ctx: commands.Context, option: Lower = None, message_id: t.Optional[int] = None):
         async with ctx.typing():
             prefix = ctx.clean_prefix
             guild_self_roles = await self.client.self_roles.find_one({"_id": ctx.guild.id})
@@ -210,6 +209,8 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                 ctx.command.reset_cooldown(ctx)
                 return await ctx.reply(embed=info_embed)
             if option in ['create', 'new']:
+                if len(role_menus) >= 10:
+                    return await ctx.reply("You can only have max `10` rolemenus.")
                 view = SelfRoleOptionSelecter(ctx)
                 main_msg = await ctx.reply(embed=success_embed(
                     f"{EMOJIS['loading']} Rolemenu creation...",
@@ -234,8 +235,24 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                     await main_msg.delete()
                     raise commands.ChannelNotFound(m.content)
                 if self_role_type == 'reaction':
-                    pass
-                    # i'll make the bot ask for a message ID by a human being instead of the bot sending the menu everytime.
+                    await main_msg.edit(embed=success_embed(
+                        f"{EMOJIS['loading']} Rolemenu creation...",
+                        "If you would like to have the rolemenu in an already sent message, please enter the message ID of that message.\n\nYou can send `none` to skip this step."
+                    ))
+                    m = await wait_for_msg(ctx, 60, main_msg)
+                    if m == 'pain':
+                        return
+                    if m.content.lower() != 'none':
+                        try:
+                            custom_msg = await text_channel.fetch_message(int(m.content.lower()))
+                            custom_msg_id = custom_msg.id
+                        except Exception:
+                            custom_msg_id = None
+                            await ctx.send("I wasn't able to find the message from your message ID, so I will create a rolemenu message for you.")
+                    else:
+                        custom_msg_id = None
+                else:
+                    custom_msg_id = None
                 await main_msg.edit(embed=success_embed(
                     f"{EMOJIS['loading']} Rolemenu creation...",
                     "Please send all the roles separated with a comma `,`.\n\nExample: `@Artist, @Foodie, @Music Lover, @Cutie`\nPlease follow this format."
@@ -263,7 +280,7 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                     f"I have found **{len(roles)}** in your message.\n\n{' '.join(role.mention for role in roles)}\n\nNow you need to react to this message with the corresponding emojis for the rolemenu to be complete!"
                 ), view=None)
                 final_output = await prepare_emojis_and_roles(ctx, roles, main_msg)
-                msg_id = await prepare_rolemenu(ctx, final_output, text_channel, self_role_type)
+                msg_id = await prepare_rolemenu(ctx, final_output, text_channel, self_role_type, custom_msg_id)
                 role_menus = guild_self_roles['role_menus']
                 role_menus.update({
                     str(msg_id): {
@@ -278,11 +295,133 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                 )
                 return await main_msg.edit(content=f"The rolemenu has been setup in {text_channel.mention}", embed=None, view=None)
             if option in ['delete', 'remove']:
-                return await ctx.reply("soon")
+                if message_id is None:
+                    ctx.command.reset_cooldown(ctx)
+                    return await ctx.reply(embed=error_embed(f"{EMOJIS['tick_no']} Invalid Usage!", "Please mention a message ID."))
+                if str(message_id) not in role_menus:
+                    ctx.command.reset_cooldown(ctx)
+                    return await ctx.reply(embed=error_embed(f"{EMOJIS['tick_no']} Not found!", "This rolemenu doesn't exist."))
+                role_menus.pop(str(message_id))
+                await self.client.self_roles.update_one(
+                    filter={"_id": ctx.guild.id},
+                    update={"$set": {"role_menus": role_menus}}
+                )
+                return await ctx.reply(embed=success_embed(f"{EMOJIS['tick_yes']} Rolemenu removed!", "The rolemenu has been removed from the database, you can now delete the message."))
             if option in ['show', 'list']:
-                return await ctx.reply("soon")
+                embed = success_embed(
+                    f"{EMOJIS['tick_yes']} Your rolemenus!",
+                    f"This server has a total of **{len(role_menus)}** rolemenus."
+                )
+                for msg_id, menu in role_menus.items():
+                    embed.add_field(
+                        name=msg_id,
+                        value=f"""
+**Message:** [Click me](https://discord.com/channels/{ctx.guild.id}/{menu['channel']}/{msg_id})
+**Menu type:** {menu['type'].title()}
+**Roles:** {len(menu['stuff'])}
+**Channel:** <#{menu['channel']}>
+                        """,
+                        inline=False
+                    )
+                return await ctx.reply(embed=embed)
             if option in ['edit']:
-                return await ctx.reply("soon")
+                if message_id is None:
+                    ctx.command.reset_cooldown(ctx)
+                    return await ctx.reply(embed=error_embed(f"{EMOJIS['tick_no']} Invalid Usage!", "Please mention a message ID."))
+                if str(message_id) not in role_menus:
+                    ctx.command.reset_cooldown(ctx)
+                    return await ctx.reply(embed=error_embed(f"{EMOJIS['tick_no']} Not found!", "This rolemenu doesn't exist."))
+                view = SelfRoleEditor(ctx)
+                main_msg = await ctx.reply(embed=success_embed(
+                    f"{EMOJIS['loading']} What would you like to edit?",
+                    "Please select an option!"
+                ), view=view)
+                await view.wait()
+                if not view.value:
+                    ctx.command.reset_cooldown()
+                    return await main_msg.edit(content=f"{EMOJIS['tick_no']}Command cancelled.", embed=None, view=None)
+                if view.value == 'add':
+                    await main_msg.edit(embed=success_embed(
+                        f"{EMOJIS['loading']} Rolemenu edit...",
+                        f"{EMOJIS['tick_yes']} Please send the roles separated with a comma `,`.\n\nExample: `@Artist, @Foodie, @Music Lover, @Cutie`\nPlease follow this format."
+                    ), view=None)
+                    m = await wait_for_msg(ctx, 60, main_msg)
+                    if m == 'pain':
+                        return
+                    roles_text_list = m.content.replace(" ", "").split(",")
+                    roles = []
+                    for role_text in roles_text_list:
+                        try:
+                            role = await commands.RoleConverter().convert(ctx, role_text)
+                            if role.position < ctx.guild.me.top_role.position and (role.position < ctx.author.top_role.position or ctx.author == ctx.guild.owner) and role not in roles:
+                                roles.append(role)
+                        except Exception:
+                            pass
+                    if len(roles) == 0:
+                        ctx.command.reset_cooldown(ctx)
+                        return await main_msg.edit(embed=error_embed(
+                            f"{EMOJIS['tick_no']} Error!",
+                            f"Looks like no roles were found in your message.\nOr all the roles were above my top role.\nYou can join our **[Support Server]({SUPPORT_SERVER_LINK})** for help."
+                        ))
+                    await main_msg.edit(content="", embed=success_embed(
+                        f"{len(roles)} Roles found!",
+                        f"I have found **{len(roles)}** in your message.\n\n{' '.join(role.mention for role in roles)}\n\nNow you need to react to this message with the corresponding emojis for the rolemenu to be complete!"
+                    ), view=None)
+                    final_output = await prepare_emojis_and_roles(ctx, roles, main_msg)
+                    current_role_menu = role_menus[str(message_id)]
+                    stuff = current_role_menu['stuff']
+                    for role_id, emoji in final_output.items():
+                        stuff.update({role_id: emoji})
+                    current_role_menu.update({"stuff": stuff})
+                    role_menus.update({str(message_id): current_role_menu})
+                    await self.client.self_roles.update_one(
+                        filter={"_id": ctx.guild.id},
+                        update={"$set": {"role_menus": role_menus}}
+                    )
+                    await prepare_rolemenu(ctx, stuff, self.client.get_channel(current_role_menu['channel']), current_role_menu['type'], message_id, edit=True)
+                    return await main_msg.edit(f"{EMOJIS['tick_yes']}The rolemenu has been updated!", embed=None, view=None)
+                if view.value == 'remove':
+                    current_role_menu = role_menus[str(message_id)]
+                    if len(current_role_menu['stuff']) == 1:
+                        ctx.command.reset_cooldown(ctx)
+                        return await main_msg.edit(embed=error_embed(
+                            f"{EMOJIS['tick_no']} Error!",
+                            "There's only one role in the rolemenu! You cannot remove that!"
+                        ), view=None)
+                    await main_msg.edit(embed=success_embed(
+                        f"{EMOJIS['loading']} Rolemenu edit...",
+                        f"{EMOJIS['tick_yes']} Please send the roles separated with a comma `,`.\n\nExample: `@Artist, @Foodie, @Music Lover, @Cutie`\nPlease follow this format."
+                    ), view=None)
+                    m = await wait_for_msg(ctx, 60, main_msg)
+                    if m == 'pain':
+                        return
+                    roles_text_list = m.content.replace(" ", "").split(",")
+                    roles = []
+                    for role_text in roles_text_list:
+                        try:
+                            role = await commands.RoleConverter().convert(ctx, role_text)
+                            if str(role.id) in role_menus[str(message_id)]['stuff']:
+                                roles.append(role)
+                        except Exception:
+                            pass
+                    if len(roles) == 0:
+                        ctx.command.reset_cooldown(ctx)
+                        return await main_msg.edit(embed=error_embed(
+                            f"{EMOJIS['tick_no']} Error!",
+                            f"Looks like no roles were found in your message.\nOr all the roles were above my top role.\nYou can join our **[Support Server]({SUPPORT_SERVER_LINK})** for help."
+                        ))
+                    stuff = current_role_menu['stuff']
+                    for role in roles:
+                        if str(role.id) in stuff:
+                            stuff.pop(str(role.id))
+                    current_role_menu.update({"stuff": stuff})
+                    role_menus.update({str(message_id): current_role_menu})
+                    await self.client.self_roles.update_one(
+                        filter={"_id": ctx.guild.id},
+                        update={"$set": {"role_menus": role_menus}}
+                    )
+                    await prepare_rolemenu(ctx, stuff, self.client.get_channel(current_role_menu['channel']), current_role_menu['type'], message_id, edit=True)
+                    return await main_msg.edit(f"{EMOJIS['tick_yes']}The rolemenu has been updated!", embed=None, view=None)
 
             await ctx.reply(embed=info_embed)
 
@@ -2510,6 +2649,13 @@ Counting is currently **{'Disabled' if not enabled else 'set in <#'+str(g['count
         g['counting'].update({"count": number})
         return await ctx.reply(f"The count has been updated: `{before_count}` ➜ `{number}`")
 
+    @commands.command(help="Setup server counters!")
+    @commands.has_permissions(manage_guild=True, manage_channels=True)
+    @commands.bot_has_permissions(manage_channels=True, manage_messages=True)
+    @commands.cooldown(3, 30, commands.BucketType.guild)
+    async def counters(self, ctx: commands.Context):
+        pass
+
     @commands.command(help="Configure automod for your server!", aliases=['am'])
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(administrator=True)
@@ -2746,7 +2892,18 @@ Counting is currently **{'Disabled' if not enabled else 'set in <#'+str(g['count
 
         em = success_embed(
             f"{EMOJIS['disboard']} Bump Reminders!",
-            f"Bump reminders are currently **{'Enabled' if enabled else 'Disabled'}** for this server.\nPlease use `{prefix}bumpreminder enable/disable`"
+            f"""
+Bump reminders are currently **{'Enabled' if enabled else 'Disabled'}** for this server.
+
+**Ping role:** {'None' if not enabled else "<@&"+str(g['bump_reminders']['role'])+">" if g['bump_reminders']['role'] is not None else "None"}
+**Reward role:** {"None" if not enabled else "<@&"+str(g['bump_reminders'].get('reward'))+">" if g['bump_reminders'].get('reward') is not None else "None"}
+
+**You can use the following commands to configure it!**
+
+- `{prefix}bumpreminder enable/disable` - To enable/disable bumpreminders.
+- `{prefix}bumpreminder role @role` - To set a reminder role when bumps are available.
+- `{prefix}bumpreminder rewrad @role` - To set a reward role for bumpers.
+            """
         ).set_thumbnail(url="https://cdn.discordapp.com/emojis/861565998510637107.png?v=1")
 
         if choice is None:
@@ -2764,12 +2921,13 @@ Counting is currently **{'Disabled' if not enabled else 'set in <#'+str(g['count
                     "channel_id": None,
                     "time": None,
                     "bumper": None,
-                    "role": None
+                    "role": None,
+                    "reward": None
                 }
             })
             return await ctx.reply(embed=success_embed(
                 f"{EMOJIS['disboard']} Bump Reminders Enabled!",
-                f"Bump reminders have been enabled!\nYou can also set a bump role using `{prefix}bumpreminder role @role`\nThis role will get pinged when a bump is available."
+                f"Bump reminders have been enabled!\n\nYou can also set a bump role using `{prefix}bumpreminder role @role`\nThis role will get pinged when a bump is available.\nAnd you can use `{prefix}bumpreminder reward @role` to reward a role to bumpers!"
             ).set_thumbnail(url="https://cdn.discordapp.com/emojis/861565998510637107.png?v=1"))
         if choice.lower() in no:
             if not enabled:
@@ -2799,7 +2957,6 @@ Counting is currently **{'Disabled' if not enabled else 'set in <#'+str(g['count
             if isinstance(role, str) and role.lower() != 'none':
                 ctx.command.reset_cooldown(ctx)
                 raise commands.RoleNotFound(role)
-                return
             if isinstance(role, discord.Role):
                 g['bump_reminders'].update({
                     "role": role.id
@@ -2814,6 +2971,43 @@ Counting is currently **{'Disabled' if not enabled else 'set in <#'+str(g['count
             return await ctx.reply(embed=success_embed(
                 f"{EMOJIS['tick_yes']} Bump role removed!",
                 "The role won't be pinged when a bump is available."
+            ))
+        if choice.lower() in ['reward', 'give']:
+            if not enabled:
+                ctx.command.reset_cooldown(ctx)
+                return await ctx.reply(embed=error_embed(
+                    f"{EMOJIS['tick_no']} Not enabled!",
+                    "You need to enable bump reminders to configure the reward role."
+                ))
+            if role is None:
+                ctx.command.reset_cooldown(ctx)
+                return await ctx.reply(embed=error_embed(
+                    f"{EMOJIS['tick_no']} Invalid Usage!",
+                    f"Please use `{prefix}bumpreminder reward @role`"
+                ))
+            if isinstance(role, str) and role.lower() != 'none':
+                ctx.command.reset_cooldown(ctx)
+                raise commands.RoleNotFound(role)
+            if isinstance(role, discord.Role):
+                if role.position >= ctx.guild.me.top_role.position:
+                    ctx.command.reset_cooldown(ctx)
+                    return await ctx.reply(embed=error_embed(
+                        f"{EMOJIS['tick_no']} Give me a higher role!",
+                        f"I can't give roles higher than my top role ({ctx.guild.me.top_role.mention})."
+                    ))
+                g['bump_reminders'].update({
+                    "reward": role.id
+                })
+                return await ctx.reply(embed=success_embed(
+                    f"{EMOJIS['tick_yes']} Reward role updated!",
+                    f"The role {role.mention} will be rewarded to bumpers!"
+                ))
+            g['bump_reminders'].update({
+                "reward": None
+            })
+            return await ctx.reply(embed=success_embed(
+                f"{EMOJIS['tick_yes']} Reward role removed!",
+                "The role won't be given to bumpers."
             ))
         else:
             ctx.command.reset_cooldown(ctx)

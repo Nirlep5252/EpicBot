@@ -345,6 +345,7 @@ Make sure to upload image as an attachment.
         people_badges = {
             "aw||oo||sh": 671355502399193128,
             "wendo": 478623992337530883,
+            "cutevi": 679677267164921866,
             "cat": 344313283714613248,
             "best_streamer": 91090336029347840,
             "very_good_taste": 729765852030828674

@@ -57,6 +57,7 @@ class EpicBot(commands.AutoShardedBot):
         self.before_invites = self.db['before_invites']
         self.invites = self.db['invites']
         self.reminders_db = self.db['reminders']
+        self.alarms_db = self.db['alarms']
         self.leveling_db = self.db['leveling']
         self.user_profile_db = self.db['user_profile']
         self.starboard = self.db['starboard']
@@ -70,6 +71,7 @@ class EpicBot(commands.AutoShardedBot):
         self.user_profile_cache = []
 
         self.reminders = []
+        self.alarms = []
 
         self.update_prefixes_db.start()
         self.update_serverconfig_db.start()
@@ -100,7 +102,8 @@ class EpicBot(commands.AutoShardedBot):
             "globalchat": False,
             "counting": None,
             "antihoisting": False,
-            "tickets": {"message_id": None, "channel": None, "roles": []}
+            "tickets": {"message_id": None, "channel": None, "roles": []},
+            "counters": {"members": None, "huamns": None, "bots": None, "channels": None, "categories": None, "roles": None, "emojis": None}
         }
         self.serverconfig_cache.append(pain)
         return await self.get_guild_config(guild_id)
@@ -130,6 +133,8 @@ class EpicBot(commands.AutoShardedBot):
                     e.update({"antihoisting": False})
                 if "tickets" not in e:
                     e.update({"tickets": {"message_id": None, "channel": None, "roles": []}})
+                if "counters" not in e:
+                    e.update({"counters": {"members": None, "huamns": None, "bots": None, "channels": None, "categories": None, "roles": None, "emojis": None}})
                 return e
         return await self.set_default_guild_config(guild_id)
 
@@ -371,7 +376,8 @@ class EpicBot(commands.AutoShardedBot):
                         "globalchat": False if "globalchat" not in eee else eee['globalchat'],
                         "counting": None if "counting" not in eee else eee['counting'],
                         "antihoisting": False if "antihoisting" not in eee else eee['antihoisting'],
-                        "tickets": {"message_id": None, "channel": None, "roles": []} if "tickets" not in eee else eee['tickets']
+                        "tickets": {"message_id": None, "channel": None, "roles": []} if "tickets" not in eee else eee['tickets'],
+                        "counters": {"members": None, "huamns": None, "bots": None, "channels": None, "categories": None, "roles": None, "emojis": None} if "counters" not in eee else eee['counters']
                     }},
                     upsert=True
                 )

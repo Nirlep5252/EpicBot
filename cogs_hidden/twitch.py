@@ -16,6 +16,7 @@ limitations under the License.
 
 import asyncio
 import discord
+import aiohttp
 
 from discord.ext import commands, tasks
 from twitchAPI.twitch import Twitch
@@ -31,7 +32,7 @@ API_HEADERS = {
 }
 
 
-class Twitch(commands.Cog):
+class TwitchNotifs(commands.Cog):
     def __init__(self, client: EpicBot):
         self.client = client
         self.live_notifs_loop.start()
@@ -41,13 +42,14 @@ class Twitch(commands.Cog):
             userid = twitch.get_users(logins=[user])['data'][0]['id']
             url = TWITCH_STREAM_API_ENDPOINT_V5.format(userid)
             try:
-                async with self.client.session.get(url, headers=API_HEADERS) as r:
-                    jsondata = await r.json()
-                    if 'stream' in jsondata:
-                        if jsondata['stream'] is not None:
-                            return jsondata['stream']
-                        else:
-                            return False
+                async with aiohttp.ClientSession() as s:
+                    async with s.get(url, headers=API_HEADERS) as r:
+                        jsondata = await r.json()
+                        if 'stream' in jsondata:
+                            if jsondata['stream'] is not None:
+                                return jsondata['stream']
+                            else:
+                                return False
             except Exception as e:
                 print("Error in twitch for user: ", e)
                 return False
@@ -64,7 +66,7 @@ class Twitch(commands.Cog):
                     try:
                         status = await self.check_live_user(e['twitch']['username'])
                         await asyncio.sleep(1)
-                        if not status and not e['twitch']['currently_live']:
+                        if status and not e['twitch']['currently_live']:
                             e['twitch'].update({"currently_live": True})
                             nice = "**🎮  Game:** " + status['game'] + '\n'
                             nice += "**" + EMOJIS['members'] + "  Viewers:** " + str(status['viewers']) + '\n'
@@ -91,9 +93,9 @@ class Twitch(commands.Cog):
                             )
                         elif not status:
                             e['twitch'].update({"currently_live": False})
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        print(f"ERROR in twitch loop: {e}")
 
 
 def setup(client):
-    client.add_cog(Twitch(client))
+    client.add_cog(TwitchNotifs(client))

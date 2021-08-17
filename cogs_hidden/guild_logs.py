@@ -628,7 +628,7 @@ class GuildLogs(commands.Cog):
             description=f"""
 **Thread created: {thread.mention} `#{thread.name}`**
 
-**Private:** {EMOJIS['tick_no'] if isinstance(thread.type, discord.ChannelType.private_thread) else EMOJIS['tick_yes']}
+**Private:** {EMOJIS['tick_no'] if thread.type.name == "private_thread" else EMOJIS['tick_yes']}
 **Archived:** {EMOJIS['tick_yes'] if thread.archived else EMOJIS['tick_no']}
             """,
             timestamp=datetime.datetime.utcnow(),
@@ -648,7 +648,7 @@ class GuildLogs(commands.Cog):
             description=f"""
 **Thread deleted: `#{thread.name}`**
 
-**Private:** {EMOJIS['tick_no'] if isinstance(thread.type, discord.ChannelType.private_thread) else EMOJIS['tick_yes']}
+**Private:** {EMOJIS['tick_no'] if thread.type.name == "private_thread" else EMOJIS['tick_yes']}
 **Archived:** {EMOJIS['tick_yes'] if thread.archived else EMOJIS['tick_no']}
             """,
             timestamp=datetime.datetime.utcnow(),

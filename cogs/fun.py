@@ -23,12 +23,12 @@ import functools
 from discord.ext import commands
 from typing import Optional, Union
 from config import (
-    EMOJIS, MAIN_COLOR, BIG_PP_GANG, NO_PP_GANG,
+    DAGPI_KEY, EMOJIS, MAIN_COLOR, BIG_PP_GANG, NO_PP_GANG,
     RED_COLOR, ORANGE_COLOR, PINK_COLOR, CHAT_BID,
-    CHAT_API_KEY, PINK_COLOR_2
+    CHAT_API_KEY, PINK_COLOR_2, THINKING_EMOJI_URLS
 )
 from utils.embed import success_embed, error_embed, edit_msg_multiple_times
-from utils.custom_checks import voter_only, not_opted_out
+from utils.custom_checks import not_opted_out
 from utils.random import email_fun, passwords, DMs, discord_servers
 from utils.reddit import pick_random_url_from_reddit
 from owotext import OwO
@@ -238,7 +238,8 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             "author": message.author,
             "channel": message.channel,
             "time": message.created_at.replace(tzinfo=None),
-            "attachments": msg_attachments
+            "attachments": msg_attachments,
+            "stickers": message.stickers
         }
         if message.channel.id not in self.sniped_msgs:
             return self.sniped_msgs.update({message.channel.id: [thing]})
@@ -268,7 +269,8 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             "author": before.author,
             "channel": before.channel,
             "time": before.created_at.replace(tzinfo=None),
-            "attachments": msg_attachments
+            "attachments": msg_attachments,
+            "stickers": before.stickers
         }
         if before.channel.id not in self.edited_msgs:
             return self.edited_msgs.update({before.channel.id: [thing]})
@@ -317,7 +319,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
 
     @commands.cooldown(1, 15, commands.BucketType.user)
     @not_opted_out()
-    @voter_only()
+    # @voter_only()
     @commands.command(aliases=['s'], help="Snipe the last deleted message.")
     async def snipe(self, ctx: commands.Context, amount='1', channel: discord.TextChannel = None):
         prefix = ctx.clean_prefix
@@ -363,11 +365,18 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             timestamp=thing['time']
         ).set_author(name=thing['author'].name, icon_url=thing['author'].avatar.url)
 
+        for sticker in thing['stickers']:
+            embed.add_field(
+                name=f"Sticker: `{sticker.name}`",
+                value=f"ID: [`{sticker.id}`]({sticker.url})"
+            )
+        if len(thing['stickers']) == 1:
+            embed.set_thumbnail(url=thing['stickers'][0].url)
         await ctx.send(embed=embed, files=thing['attachments'])
 
     @commands.cooldown(1, 15, commands.BucketType.user)
     @not_opted_out()
-    @voter_only()
+    # @voter_only()
     @commands.command(aliases=['es'], help="Snipe the last edited message.")
     async def editsnipe(self, ctx: commands.Context, amount=1, channel: discord.TextChannel = None):
         prefix = ctx.clean_prefix
@@ -413,6 +422,14 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         ).set_author(name=thing['author'].name, icon_url=thing['author'].avatar.url
         ).add_field(name="Before:", value=thing['before'] if len(thing['before']) <= 1024 else thing['before'][0: 1023], inline=False
         ).add_field(name="After:", value=thing['after'] if len(thing['after']) <= 1024 else thing['after'][0: 1023], inline=False)
+
+        for sticker in thing['stickers']:
+            embed.add_field(
+                name=f"Sticker: `{sticker.name}`",
+                value=f"ID: [`{sticker.id}`]({sticker.url})"
+            )
+        if len(thing['stickers']) == 1:
+            embed.set_thumbnail(url=thing['stickers'][0].url)
 
         await ctx.send(embed=embed, files=thing['attachments'])
 
@@ -514,6 +531,35 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             color=embed_color_uwu
         )
 
+        await msg.edit(embed=embed)
+
+    @commands.command(help="Calculate how sus someone is!", aliases=['suscalculator'])
+    @commands.cooldown(1, 15, commands.BucketType.user)
+    async def howsus(self, ctx, user: Optional[discord.Member] = None):
+        user = user or ctx.author
+        msg = await ctx.reply(embed=discord.Embed(
+            title="Calculating how sus you are...",
+            color=MAIN_COLOR
+        ))
+        await asyncio.sleep(0.5)
+        sus_number = random.randint(0, 100)
+        if 0 <= sus_number <= 20:
+            embed_color_uwu = RED_COLOR
+            embed_footer = "Crewmate confirmed!"
+        if 20 < sus_number <= 50:
+            embed_color_uwu = ORANGE_COLOR
+            embed_footer = "Kinda sus"
+        if 50 < sus_number <= 100:
+            embed_color_uwu = MAIN_COLOR
+            embed_footer = "You are sus, uwu"
+        if sus_number == 100:
+            embed_color_uwu = PINK_COLOR
+            embed_footer = "YOU SUSSY BAKA!"
+        embed = discord.Embed(
+            title="Suspiciousness calculator!",
+            description=f"**{escape_markdown(str(user))}** is **{sus_number}%** sus!",
+            color=embed_color_uwu
+        ).set_footer(text=embed_footer)
         await msg.edit(embed=embed)
 
     @commands.command(aliases=['fm', 'firstmsg', 'firstmessage', 'first_msg'], help="Get the first message of the channel.")
@@ -745,12 +791,26 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Funny, funny jokes!", aliases=['dadjoke'])
     async def joke(self, ctx):
-        await ctx.message.reply(embed=success_embed("Haha!", dadjoke.joke))
+        await ctx.reply(embed=success_embed("Haha!", dadjoke.joke))
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Funny, funny memes!")
-    async def meme(self, ctx):
-        await ctx.message.reply(embed=await pick_random_url_from_reddit('dankmemes', 'Haha!'))
+    async def meme(self, ctx: commands.Context):
+        await ctx.reply(embed=await pick_random_url_from_reddit('dankmemes', 'Haha!'))
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command(help="Random fun facts!")
+    async def fact(self, ctx: commands.Context):
+        headers = {'Authorization': DAGPI_KEY}
+        async with self.client.session.get("https://api.dagpi.xyz/data/fact", headers=headers) as resp:
+            data = await resp.json()
+            if "error" in data:
+                ctx.command.reset_cooldown(ctx)
+                return await ctx.reply(embed=error_embed("An error occured!", data['error']))
+            return await ctx.reply(embed=success_embed(
+                "Random Fact",
+                data['fact']
+            ).set_thumbnail(url=random.choice(THINKING_EMOJI_URLS)))
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Get a random quote!")

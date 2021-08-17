@@ -20,7 +20,7 @@ import os
 # LOL TOKEN GO BRR
 BOT_TOKEN = os.environ.get("TOKEN")
 MONGO_DB_URL = os.environ.get("MONGO")
-DB_UPDATE_INTERVAL = 300
+DB_UPDATE_INTERVAL = 60
 PREFIX = "e/"
 OWNERS = [558861606063308822]
 COOLDOWN_BYPASS = [558861606063308822, 344313283714613248]
@@ -37,6 +37,7 @@ TWITCH_CLIENT_ID = os.environ.get("TWITCH_CLIENT_ID")
 TWITCH_CLIENT_SECRET = os.environ.get("TWITCH_CLIENT_SECRET")
 CHAT_BID = os.environ.get("CHAT_BID")
 CHAT_API_KEY = os.environ.get("CHAT_API_KEY")
+DAGPI_KEY = os.environ.get("DAGPI_KEY")
 
 # SECRET LOGS HEHE :3
 
@@ -83,6 +84,7 @@ VIP_ROLE = 746202728031584366
 
 BADGE_EMOJIS = {
     "normie": "<:members:853203090001887232>",
+    "cutevi": "<:avi:875400894919872562>",
     "bot_mod": "<:certifiedmod:857158455269130242>",
     "owner_of_epicness": "👑",
     "staff_member": "<:staff:857194745289113641>",
@@ -147,7 +149,8 @@ EMOJIS = {
     'idle': '<:status_idle:862600144917364737> ',
     'dnd': '<:status_dnd:862600241851924480> ',
     'arrow': '<:Arrow:869101378822373417> ',
-    'reaction': '<:add_reaction:873891867610210304> '
+    'reaction': '<:add_reaction:873891867610210304> ',
+    'cmd_arrow': '<:join_arrow:876313929402417172> '
 }
 EMOJIS_FOR_COGS = {
     'actions': '<a:hugs:839739273083224104>',
@@ -180,6 +183,14 @@ CUTE_EMOJIS = [
     "<:ur_cute:845151161039716362>",
     "<:thanks:800741855805046815>",
     "<a:hugs:839739273083224104>"
+]
+THINKING_EMOJI_URLS = [
+    'https://cdn.discordapp.com/emojis/862387505852055602.png',
+    'https://cdn.discordapp.com/emojis/768302864685727755.png',
+    'https://cdn.discordapp.com/emojis/854206416830988318.png',
+    'https://cdn.discordapp.com/emojis/853192295277002752.png',
+    'https://cdn.discordapp.com/emojis/585956493392871424.png',
+    'https://cdn.discordapp.com/emojis/819207595876417546.png'
 ]
 
 # CREDITS

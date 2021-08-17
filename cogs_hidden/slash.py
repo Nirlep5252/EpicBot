@@ -14,26 +14,26 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import discord
+# import discord
 from discord.ext import commands
 from utils.bot import EpicBot
-from utils.embed import success_embed
-from random import randint
+# from utils.embed import success_embed
+# from random import randint
 
 
 class LolSlashCmdGoBrr(commands.Cog):
     def __init__(self, client: EpicBot):
         self.client = client
 
-    @commands.Cog.listener("on_interaction")
-    async def haha_slash_go_brr(self, interaction: discord.Interaction):
-        if interaction.type == discord.InteractionType.application_command:
-            await interaction.response.send_message(
-                embed=success_embed(
-                    title="<:amogus:871732356233429014>  Sussometer",
-                    description=f"You are **{randint(0, 100)}%** sus!"
-                )
-            )
+    # @commands.Cog.listener("on_interaction")
+    # async def haha_slash_go_brr(self, interaction: discord.Interaction):
+    #     if interaction.type == discord.InteractionType.application_command:
+    #         await interaction.response.send_message(
+    #             embed=success_embed(
+    #                 title="<:amogus:871732356233429014>  Sussometer",
+    #                 description=f"You are **{randint(0, 100)}%** sus!"
+    #             )
+    #         )
 
 
 def setup(client: EpicBot):

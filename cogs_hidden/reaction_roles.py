@@ -46,9 +46,10 @@ class ReactionRoles(commands.Cog):
         for role_id, emoji in menu['stuff'].items():
             if emoji == str(payload.emoji):
                 guild = self.client.get_guild(payload.guild_id)
+                member = guild.get_member(payload.user_id)
                 role = guild.get_role(int(role_id))
                 if role is not None:
-                    await payload.member.remove_roles(role, reason="EpicBot Selfroles")
+                    await member.remove_roles(role, reason="EpicBot Selfroles")
                     return
 
 

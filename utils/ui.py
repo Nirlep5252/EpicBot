@@ -78,6 +78,40 @@ class Paginator(discord.ui.View):
         await interaction.response.send_message("Not your command ._.", ephemeral=True)
 
 
+class PaginatorText(discord.ui.View):
+    def __init__(self, ctx: commands.Context, stuff: List[str]):
+        super().__init__(timeout=None)
+        self.ctx = ctx
+        self.stuff = stuff
+        self.current = 0
+
+    async def edit(self, msg, pos):
+        await msg.edit(content=self.stuff[pos])
+
+    @discord.ui.button(emoji='◀️', style=discord.ButtonStyle.blurple)
+    async def bac(self, b, i):
+        if self.current == 0:
+            return
+        await self.edit(i.message, self.current - 1)
+        self.current -= 1
+
+    @discord.ui.button(emoji='⏹️', style=discord.ButtonStyle.blurple)
+    async def stap(self, b, i):
+        await i.message.delete()
+
+    @discord.ui.button(emoji='▶️', style=discord.ButtonStyle.blurple)
+    async def nex(self, b, i):
+        if self.current + 1 == len(self.stuff):
+            return
+        await self.edit(i.message, self.current + 1)
+        self.current += 1
+
+    async def interaction_check(self, interaction):
+        if interaction.user == self.ctx.author:
+            return True
+        await interaction.response.send_message("Not your command ._.", ephemeral=True)
+
+
 class TicketView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -91,7 +125,7 @@ class TicketView(discord.ui.View):
             if t.name == f'ticket-{interaction.user.id}' and not t.archived:
                 return await interaction.response.send_message(f'You already have a ticket {t.mention}', ephemeral=True)
         channel = interaction.channel
-        thread = await channel.start_thread(name=f'ticket-{interaction.user.id}')
+        thread = await channel.create_thread(name=f'ticket-{interaction.user.id}')
         await thread.send(f"📂 {interaction.user.mention} has created a ticket.", allowed_mentions=discord.AllowedMentions(
             everyone=False,
             roles=False,
@@ -129,9 +163,37 @@ class SelfRoleOptionSelecter(discord.ui.View):
         return True
 
 
+class SelfRoleEditor(discord.ui.View):
+    def __init__(self, ctx: commands.Context, timeout: Optional[int] = 300):
+        super().__init__(timeout=timeout)
+        self.ctx = ctx
+        self.value = None
+
+    @discord.ui.select(placeholder="Please select an option to modify!", options=[
+        SelectOption(label='Add', description="Add roles to the list.", value='add'),
+        SelectOption(label='Remove', description="Remove roles from the list.", value='remove')
+    ])
+    async def uwu(self, select: discord.ui.Select, interaction: discord.Interaction):
+        self.value = select.values[0]
+
+    @discord.ui.button(label="Continue", style=discord.ButtonStyle.blurple)
+    async def go_ahead(self, b: discord.Button, i: discord.Interaction):
+        self.stop()
+
+    @discord.ui.button(label="Stop", style=discord.ButtonStyle.red)
+    async def cancel(self, b: discord.Button, i: discord.Interaction):
+        self.value = None
+        self.stop()
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user != self.ctx.author:
+            return False
+        return True
+
+
 class SelfRoleButton(discord.ui.Button):
     def __init__(self, guild: discord.Guild, emoji: str, role_id: int):
-        super().__init__(emoji=emoji, style=discord.ButtonStyle.blurple, custom_id='selfrole-button')
+        super().__init__(emoji=emoji, style=discord.ButtonStyle.blurple, custom_id=str(role_id))
         self.guild = guild
         self.emoji = emoji
         self.role = guild.get_role(int(role_id))
