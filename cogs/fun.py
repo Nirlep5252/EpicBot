@@ -23,9 +23,9 @@ import functools
 from discord.ext import commands
 from typing import Optional, Union
 from config import (
-    EMOJIS, MAIN_COLOR, BIG_PP_GANG, NO_PP_GANG,
+    DAGPI_KEY, EMOJIS, MAIN_COLOR, BIG_PP_GANG, NO_PP_GANG,
     RED_COLOR, ORANGE_COLOR, PINK_COLOR, CHAT_BID,
-    CHAT_API_KEY, PINK_COLOR_2
+    CHAT_API_KEY, PINK_COLOR_2, THINKING_EMOJI_URLS
 )
 from utils.embed import success_embed, error_embed, edit_msg_multiple_times
 from utils.custom_checks import not_opted_out
@@ -794,12 +794,26 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Funny, funny jokes!", aliases=['dadjoke'])
     async def joke(self, ctx):
-        await ctx.message.reply(embed=success_embed("Haha!", dadjoke.joke))
+        await ctx.reply(embed=success_embed("Haha!", dadjoke.joke))
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Funny, funny memes!")
-    async def meme(self, ctx):
-        await ctx.message.reply(embed=await pick_random_url_from_reddit('dankmemes', 'Haha!'))
+    async def meme(self, ctx: commands.Context):
+        await ctx.reply(embed=await pick_random_url_from_reddit('dankmemes', 'Haha!'))
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command(help="Random fun facts!")
+    async def fact(self, ctx: commands.Context):
+        headers = {'Authorization': DAGPI_KEY}
+        async with self.client.session.get("https://api.dagpi.xyz/data/fact", headers=headers) as resp:
+            data = await resp.json()
+            if "error" in data:
+                ctx.command.reset_cooldown(ctx)
+                return await ctx.reply(embed=error_embed("An error occured!", data['error']))
+            return await ctx.reply(embed=success_embed(
+                "Random Fact",
+                data['fact']
+            ).set_thumbnail(random.choice(THINKING_EMOJI_URLS)))
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Get a random quote!")
