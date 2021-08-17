@@ -28,7 +28,6 @@ from config import (
 )
 from utils.embed import error_embed
 from utils.bot import EpicBot
-from typing import Optional, Union
 
 
 class info(commands.Cog, description="Statistic related commands"):
@@ -159,8 +158,9 @@ Members: {len(role.members)}
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Get info about users!")
-    async def userinfo(self, ctx: commands.Context, user: Optional[Union[discord.Member, discord.User]] = None):
-        user = user or ctx.author
+    async def userinfo(self, ctx: commands.Context, user: discord.Member = None):
+        if user is None:
+            user = ctx.author
 
         embed = discord.Embed(color=user.color)
         embed.set_author(name=user, icon_url=user.avatar.url)
