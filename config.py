@@ -37,6 +37,7 @@ TWITCH_CLIENT_ID = os.environ.get("TWITCH_CLIENT_ID")
 TWITCH_CLIENT_SECRET = os.environ.get("TWITCH_CLIENT_SECRET")
 CHAT_BID = os.environ.get("CHAT_BID")
 CHAT_API_KEY = os.environ.get("CHAT_API_KEY")
+DAGPI_KEY = os.environ.get("DAGPI_KEY")
 
 # SECRET LOGS HEHE :3
 
@@ -182,6 +183,14 @@ CUTE_EMOJIS = [
     "<:ur_cute:845151161039716362>",
     "<:thanks:800741855805046815>",
     "<a:hugs:839739273083224104>"
+]
+THINKING_EMOJI_URLS = [
+    'https://cdn.discordapp.com/emojis/862387505852055602.png',
+    'https://cdn.discordapp.com/emojis/768302864685727755.png',
+    'https://cdn.discordapp.com/emojis/854206416830988318.png',
+    'https://cdn.discordapp.com/emojis/853192295277002752.png',
+    'https://cdn.discordapp.com/emojis/585956493392871424.png',
+    'https://cdn.discordapp.com/emojis/819207595876417546.png'
 ]
 
 # CREDITS
