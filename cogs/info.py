@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from utils.time import datetime_to_seconds
 import discord
 import time
 import datetime
@@ -22,7 +23,7 @@ from discord.utils import escape_markdown
 from discord.ext import commands
 
 from config import (
-    MAIN_COLOR, ORANGE_COLOR,
+    EMOJIS_FOR_COGS, MAIN_COLOR, ORANGE_COLOR,
     EMOJIS, WEBSITE_LINK, SUPPORT_SERVER_LINK,
     INVITE_BOT_LINK, start_time
 )
@@ -211,75 +212,64 @@ Joined At: {user.joined_at.replace(tzinfo=None).strftime("%d/%m/%y | %H:%M:%S")}
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Get info about the server!")
     async def serverinfo(self, ctx: commands.Context):
-        embed = discord.Embed(description=f"[Server Icon]({ctx.guild.icon.url})", color=MAIN_COLOR)
-        embed.set_author(name=ctx.guild.name, icon_url=ctx.guild.icon.url)
-        embed.set_thumbnail(url=ctx.guild.icon.url)
+        guild: discord.Guild = ctx.guild
+        embed = discord.Embed(
+            title=f"{EMOJIS_FOR_COGS['info']} Server Information",
+            description=f"Description: {guild.description}",
+            color=MAIN_COLOR
+        ).set_author(
+            name=guild.name,
+            icon_url=guild.me.avatar.url if guild.icon is None else guild.icon.url
+        ).set_footer(text=f"ID: {guild.id}")
+        if guild.icon is not None:
+            embed.set_thumbnail(url=guild.icon.url)
+        embed.add_field(
+            name="Basic Info:",
+            value=f"""
+**Owner:** <@{guild.owner_id}>
+**Created At:** <t:{datetime_to_seconds(guild.created_at)}:F>
+**Region:** {str(guild.region).title()}
+**System Channel:** {"None" if guild.system_channel is None else guild.system_channel.mention}
+**Verification Level:** {str(guild.verification_level).title()}
+            """,
+            inline=False
+        )
+        embed.add_field(
+            name="Members Info:",
+            value=f"""
+**Members:** `{len(guild.members)}`
+**Humans:** `{len(list(filter(lambda m: not m.bot, guild.members)))}`
+**Bots:** `{len(list(filter(lambda m: m.bot, guild.members)))}`
+            """,
+            inline=True
+        )
+        embed.add_field(
+            name="Channels Info:",
+            value=f"""
+**Categories:** `{len(guild.categories)}`
+**Text Channels:** `{len(guild.text_channels)}`
+**Voice Channels:** `{len(guild.voice_channels)}`
+**Threads:** `{len(guild.threads)}`
+            """,
+            inline=True
+        )
+        embed.add_field(
+            name="Other Info:",
+            value=f"""
+**Roles:** `{len(guild.roles)}`
+**Emojis:** `{len(guild.emojis)}`
+**Stickers:** `{len(guild.stickers)}`
+                """
+        )
+        embed.add_field(
+            name="Features:",
+            value=', '.join([feature.replace('_', ' ').title() for feature in guild.features]),
+            inline=False
+        )
+        if guild.banner is not None:
+            embed.set_image(url=guild.banner.url)
 
-        try:
-            rules_channel = ctx.guild.rules_channel
-            moderation_level = str(ctx.guild.verification_level).title()
-            invites = len(await ctx.guild.invites())
-            afk_channel = ctx.guild.afk_channel
-            afk_timeout = ctx.guild.afk_timeout
-        except Exception:
-            rules_channel = 'Not Enough Perms'
-            moderation_level = 'Not Enough Perms'
-            invites = 'Not Enough Perms'
-            afk_channel = 'Not Enough Perms'
-            afk_timeout = 'Not Enough Perms'
-
-        embed.add_field(
-            name="Basic Info",
-            value=f"""
-```yaml
-Server Name: {ctx.guild.name}
-ID: {ctx.guild.id}
-Owner: {ctx.guild.owner}
-Region: {str(ctx.guild.region).title()}
-Moderation Level: {moderation_level}
-Created At: {ctx.guild.created_at.replace(tzinfo=None).strftime("%d/%m/%y | %H:%M:%S")}
-```
-            """,
-            inline=False
-        )
-        embed.add_field(
-            name="Members Info",
-            value=f"""
-```yaml
-Members: {len(ctx.guild.members)}
-Humans: {len(list(filter(lambda m: not m.bot, ctx.guild.members)))}
-Bots: {len(list(filter(lambda m: m.bot, ctx.guild.members)))}
-```
-            """,
-            inline=False
-        )
-        embed.add_field(
-            name="Channels Info",
-            value=f"""
-```yaml
-Text Channels: {len(ctx.guild.text_channels)}
-Voice Channels: {len(ctx.guild.voice_channels)}
-Rules Channel: {rules_channel}
-AFK Channel: {afk_channel}
-AFK Timeout: {afk_timeout}s
-```
-            """,
-            inline=False
-        )
-        embed.add_field(
-            name="Other Info",
-            value=f"""
-```yaml
-Invites: {invites}
-Roles: {len(ctx.guild.roles)}
-Emojis: {len(ctx.guild.emojis)}
-Server Boosts: {ctx.guild.premium_subscription_count}
-```
-            """,
-            inline=False
-        )
-
-        await ctx.message.reply(embed=embed)
+        return await ctx.reply(embed=embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases=['av', 'pfp'], help="Get the user's avatar")
