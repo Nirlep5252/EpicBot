@@ -425,13 +425,13 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
 
             await ctx.reply(embed=info_embed)
 
-    @commands.command(help="Setup everything you'll ever need.")
-    @commands.has_permissions(administrator=True)
-    @commands.bot_has_permissions(administrator=True)
-    @commands.cooldown(3, 30, commands.BucketType.user)
-    @commands.max_concurrency(1, commands.BucketType.guild)
-    async def setup(self, ctx: commands.Context):
-        return await ctx.reply("work in progress")
+    # @commands.command(help="Setup everything you'll ever need.")
+    # @commands.has_permissions(administrator=True)
+    # @commands.bot_has_permissions(administrator=True)
+    # @commands.cooldown(3, 30, commands.BucketType.user)
+    # @commands.max_concurrency(1, commands.BucketType.guild)
+    # async def setup(self, ctx: commands.Context):
+    #     return await ctx.reply("work in progress")
 
     @commands.cooldown(3, 60, commands.BucketType.user)
     @commands.has_guild_permissions(manage_guild=True)
@@ -2649,12 +2649,12 @@ Counting is currently **{'Disabled' if not enabled else 'set in <#'+str(g['count
         g['counting'].update({"count": number})
         return await ctx.reply(f"The count has been updated: `{before_count}` ➜ `{number}`")
 
-    @commands.command(help="Setup server counters!")
-    @commands.has_permissions(manage_guild=True, manage_channels=True)
-    @commands.bot_has_permissions(manage_channels=True, manage_messages=True)
-    @commands.cooldown(3, 30, commands.BucketType.guild)
-    async def counters(self, ctx: commands.Context):
-        pass
+    # @commands.command(help="Setup server counters!")
+    # @commands.has_permissions(manage_guild=True, manage_channels=True)
+    # @commands.bot_has_permissions(manage_channels=True, manage_messages=True)
+    # @commands.cooldown(3, 30, commands.BucketType.guild)
+    # async def counters(self, ctx: commands.Context):
+    #     pass
 
     @commands.command(help="Configure automod for your server!", aliases=['am'])
     @commands.has_permissions(administrator=True)
@@ -2802,9 +2802,9 @@ Counting is currently **{'Disabled' if not enabled else 'set in <#'+str(g['count
                     f"Users in channel {other.mention} will now trigger automod."
                 ))
         if module.lower() == 'links':
-            return await ctx.reply("soon")
+            return await ctx.reply("This is work in progress!")
         if module.lower() == 'badwords':
-            return await ctx.reply("soon")
+            return await ctx.reply("This is work in progress!")
         if setting is None:
             return await ctx.reply(embed=error_embed(
                 f"{EMOJIS['tick_no']} Incorrect Usage!",
