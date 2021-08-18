@@ -26,8 +26,8 @@ from utils.embed import (
     error_embed
 )
 from config import (
-    OWNERS, EMOJIS, ERROR_LOG_CHANNEL,
-    MAIN_COLOR, VOTE_LINK, RED_COLOR
+    OWNERS, EMOJIS, MAIN_COLOR,
+    VOTE_LINK, RED_COLOR
 )
 from utils.random import gen_random_string
 from utils.custom_checks import NotVoted, NotBotMod, OptedOut
@@ -117,7 +117,7 @@ class ErrorHandling(commands.Cog):
                 "This command can only be used in a **NSFW** channel."
             ))
         elif isinstance(error, commands.NotOwner):
-            await self.client.get_channel(ERROR_LOG_CHANNEL).send(
+            await self.client.get_channel(800252938869669898).send(
                 embed=discord.Embed(
                     title="Someone tried to use Owner only command!",
                     description=f"```{ctx.message.content}```",
@@ -209,7 +209,7 @@ class ErrorHandling(commands.Cog):
             ).set_footer(text=f"ERROR ID: {random_error_id}")
 
             try:
-                await self.client.get_channel(ERROR_LOG_CHANNEL).send(embed=error_embed_)
+                await self.client.get_channel(800252938869669898).send(embed=error_embed_)
             except Exception:
                 traceback.print_exception(etype=type(error), value=error, tb=error.__traceback__)
 

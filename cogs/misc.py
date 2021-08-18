@@ -67,7 +67,7 @@ Database : {round((db_time2-db_time1)*1000)}ms
             title="Invite EpicBot \💖",
             description="Thank you so much!",
             color=MAIN_COLOR,
-            url=f"{WEBSITE_LINK}/beta"
+            url=f"{WEBSITE_LINK}/invite"
         ).set_footer(text="UwU"))
 
     @commands.cooldown(1, 2, commands.BucketType.user)

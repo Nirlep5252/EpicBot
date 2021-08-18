@@ -23,9 +23,8 @@ import aiohttp
 
 from config import (
     MONGO_DB_URL, DEFAULT_AUTOMOD_CONFIG,
-    DB_UPDATE_INTERVAL, ONLINE_LOG_CHANNEL
+    DB_UPDATE_INTERVAL
 )
-from utils.embed import success_embed
 from discord.ext import commands, tasks
 from pymongo import UpdateOne
 
@@ -462,7 +461,7 @@ class EpicBot(commands.AutoShardedBot):
         print("Blacklisted users cache has been loaded.")
 
     async def load_extensions(self, filename_):
-        await self.wait_until_ready()
+        # await self.wait_until_ready()
         cogs_text = ""
         i = 0
         total = 0
@@ -475,12 +474,13 @@ class EpicBot(commands.AutoShardedBot):
                     i += 1
                 except Exception as e:
                     cogs_text += f"🔴 Unable to load {filename[:-3]} | {e}\n"
-        await self.get_channel(ONLINE_LOG_CHANNEL).send(embed=success_embed("Cogs Loaded", f"```{cogs_text}```"))
+        # await self.get_channel(ONLINE_LOG_CHANNEL).send(embed=success_embed("Cogs Loaded", f"```{cogs_text}```"))
         print(f"Loaded {i}/{total} extensions from {filename_}")
+        print(cogs_text)
 
     async def fetch_prefix(self, message: discord.Message):
         if not message.guild:
-            return ["e/"]
+            return ["e!"]
 
         guild_id = message.guild.id
         prefix_cache = self.prefixes_cache
@@ -493,7 +493,7 @@ class EpicBot(commands.AutoShardedBot):
                 return ee['prefix']
 
         prefix_cache.append({"_id": guild_id, "prefix": ["e/"]})
-        return ["e/"]
+        return ["e!"]
 
     async def get_custom_prefix(self, message: discord.Message):
         prefix = await self.fetch_prefix(message)

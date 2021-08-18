@@ -20,8 +20,7 @@ from discord.ext import commands
 from utils.embed import success_embed, error_embed
 from utils.bot import EpicBot
 from config import (
-    COMMANDS_LOG_CHANNEL, ADD_REMOVE_LOG_CHANNEL,
-    DM_LOG_CHANNEL, COOLDOWN_BYPASS, EMOJIS,
+    COOLDOWN_BYPASS, EMOJIS,
     PREFIX, MAIN_COLOR, EMPTY_CHARACTER, WEBSITE_LINK,
     SUPPORT_SERVER_LINK
 )
@@ -30,9 +29,9 @@ from config import (
 class Logs(commands.Cog):
     def __init__(self, client: EpicBot):
         self.client = client
-        self.cmd_log_channel = self.client.get_channel(COMMANDS_LOG_CHANNEL)
-        self.add_remove_log_channel = self.client.get_channel(ADD_REMOVE_LOG_CHANNEL)
-        self.dm_log_channel = self.client.get_channel(DM_LOG_CHANNEL)
+        self.cmd_log_channel = self.client.get_channel(775949886842994698)
+        self.add_remove_log_channel = self.client.get_channel(793832499645644800)
+        self.dm_log_channel = self.client.get_channel(793482521076695070)
 
     @commands.Cog.listener(name="on_command_completion")
     async def add_cmd_used_count_user_profile(self, ctx: commands.Context):

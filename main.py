@@ -34,13 +34,13 @@ intents = Intents.default()
 intents.members = True
 client = EpicBot(
     command_prefix=EpicBot.get_custom_prefix,
-    intents=Intents.all(),
+    intents=intents,
     case_insensitive=True,
     allowed_mentions=AllowedMentions.none(),
     strip_after_prefix=True,
     help_command=EpicBotHelp(),
     cached_messages=10000,
-    activity=Activity(type=ActivityType.playing, name="e/help | beta.epic-bot.com")
+    activity=Activity(type=ActivityType.playing, name="e!help | epic-bot.com")
 )
 environ.setdefault("JISHAKU_HIDE", "1")
 environ.setdefault("JISHAKU_NO_UNDERSCORE", "1")
@@ -90,22 +90,22 @@ async def on_message_edit(before, after):
         return
     client.dispatch("message", after)
 
+if not client.cache_loaded:
+    client.loop.run_until_complete(client.get_cache())
+    client.loop.run_until_complete(client.get_blacklisted_users())
+    client.cache_loaded = True
+
+if not client.cogs_loaded:
+    client.load_extension('jishaku')
+    print("Loaded jsk!")
+    client.loop.run_until_complete(client.load_extensions('./cogs'))
+    client.loop.run_until_complete(client.load_extensions('./cogs_hidden'))
+    client.cogs_loaded = True
+
 
 @client.event
 async def on_ready():
     print(f"Logged in as {client.user}")
-
-    if not client.cache_loaded:
-        await client.get_cache()
-        await client.get_blacklisted_users()
-        client.cache_loaded = True
-
-    if not client.cogs_loaded:
-        client.load_extension('jishaku')
-        print("Loaded jsk!")
-        await client.load_extensions('./cogs')
-        await client.load_extensions('./cogs_hidden')
-        client.cogs_loaded = True
 
     if not client.views_loaded:
         client.add_view(TicketView())

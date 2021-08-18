@@ -9,8 +9,6 @@ pymongo
 dnspython
 psutil
 git+https://github.com/LiBa001/disputils
-git+https://github.com/ytdl-org/youtube-dl
-google-api-python-client
 PyNaCl
 chatbotAI
 topggpy
@@ -22,9 +20,7 @@ humanfriendly
 pillow
 typing
 DiscordUtils
+python-dotenv
+epicbot-images
 
 git+https://github.com/nirlep5252/Discord-Games.git
-git+https://github.com/nirlep5252/discord-ext-events
-
-git+https://github.com/Nirlep5252/epicbot-images/
-# epicbot-images
