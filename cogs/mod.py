@@ -744,6 +744,28 @@ Here are you settings:
             ctx.command.reset_cooldown(ctx)
             return await ctx.message.reply(embed=error_embed("Error!", f"I cannot kick **{escape_markdown(str(user))}** because they are a mod/admin."))
 
+    @commands.cooldown(1, 30, commands.BucketType.user)
+    @commands.has_permissions(ban_members=True)
+    @commands.bot_has_guild_permissions(ban_members=True, embed_links=True)
+    @commands.command(help="Ban multiple people from your server!")
+    async def massban(self, ctx: commands.Context, users: commands.Greedy[Union[discord.Member, discord.User, int, str]] = None, *, reason='No Reason Provided'):
+        if not users:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply("Please provide some users to ban!")
+        for user in users:
+            await ctx.invoke(self.client.get_command('ban'), user=user, reason=reason)
+
+    @commands.cooldown(1, 30, commands.BucketType.user)
+    @commands.has_permissions(kick_members=True)
+    @commands.bot_has_guild_permissions(ban_members=True, embed_links=True)
+    @commands.command(help="Kick multiple people from your server!")
+    async def masskick(self, ctx: commands.Context, users: commands.Greedy[discord.Member] = None, *, reason='No Reason Provided'):
+        if not users:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply("Please provide some users to kick!")
+        for user in users:
+            await ctx.invoke(self.client.get_command('kick'), user=user, reason=reason)
+
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_guild_permissions(ban_members=True, embed_links=True)
@@ -752,7 +774,7 @@ Here are you settings:
         PREFIX = ctx.clean_prefix
         if user is None:
             ctx.command.reset_cooldown(ctx)
-            return await ctx.message.reply(embed=error_embed(
+            return await ctx.send(embed=error_embed(
                 f"{EMOJIS['tick_no']} Invalid Usage!",
                 f"Please enter a user to ban.\nCorrect Usage: `{PREFIX}ban @user [reason]`"
             ))
@@ -761,20 +783,20 @@ Here are you settings:
         if isinstance(user, int):
             try:
                 await ctx.guild.ban(discord.Object(id=user), reason=f"{ctx.author} - {ctx.author.id}: {reason}")
-                await ctx.reply(embed=success_embed(f"{EMOJIS['tick_yes']}", "They have been banned."))
+                await ctx.send(embed=success_embed(f"{EMOJIS['tick_yes']}", "They have been banned."))
             except Exception as e:
                 ctx.command.reset_cooldown(ctx)
-                return await ctx.reply(embed=error_embed(f"{EMOJIS['tick_no']} Unable to ban", e))
+                return await ctx.send(embed=error_embed(f"{EMOJIS['tick_no']} Unable to ban", e))
         if user == ctx.author:
             ctx.command.reset_cooldown(ctx)
-            return await ctx.message.reply("Don't ban yourself :(")
+            return await ctx.send("Don't ban yourself :(")
         if user == self.client.user:
             ctx.command.reset_cooldown(ctx)
-            return await ctx.message.reply("Bruh why u wanna ban me :(")
+            return await ctx.send("Bruh why u wanna ban me :(")
         if isinstance(user, discord.Member):
             if int(user.top_role.position) >= int(ctx.author.top_role.position):
                 ctx.command.reset_cooldown(ctx)
-                return await ctx.message.reply(embed=error_embed(
+                return await ctx.send(embed=error_embed(
                     f"{EMOJIS['tick_no']} No!",
                     f"You cannot ban **{escape_markdown(str(user))}** because they are a mod/admin."
                 ))
@@ -789,10 +811,10 @@ Here are you settings:
                 ).add_field(name="Reason", value=reason, inline=False))
             except Exception:
                 pass
-            await ctx.message.reply(embed=success_embed(f"{EMOJIS['tick_yes']} User Banned!", f"**{escape_markdown(str(user))}** has been banned!"))
+            await ctx.send(embed=success_embed(f"{EMOJIS['tick_yes']} User Banned!", f"**{escape_markdown(str(user))}** has been banned!"))
         except Exception:
             ctx.command.reset_cooldown(ctx)
-            return await ctx.message.reply(embed=error_embed("Error!", f"I cannot ban **{escape_markdown(str(user))}** because they are a mod/admin."))
+            return await ctx.send(embed=error_embed("Error!", f"I cannot ban **{escape_markdown(str(user))}** because they are a mod/admin."))
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.has_permissions(ban_members=True)
