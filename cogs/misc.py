@@ -16,7 +16,7 @@ limitations under the License.
 
 import discord
 import time
-import datetime
+import humanfriendly
 
 from utils.embed import error_embed, success_embed
 from discord.ext import commands
@@ -67,7 +67,7 @@ Database : {round((db_time2-db_time1)*1000)}ms
             title="Invite EpicBot \💖",
             description="Thank you so much!",
             color=MAIN_COLOR,
-            url=f"https://beta.epic-bot.com/invite"
+            url="https://beta.epic-bot.com/invite"
         ).set_footer(text="UwU"))
 
     @commands.cooldown(1, 2, commands.BucketType.user)
@@ -90,7 +90,7 @@ Database : {round((db_time2-db_time1)*1000)}ms
     async def uptime(self, ctx):
         await ctx.message.reply(embed=discord.Embed(
             title="Uptime",
-            description=f"I have been up for **{str(datetime.timedelta(seconds=int(round(time.time()-start_time))))}**",
+            description=f"I have been up for **{humanfriendly.format_timespan(round(time.time()-start_time))}**",
             color=MAIN_COLOR
         ))
 
