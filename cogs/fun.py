@@ -35,7 +35,7 @@ from owotext import OwO
 from dadjokes import Dadjoke
 from discord.utils import escape_markdown
 from utils.bot import EpicBot
-from epicbot_images import effects
+from epicbot_images.effects import ascii
 from io import BytesIO
 
 uwu = OwO()
@@ -866,7 +866,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         if isinstance(text, str):
             res = pyfiglet.figlet_format(text)
         else:
-            res = await self.client.loop.run_in_executor(None, functools.partial(effects.ascii, file_bytes))
+            res = await self.client.loop.run_in_executor(None, functools.partial(ascii, file_bytes))
 
         try:
             await ctx.reply(f"```{res}```")

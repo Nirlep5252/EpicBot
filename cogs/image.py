@@ -24,7 +24,7 @@ from config import (
 from utils.embed import error_embed
 from utils.bot import EpicBot
 from utils.flags import EnhanceCmdFlags
-from typing import Optional, Union
+from typing import Optional  # , Union
 from epicbot_images import memes, effects
 
 
@@ -103,35 +103,35 @@ class image(commands.Cog, description="Cool image commands!"):
         async with ctx.channel.typing():
             await ctx.reply(file=discord.File(await self.client.loop.run_in_executor(None, functools.partial(effects.enhance, avatar_bytes, **amogus))))
 
-    @commands.command(help="Wiggle your friends...")
-    @commands.cooldown(1, 60, commands.BucketType.user)
-    @commands.max_concurrency(1, commands.BucketType.guild)
-    @commands.bot_has_permissions(attach_files=True)
-    async def wiggle(self, ctx: commands.Context, *, thing: Optional[Union[discord.Member, discord.PartialEmoji]] = None):
-        thingy_bytes = None
+    # @commands.command(help="Wiggle your friends...")
+    # @commands.cooldown(1, 60, commands.BucketType.user)
+    # @commands.max_concurrency(1, commands.BucketType.guild)
+    # @commands.bot_has_permissions(attach_files=True)
+    # async def wiggle(self, ctx: commands.Context, *, thing: Optional[Union[discord.Member, discord.PartialEmoji]] = None):
+    #     thingy_bytes = None
 
-        if not thing and len(ctx.message.attachments) == 0:
-            thingy_bytes = await ctx.author.avatar.replace(format='png', size=128).read()
-        elif not thing and len(ctx.message.attachments) != 0:
-            for attachment in ctx.message.attachments:
-                if attachment.content_type == "image/png":
-                    thingy_bytes = await attachment.read()
-                    break
-            thingy_bytes = thingy_bytes or await ctx.author.avatar.replace(format='png', size=128).read()
-        else:
-            if isinstance(thing, discord.Member):
-                thingy_bytes = await thing.avatar.replace(format='png', size=128).read()
-            else:
-                thingy_bytes = await thing.read()
+    #     if not thing and len(ctx.message.attachments) == 0:
+    #         thingy_bytes = await ctx.author.avatar.replace(format='png', size=128).read()
+    #     elif not thing and len(ctx.message.attachments) != 0:
+    #         for attachment in ctx.message.attachments:
+    #             if attachment.content_type == "image/png":
+    #                 thingy_bytes = await attachment.read()
+    #                 break
+    #         thingy_bytes = thingy_bytes or await ctx.author.avatar.replace(format='png', size=128).read()
+    #     else:
+    #         if isinstance(thing, discord.Member):
+    #             thingy_bytes = await thing.avatar.replace(format='png', size=128).read()
+    #         else:
+    #             thingy_bytes = await thing.read()
 
-        async with ctx.channel.typing():
-            await ctx.reply(
-                file=discord.File(
-                    await self.client.loop.run_in_executor(
-                        None, functools.partial(effects.wiggle, img=thingy_bytes)
-                    )
-                )
-            )
+    #     async with ctx.channel.typing():
+    #         await ctx.reply(
+    #             file=discord.File(
+    #                 await self.client.loop.run_in_executor(
+    #                     None, functools.partial(effects.wiggle, img=thingy_bytes)
+    #                 )
+    #             )
+    #         )
 
     @commands.command(help="Why...", aliases=['why'])
     @commands.bot_has_permissions(attach_files=True)
