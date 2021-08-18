@@ -20,6 +20,7 @@ import time
 import asyncio
 import aiohttp
 import json
+import re
 
 from config import EMOJIS, MAIN_COLOR, UD_API_KEY, RED_COLOR, WEATHER_API_KEY
 from utils.embed import success_embed, error_embed, process_embeds_from_json
@@ -40,6 +41,18 @@ class utility(commands.Cog, description="Commands that make your Discord experie
     def __init__(self, client: EpicBot):
         self.client = client
         self.reminding.start()
+        self.regex = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
+
+    @property
+    def session(self):
+        return self.client.http._HTTPClient__session  # type: ignore
+
+    async def _run_code(self, *, lang: str, code: str):
+        res = await self.session.post(
+            "https://emkc.org/api/v1/piston/execute",
+            json={"language": lang, "source": code},
+        )
+        return await res.json()
 
     @tasks.loop(seconds=1)
     async def reminding(self):
@@ -169,6 +182,52 @@ class utility(commands.Cog, description="Commands that make your Discord experie
                     inline=False
                 )
             embed.set_footer(text=f"You can delete reminders using {prefix}delreminder <id>")
+        await ctx.reply(embed=embed)
+
+    @commands.command(help="Run code and get results instantly! Credits: `FalseDev`")
+    @commands.cooldown(3, 30, commands.BucketType.user)
+    async def run(self, ctx: commands.Context, *, codeblock: str = None):
+        if not codeblock:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Invalid Usage!",
+                f"Please enter a code block.\nCorrect Usage: `{ctx.clean_prefix}run <code>`"
+            ))
+        matches = self.regex.findall(codeblock)
+        if not matches:
+            return await ctx.reply(
+                embed=error_embed(
+                    "Uh-oh", "Please use codeblocks to run your code!"
+                ).set_image(url="https://us2.tixte.net/uploads/awish-go.to-sleep.xyz/ksh6nas2u9a.png")
+            )
+        lang = matches[0][0] or matches[0][1]
+        if not lang:
+            return await ctx.reply(
+                embed=error_embed("Uh-oh", "Couldn't find the language hinted in the codeblock or before it")
+            )
+        code = matches[0][2]
+        result = await self._run_code(lang=lang, code=code)
+
+        await self._send_result(ctx, result)
+
+    async def _send_result(self, ctx: commands.Context, result: dict):
+        if "message" in result:
+            return await ctx.reply(
+                embed=error_embed("Uh-oh", result["message"])
+            )
+        output = result["output"]
+        #        if len(output) > 2000:
+        #            url = await create_guest_paste_bin(self.session, output)
+        #            return await ctx.reply("Your output was too long, so here's the pastebin link " + url)
+        embed = discord.Embed(title=f"Ran your {result['language']} code", color=MAIN_COLOR)
+        output = output[:500].strip()
+        shortened = len(output) > 500
+        lines = output.splitlines()
+        shortened = shortened or (len(lines) > 15)
+        output = "\n".join(lines[:15])
+        output += shortened * "\n\n**Output shortened**"
+        embed.add_field(name="Output", value=f"```{output}```" or "**<No output>**")
+
         await ctx.reply(embed=embed)
 
     # @commands.cooldown(1, 10, commands.BucketType.user)
