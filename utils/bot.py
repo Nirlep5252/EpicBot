@@ -492,7 +492,7 @@ class EpicBot(commands.AutoShardedBot):
                     ee.update({"prefix": [str_prefix]})
                 return ee['prefix']
 
-        prefix_cache.append({"_id": guild_id, "prefix": ["e/"]})
+        prefix_cache.append({"_id": guild_id, "prefix": ["e!"]})
         return ["e!"]
 
     async def get_custom_prefix(self, message: discord.Message):
