@@ -41,6 +41,7 @@ TWITCH_CLIENT_SECRET = os.environ.get("TWITCH_CLIENT_SECRET")
 CHAT_BID = os.environ.get("CHAT_BID")
 CHAT_API_KEY = os.environ.get("CHAT_API_KEY")
 DAGPI_KEY = os.environ.get("DAGPI_KEY")
+STATCORD_KEY = os.environ.get("STATCORD_KEY")
 
 # SECRET LOGS HEHE :3
 
