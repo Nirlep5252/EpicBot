@@ -173,4 +173,4 @@ class EpicBotHelp(commands.HelpCommand):
         return await self.context.reply(embed=error_embed(f"{EMOJIS['tick_no']} Error", error))
 
     async def send_group_help(self, group):
-        return super().send_group_help(group)
+        return await super().send_group_help(group)
