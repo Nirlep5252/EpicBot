@@ -53,7 +53,7 @@ async def get_command_help(ctx: commands.Context, command_name: str) -> discord.
 
 **Usage:**
 ```
-{ctx.clean_prefix}{command.name} {''.join(['<' + str(param) + '>' for param in command.clean_params])}
+{ctx.clean_prefix}{command.name} {' '.join(['<' + str(param) + '>' for param in command.clean_params])}
 ```
 **Aliases:** {','.join(['`' + str(alias) + '`' for alias in command.aliases])}
 **Cooldown:** {0 if command._buckets._cooldown == None else command._buckets._cooldown.per} seconds
