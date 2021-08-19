@@ -326,10 +326,9 @@ Make sure to upload image as an attachment.
         ).set_footer(text=f"They have been thanked {user_profile['times_thanked']} times!"
         ).set_thumbnail(url="https://cdn.discordapp.com/emojis/856078862852161567.png?v=1"))
 
-    async def get_badges(self, user_id):
+    async def get_badges(self, user_id, user_profile):
         guild = self.client.get_guild(EPICBOT_GUILD_ID)
         member = guild.get_member(user_id)
-        user_profile = await self.client.get_user_profile_(user_id)
         wew = []
         badge_roles = {
             "owner_of_epicness": OWNER_ROLE,
@@ -382,9 +381,9 @@ Make sure to upload image as an attachment.
         if user_id in NO_PP_GANG:
             wew.append("No_PP")
 
-        voted = await check_voter(user_id)
-        if voted:
-            wew.append("voter")
+#        voted = await check_voter(user_id)
+#        if voted:
+#            wew.append("voter")
 
         return wew
 
@@ -400,12 +399,12 @@ Make sure to upload image as an attachment.
         user_profile = await self.client.get_user_profile_(user_.id)
 
         async with ctx.typing():
-            await ctx.invoke(
-                self.client.get_command('rank_from_template'),
-                member=user_,
-                template=user_profile['rank_card_template'],
-                reply=False
-            )
+            # await ctx.invoke(
+            #     self.client.get_command('rank_from_template'),
+            #     member=user_,
+            #     template=user_profile['rank_card_template'],
+            #     reply=False
+            # )
 
             nice = f"""
     {user_profile['description']}
@@ -429,7 +428,7 @@ Make sure to upload image as an attachment.
             badge_text4 = ""
             badge_text5 = ""
 
-            h = await self.get_badges(user_.id)
+            h = await self.get_badges(user_.id, user_profile)
 
             for e in user_profile['badges']:
                 h.append(e)
@@ -453,12 +452,12 @@ Make sure to upload image as an attachment.
                     badge_text5 += hee
                 i += 1
 
-            f = discord.File("assets/temp/rank.png", filename="rank.png")
+            # f = discord.File("assets/temp/rank.png", filename="rank.png")
             embed = discord.Embed(
                 description=nice,
                 color=MAIN_COLOR
             ).set_author(name=user_.name, icon_url=user_.avatar.url
-            ).set_image(url="attachment://rank.png")
+            )  # .set_image(url="attachment://rank.png")
 
             embed.add_field(name="Badges:", value=badge_text, inline=True)
 
@@ -479,7 +478,7 @@ Make sure to upload image as an attachment.
                 inline=False
             ).set_thumbnail(url=user_.avatar.url)
 
-            await ctx.reply(embed=embed, file=f)
+            await ctx.reply(embed=embed)
 
     @commands.command(help="Edit your profile.", aliases=['eprofile', 'editp'])
     @commands.cooldown(3, 30, commands.BucketType.user)
