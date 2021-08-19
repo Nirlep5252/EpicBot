@@ -76,7 +76,7 @@ async def get_bot_help(ctx: commands.Context, mapping) -> discord.Embed:
     ).set_author(name=ctx.bot.user.name, icon_url=ctx.bot.user.avatar.url
     ).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url
     ).add_field(name="Links:", value=f"""
-[Dashboard]({WEBSITE_LINK}) | [Support]({SUPPORT_SERVER_LINK}) | [Invite]({WEBSITE_LINK}/invite)
+[Dashboard]({WEBSITE_LINK}) | [Support]({SUPPORT_SERVER_LINK}) | [Invite]({WEBSITE_LINK}/invite) | [Winlep](https://www.winlep.cf/)
     """, inline=False)
 
 
