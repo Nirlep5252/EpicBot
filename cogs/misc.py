@@ -67,7 +67,7 @@ Database : {round((db_time2-db_time1)*1000)}ms
             title="Invite EpicBot \💖",
             description="Thank you so much!",
             color=MAIN_COLOR,
-            url="https://beta.epic-bot.com/invite"
+            url=f"https://discord.com/oauth2/authorize?client_id={self.client.user.id}&permissions=8&scope=bot%20applications.commands"
         ).set_footer(text="UwU"))
 
     @commands.cooldown(1, 2, commands.BucketType.user)
