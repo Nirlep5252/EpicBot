@@ -29,9 +29,6 @@ from config import (
 class Logs(commands.Cog):
     def __init__(self, client: EpicBot):
         self.client = client
-        self.cmd_log_channel = self.client.get_channel(775949886842994698)
-        self.add_remove_log_channel = self.client.get_channel(793832499645644800)
-        self.dm_log_channel = self.client.get_channel(793482521076695070)
 
     @commands.Cog.listener(name="on_command_completion")
     async def add_cmd_used_count_user_profile(self, ctx: commands.Context):
@@ -49,7 +46,7 @@ class Logs(commands.Cog):
         ).add_field(name="Command:", value=f"```{ctx.message.content}```", inline=False
         ).add_field(name="User:", value=f"{ctx.author.mention}```{ctx.author}\n{ctx.author.id}```", inline=False
         ).add_field(name="Server:", value=f"```{ctx.guild}\n{ctx.guild.id}```", inline=False)
-        await self.cmd_log_channel.send(embed=embed)
+        await self.client.get_channel(775949886842994698).send(embed=embed)
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -68,7 +65,7 @@ class Logs(commands.Cog):
                 value=f"{message.author.mention}```{message.author}\n{message.author.id}```",
                 inline=False
             )
-            await self.dm_log_channel.send(embed=embed, files=files)
+            await self.client.get_channel(793482521076695070).send(embed=embed, files=files)
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
@@ -84,7 +81,7 @@ class Logs(commands.Cog):
             """
         ).set_author(name=guild.owner, icon_url=guild.owner.avatar.url
         ).set_thumbnail(url=guild.icon.url)
-        await self.add_remove_log_channel.send(embed=embed)
+        await self.client.get_channel(793832499645644800).send(embed=embed)
 
         send_embed = discord.Embed(
             title=f"{EMOJIS['wave_1']} Hi, UwU!~",
@@ -139,7 +136,7 @@ Bots: {len(list(filter(lambda m: m.bot, guild.members)))}
 ```
             """
         )
-        await self.add_remove_log_channel.send(embed=embed)
+        await self.client.get_channel(793832499645644800).send(embed=embed)
         for e in self.client.serverconfig_cache:
             if e['_id'] == guild.id:
                 self.client.serverconfig_cache.remove(e)
