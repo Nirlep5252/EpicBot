@@ -30,7 +30,7 @@ from config import (
     VOTE_LINK, RED_COLOR
 )
 from utils.random import gen_random_string
-from utils.custom_checks import NotVoted, NotBotMod, OptedOut
+from utils.custom_checks import NotVoted, NotBotMod, OptedOut, PrivateCommand
 from humanfriendly import format_timespan
 from utils.bot import EpicBot
 
@@ -187,6 +187,11 @@ class ErrorHandling(commands.Cog):
             await ctx.reply(embed=error_embed(
                 f"{EMOJIS['tick_no']} Invalid Timezone!",
                 f"Please use a valid timezone.\nClick **[here](https://github.com/nirlep5252/epicbot/tree/main/other/timezones.txt)** to see the list of valid timezones.\n\nYou can also set your timezone using `{ctx.clean_prefix}settimezone <timezone>` for all commands."
+            ))
+        elif isinstance(error, PrivateCommand):
+            await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Private Command!",
+                "This command is private and you cannot use it."
             ))
         elif isinstance(error, commands.CheckFailure):
             ctx.command.reset_cooldown(ctx)

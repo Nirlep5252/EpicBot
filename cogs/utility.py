@@ -284,6 +284,11 @@ class utility(commands.Cog, description="Commands that make your Discord experie
     #         embed.set_footer(text=f"You can delete alarms using {prefix}delalarm <id>")
     #     await ctx.reply(embed=embed)
 
+    @commands.command(help="Start a poll!", aliases=['startpoll', 'createpoll', 'makepoll'])
+    @commands.cooldown(3, 60, commands.BucketType.guild)
+    async def poll(self, ctx: commands.Context, *, question: str):
+        pass
+
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(help="Get info about stickers in a message!", aliases=['stickers', 'stickerinfo'])
     async def sticker(self, ctx: commands.Context):

@@ -18,7 +18,6 @@ from utils.time import datetime_to_seconds
 import discord
 import time
 import datetime
-import psutil
 from discord.utils import escape_markdown
 from discord.ext import commands
 
@@ -301,26 +300,26 @@ Servers: {len(self.client.guilds)}
 Users: {len(set(self.client.get_all_members()))}
 Total Commands: {len(self.client.commands)}
 Uptime: {str(datetime.timedelta(seconds=int(round(time.time()-start_time))))}
-Version: V2 Beta
+Version: V2 Rewrite
 ```
             """,
             inline=False
         )
-        async with self.client.session.get("https://statcord.com/logan/stats/751100444188737617") as r:
-            ah_yes = await r.json()
-        embed.add_field(
-            name="Statcord Stats",
-            value=f"""
-```yaml
-Commands Ran Today: {ah_yes['data'][::-1][0]['commands']}
-Most Used Command: {ah_yes['data'][::-1][0]['popular'][0]['name']} - {ah_yes['data'][::-1][0]['popular'][0]['count']} uses
-Memory Usage: {'%.1f' % float(int(ah_yes['data'][::-1][0]['memactive'])/1000000000)} GB / {'%.1f' % float(int(psutil.virtual_memory().total)/1000000000)} GB
-Memory Load: {ah_yes['data'][::-1][0]['memload']}%
-CPU Load: {ah_yes['data'][::-1][0]['cpuload']}%
-```
-            """,
-            inline=False
-        )
+#         async with self.client.session.get("https://statcord.com/logan/stats/751100444188737617") as r:
+#             ah_yes = await r.json()
+#         embed.add_field(
+#             name="Statcord Stats",
+#             value=f"""
+# ```yaml
+# Commands Ran Today: {ah_yes['data'][::-1][0]['commands']}
+# Most Used Command: {ah_yes['data'][::-1][0]['popular'][0]['name']} - {ah_yes['data'][::-1][0]['popular'][0]['count']} uses
+# Memory Usage: {'%.1f' % float(int(ah_yes['data'][::-1][0]['memactive'])/1000000000)} GB / {'%.1f' % float(int(psutil.virtual_memory().total)/1000000000)} GB
+# Memory Load: {ah_yes['data'][::-1][0]['memload']}%
+# CPU Load: {ah_yes['data'][::-1][0]['cpuload']}%
+# ```
+#             """,
+#             inline=False
+#         )
         embed.add_field(
             name="Links",
             value=f"""

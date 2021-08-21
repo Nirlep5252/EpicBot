@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import discord
+from typing import Union
 from discord.ext import commands
 from config import TOP_GG_TOKEN, BOT_MOD_ROLE, EPICBOT_GUILD_ID, SUPPORTER_ROLE
 
@@ -29,6 +31,10 @@ class NotBotMod(commands.CheckFailure):
 
 
 class OptedOut(commands.CheckFailure):
+    pass
+
+
+class PrivateCommand(commands.CheckFailure):
     pass
 
 
@@ -87,4 +93,15 @@ def not_opted_out():
             raise OptedOut('h')
         else:
             return True
+    return commands.check(predicate)
+
+
+def mutual_guild(guild_id: int):
+
+    async def predicate(ctx: commands.Context):
+        person: Union[discord.Member, discord.User] = ctx.author
+        if guild_id not in [guild.id for guild in person.mutual_guilds]:
+            raise PrivateCommand('h')
+        return True
+
     return commands.check(predicate)

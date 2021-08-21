@@ -57,3 +57,16 @@ def convert(time):
 def datetime_to_seconds(thing: datetime.datetime):
     current_time = datetime.datetime.fromtimestamp(time.time())
     return round((current_time - thing.replace(tzinfo=None)).total_seconds() + round(time.time()))
+
+
+def convert_int_to_weekday(number: int) -> str:
+    weekdays = {
+        0: 'Monday',
+        1: 'Tuesday',
+        2: 'Wednesday',
+        3: 'Thursday',
+        4: 'Friday',
+        5: 'Saturday',
+        6: 'Sunday'
+    }
+    return weekdays[number]
