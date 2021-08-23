@@ -25,7 +25,7 @@ from typing import Optional, Union
 from config import (
     DAGPI_KEY, EMOJIS, MAIN_COLOR, BIG_PP_GANG, NO_PP_GANG,
     RED_COLOR, ORANGE_COLOR, PINK_COLOR, CHAT_BID,
-    CHAT_API_KEY, PINK_COLOR_2, THINKING_EMOJI_URLS
+    CHAT_API_KEY, PINK_COLOR_2, THINKING_EMOJI_URLS, WEBSITE_LINK
 )
 from utils.embed import success_embed, error_embed, edit_msg_multiple_times
 from utils.custom_checks import not_opted_out
@@ -216,7 +216,10 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Free Nitro!!!")
     async def freenitro(self, ctx):
-        embed = success_embed("FREE NITRO", "[https://discord.gift/NBnj8bySBWr63Q99](https://discord.gg/Zj7h8Fp)")
+        embed = success_embed(
+            "FREE NITRO",
+            f"Your nitro: [**https://discord.gift/NBnj8bySBWr63Q99**](https://discord.gg/Zj7h8Fp)\n\n*[Disclaimer]({WEBSITE_LINK}/disclaimer)*"
+        ).set_footer(text=f"Requested by: {ctx.author}", icon_url=ctx.author.avatar.url)
 
         try:
             await ctx.message.delete()
