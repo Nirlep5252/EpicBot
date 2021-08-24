@@ -41,8 +41,8 @@ from io import BytesIO
 uwu = OwO()
 dadjoke = Dadjoke()
 f_channels = {}
-
-
+drank_beer = {}
+beer_parties = {}
 class PressFView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -55,6 +55,18 @@ class PressFView(discord.ui.View):
         await interaction.channel.send(f"**{escape_markdown(user.name)}** has paid their respects.")
         f_channels[interaction.message.channel.id]["reacted"].append(user.id)
 
+class BeerView(discord.ui.View): 
+    def __init__(self): 
+        super().__init__(timeout=None) 
+
+    @discord.ui.button(label = "Beer!", style=discord.ButtonStyle.primary, emoji='🍻')
+    async def press_beer_nice(self, button: discord.Button, interaction: discord.Interaction):
+        array = drank_beer.get(interaction.message.id) 
+        if interaction.user.id in array:
+            return await interaction.response.send_message("You have already drank the beer!", ephemeral=True)
+        await interaction.channel.send(f"**{escape_markdown(str(interaction.user.name))}** drank beer.")
+        array.append(interaction.user.id) 
+        drank_beer.update({interaction.message.id: array})
 
 class fun(commands.Cog, description="Wanna have some fun?"):
     def __init__(self, client: EpicBot):
@@ -64,9 +76,6 @@ class fun(commands.Cog, description="Wanna have some fun?"):
         self.sniped_msgs = {}
         self.edited_msgs = {}
         self.embed_snipes = {}
-
-        self.beer_parties = {}
-        self.drank_beer = {}
 
     @commands.cooldown(1, 86400, commands.BucketType.user)
     @commands.cooldown(1, 120, commands.BucketType.guild)
@@ -139,49 +148,31 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
 
     @commands.command(help="Start a beer party!", aliases=['beerparty'])
     async def beer(self, ctx: commands.Context):
-        if ctx.guild.id in self.beer_parties:
-            msg = await ctx.fetch_message(self.beer_parties[ctx.guild.id])
+        if ctx.guild.id in beer_parties:
+            msg = await ctx.fetch_message(beer_parties[ctx.guild.id])
             return await ctx.reply(embed=success_embed(
                 "A beer party is already active",
                 f"[Click here to go to beer party!]({msg.jump_url})"
             ))
-        msg = await ctx.send(f"🍻  A beer party has been started by: {ctx.author.mention}")
-        await msg.add_reaction('🍻')
-
-        self.beer_parties.update({ctx.guild.id: msg.id})
-        self.drank_beer.update({msg.id: []})
+        msg = await ctx.send(f"🍻  A beer party has been started by: {ctx.author.mention}", view=BeerView())
+        beer_parties.update({ctx.guild.id: msg.id})
+        drank_beer.update({msg.id: []})
 
         await asyncio.sleep(30)
         msg = await ctx.channel.fetch_message(msg.id)
-        if len(self.drank_beer.get(msg.id)) == 0:
+        if len(drank_beer.get(msg.id)) == 0:
             pain = f"No one drank beer with {ctx.author.mention}.\nNot even they drank beer."
-        elif len(self.drank_beer.get(msg.id)) == 1:
+        elif len(drank_beer.get(msg.id)) == 1:
             pain = f"No one drank beer with {ctx.author.mention}."
         else:
-            pain = f"A total of **{len(self.drank_beer.get(msg.id)) - 1}** people drank beer with {ctx.author.mention}"
+            pain = f"A total of **{len(drank_beer.get(msg.id)) - 1}** people drank beer with {ctx.author.mention}"
+        await msg.edit(view = None)
         await msg.reply(embed=success_embed(
             "🍻  The beer party ended!",
             pain
         ))
-        self.beer_parties.pop(ctx.guild.id)
-        self.drank_beer.pop(msg.id)
-
-    @commands.Cog.listener()
-    async def on_reaction_add(self, reaction: discord.Reaction, user):
-        if user.bot:
-            return
-        if reaction.emoji != '🍻':
-            return
-        if user.guild.id not in self.beer_parties:
-            return
-        if reaction.message.id != self.beer_parties[user.guild.id]:
-            return
-        array = self.drank_beer.get(reaction.message.id)
-        if user.id in array:
-            return
-        await reaction.message.channel.send(f"**{escape_markdown(str(user.name))}** drank beer.")
-        array.append(user.id)
-        self.drank_beer.update({reaction.message.id: array})
+        beer_parties.pop(ctx.guild.id)
+        drank_beer.pop(msg.id)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Check your PP size!")
