@@ -76,6 +76,9 @@ class InviteTracking(commands.Cog):
 
         channel = self.client.get_channel(channel_id)
 
+        if channel is None:
+            return
+
         if embed:
             embed_json = json.loads(welcome_config['message'])
             things = await process_embeds_from_json(self.client, [member, guild], embed_json)
@@ -93,26 +96,28 @@ class InviteTracking(commands.Cog):
         guild = member.guild
 
         guild_config = await self.client.get_guild_config(guild.id)
-        if guild_config['welcome']['channel_id'] is None:
-            return
         leave_config = guild_config['leave']
         channel_id = leave_config['channel_id']
         embed = leave_config['embed']
 
-        inviter = await self.client.get_inviter(member.id, member.guild.id)
+        if guild_config['welcome']['channel_id'] is not None:
+            inviter = await self.client.get_inviter(member.id, member.guild.id)
 
-        await self.client.update_inviter(member.id, inviter, member.guild.id)
-        await self.client.update_guild_before_invites(guild.id)
-        if inviter != "Unknown":
-            current_invites_of_user = await self.client.fetch_invites(inviter, guild.id, 'left')
-            await self.client.update_invites(inviter, guild.id, 'left', current_invites_of_user + 1)
+            await self.client.update_inviter(member.id, inviter, member.guild.id)
+            await self.client.update_guild_before_invites(guild.id)
+            if inviter != "Unknown":
+                current_invites_of_user = await self.client.fetch_invites(inviter, guild.id, 'left')
+                await self.client.update_invites(inviter, guild.id, 'left', current_invites_of_user + 1)
 
-            current_invites_of_user = await self.client.fetch_invites(inviter, guild.id, 'real')
-            await self.client.update_invites(inviter, guild.id, 'real', current_invites_of_user - 1)
+                current_invites_of_user = await self.client.fetch_invites(inviter, guild.id, 'real')
+                await self.client.update_invites(inviter, guild.id, 'real', current_invites_of_user - 1)
 
         if guild_config['leave']['channel_id'] is None:
             return
         channel = self.client.get_channel(channel_id)
+
+        if channel is None:
+            return
 
         if embed:
             embed_json = json.loads(leave_config['message'])
