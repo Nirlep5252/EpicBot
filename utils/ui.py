@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import asyncio
 import discord
 from typing import Optional, Union, List
 from discord.ext import commands
@@ -29,17 +30,18 @@ class Confirm(discord.ui.View):
 
     @discord.ui.button(label='Yes', style=discord.ButtonStyle.green)
     async def yes(self, b, i):
-        if i.user != self.user:
-            return await i.response.send_message("You cannot interact in other's commands.", ephemeral=True)
         self.value = True
         self.stop()
 
     @discord.ui.button(label='No', style=discord.ButtonStyle.red)
     async def no(self, b, i):
-        if i.user != self.user:
-            return await i.response.send_message("You cannot interact in other's commands.", ephemeral=True)
         self.value = False
         self.stop()
+
+    async def interaction_check(self, interaction: discord.Interaction):
+        if interaction.user != self.user:
+            return await interaction.response.send_message("You cannot interact in other's commands.", ephemeral=True)
+        return True
 
 
 class Paginator(discord.ui.View):
@@ -112,6 +114,25 @@ class PaginatorText(discord.ui.View):
         await interaction.response.send_message("Not your command ._.", ephemeral=True)
 
 
+class CloseOrClaimTicket(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.button(label='Claim', style=discord.ButtonStyle.blurple)
+    async def claim(self, b: discord.ui.Button, i: discord.Interaction):
+        b.disabled = True
+        await i.message.edit(view=self)
+        await i.channel.send(f'This ticket has been claimed by: {i.user.mention}')
+
+    @discord.ui.button(label='Close', style=discord.ButtonStyle.red)
+    async def close(self, b: discord.ui.Button, i: discord.Interaction):
+        b.disabled = True
+        await i.message.edit(view=self)
+        await i.channel.send('Closing ticket...')
+        await asyncio.sleep(2)
+        await i.channel.edit(archived=True)
+
+
 class TicketView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -126,12 +147,16 @@ class TicketView(discord.ui.View):
                 return await interaction.response.send_message(f'You already have a ticket {t.mention}', ephemeral=True)
         channel = interaction.channel
         thread = await channel.create_thread(name=f'ticket-{interaction.user.id}')
-        await thread.send(f"📂 {interaction.user.mention} has created a ticket.", allowed_mentions=discord.AllowedMentions(
-            everyone=False,
-            roles=False,
-            users=True,
-            replied_user=False
-        ))
+        await thread.send(
+            f"📂 {interaction.user.mention} has created a ticket.",
+            allowed_mentions=discord.AllowedMentions(
+                everyone=False,
+                roles=False,
+                users=True,
+                replied_user=False
+            ),
+            view=CloseOrClaimTicket()
+        )
 
 
 class SelfRoleOptionSelecter(discord.ui.View):
