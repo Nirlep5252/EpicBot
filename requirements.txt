@@ -22,6 +22,8 @@ typing
 DiscordUtils
 youtube_dl
 python-dotenv
-epicbot-images
+pytz
+statcord.py
 
+git+https://github.com/nirlep5252/epicbot-images
 git+https://github.com/nirlep5252/Discord-Games.git
