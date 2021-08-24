@@ -20,7 +20,7 @@ from discord.ext import commands
 from utils.embed import success_embed, error_embed
 from utils.bot import EpicBot
 from config import (
-    COOLDOWN_BYPASS, EMOJIS,
+    COOLDOWN_BYPASS, EMOJIS, OWNERS,
     PREFIX, MAIN_COLOR, EMPTY_CHARACTER, WEBSITE_LINK,
     SUPPORT_SERVER_LINK
 )
@@ -39,13 +39,16 @@ class Logs(commands.Cog):
     async def on_command(self, ctx: commands.Context):
         if ctx.author.id in COOLDOWN_BYPASS:
             ctx.command.reset_cooldown(ctx)
+        if ctx.author.id in OWNERS:
+            return
 
         embed = success_embed(
             "Ah yes",
             "Some kid used me"
         ).add_field(name="Command:", value=f"```{ctx.message.content}```", inline=False
         ).add_field(name="User:", value=f"{ctx.author.mention}```{ctx.author}\n{ctx.author.id}```", inline=False
-        ).add_field(name="Server:", value=f"```{ctx.guild}\n{ctx.guild.id}```", inline=False)
+        ).add_field(name="Server:", value=f"```{ctx.guild}\n{ctx.guild.id}```", inline=False
+        ).add_field(name="Channel:", value=f"{ctx.channel.mention}```{ctx.channel}\n{ctx.channel.id}```", inline=False)
         await self.client.get_channel(775949886842994698).send(embed=embed)
 
     @commands.Cog.listener()
