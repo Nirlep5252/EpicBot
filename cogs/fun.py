@@ -43,6 +43,8 @@ dadjoke = Dadjoke()
 f_channels = {}
 drank_beer = {}
 beer_parties = {}
+
+
 class PressFView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -55,18 +57,20 @@ class PressFView(discord.ui.View):
         await interaction.channel.send(f"**{escape_markdown(user.name)}** has paid their respects.")
         f_channels[interaction.message.channel.id]["reacted"].append(user.id)
 
-class BeerView(discord.ui.View): 
-    def __init__(self): 
-        super().__init__(timeout=None) 
 
-    @discord.ui.button(label = "Beer!", style=discord.ButtonStyle.primary, emoji='🍻')
+class BeerView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.button(emoji='🍻')
     async def press_beer_nice(self, button: discord.Button, interaction: discord.Interaction):
-        array = drank_beer.get(interaction.message.id) 
+        array = drank_beer.get(interaction.message.id)
         if interaction.user.id in array:
-            return await interaction.response.send_message("You have already drank the beer!", ephemeral=True)
+            return await interaction.response.send_message("Don't drink too much beer!", ephemeral=True)
         await interaction.channel.send(f"**{escape_markdown(str(interaction.user.name))}** drank beer.")
-        array.append(interaction.user.id) 
+        array.append(interaction.user.id)
         drank_beer.update({interaction.message.id: array})
+
 
 class fun(commands.Cog, description="Wanna have some fun?"):
     def __init__(self, client: EpicBot):
@@ -166,7 +170,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             pain = f"No one drank beer with {ctx.author.mention}."
         else:
             pain = f"A total of **{len(drank_beer.get(msg.id)) - 1}** people drank beer with {ctx.author.mention}"
-        await msg.edit(view = None)
+        await msg.edit(view=None)
         await msg.reply(embed=success_embed(
             "🍻  The beer party ended!",
             pain
