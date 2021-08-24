@@ -80,13 +80,7 @@ async def on_message(message):
 
 @client.event
 async def on_message_edit(before, after):
-    if before.content == after.content:
-        return
-    if before.author.bot:
-        return
-    if not client.cache_loaded:
-        return
-    if not client.cogs_loaded:
+    if before.content == after.content or before.author.bot or not client.cache_loaded or not client.cogs_loaded:
         return
     client.dispatch("message", after)
 
@@ -105,31 +99,39 @@ if not client.cogs_loaded:
 
 @client.event
 async def on_ready():
-    print(f"Logged in as {client.user}")
-
     if not client.views_loaded:
         client.add_view(TicketView())
         client.views_loaded = True
         print("Ticket view has been loaded.")
 
     if not client.rolemenus_loaded:
-        i = 0
-        cursor = client.self_roles.find({})
-        h = await cursor.to_list(length=None)
-        for amogus in h:
-            guild = client.get_guild(amogus['_id'])
-            if guild is not None:
-                role_menus = amogus['role_menus']
-                for msg_id, menu in role_menus.items():
-                    if menu['type'] == 'dropdown':
-                        client.add_view(DropDownSelfRoleView(guild, menu['stuff']), message_id=int(msg_id))
-                        i += 1
-                    if menu['type'] == 'button':
-                        client.add_view(ButtonSelfRoleView(guild, menu['stuff']), message_id=int(msg_id))
-                        i += 1
-        client.rolemenus_loaded = True
+        await client.load_rolemenus(DropDownSelfRoleView, ButtonSelfRoleView)
 
-        print(f"{i} Self role views has been loaded.")
+    print("""
+
+
+         _            _        _           _             _               _          _
+        /\ \         /\ \     /\ \       /\ \           / /\            /\ \       /\ \\
+       /  \ \       /  \ \    \ \ \     /  \ \         / /  \          /  \ \      \_\ \\
+      / /\ \ \     / /\ \ \   /\ \_\   / /\ \ \       / / /\ \        / /\ \ \     /\__ \\
+     / / /\ \_\   / / /\ \_\ / /\/_/  / / /\ \ \     / / /\ \ \      / / /\ \ \   / /_ \ \\
+    / /_/_ \/_/  / / /_/ / // / /    / / /  \ \_\   / / /\ \_\ \    / / /  \ \_\ / / /\ \ \\
+   / /____/\    / / /__\/ // / /    / / /    \/_/  / / /\ \ \___\  / / /   / / // / /  \/_/
+  / /\____\/   / / /_____// / /    / / /          / / /  \ \ \__/ / / /   / / // / /
+ / / /______  / / /   ___/ / /__  / / /________  / / /____\_\ \  / / /___/ / // / /
+/ / /_______\/ / /   /\__\/_/___\/ / /_________\/ / /__________\/ / /____\/ //_/ /
+\/__________/\/_/    \/_________/\/____________/\/_____________/\/_________/ \_\/
+
+
+    """)
+    print(f"Logged in as {client.user}")
+    print(f"Connected to: {len(client.guilds)} guilds")
+    print(f"Connected to: {len(client.users)} users")
+    print(f"Connected to: {len(client.cogs)} cogs")
+    print(f"Connected to: {len(client.commands)} commands")
+    print(f"Connected to: {len(client.emojis)} emojis")
+    print(f"Connected to: {len(client.voice_clients)} voice_clients")
+    print(f"Connected to: {len(client.private_channels)} private_channels")
 
 if __name__ == '__main__':
     client.run(BOT_TOKEN)

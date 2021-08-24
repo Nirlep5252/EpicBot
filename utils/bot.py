@@ -437,28 +437,28 @@ class EpicBot(commands.AutoShardedBot):
     async def get_cache(self):
         cursor = self.prefixes.find({})
         self.prefixes_cache = await cursor.to_list(length=None)
-        print("Prefixes cache has been loaded.")
+        print(f"Prefixes cache has been loaded. | {len(self.prefixes_cache)} items")
 
         cursor = self.serverconfig.find({})
         self.serverconfig_cache = await cursor.to_list(length=None)
-        print("Server config cache has been loaded.")
+        print(f"Server config cache has been loaded. | {len(self.serverconfig_cache)} configs")
 
         cursor = self.reminders_db.find({})
         self.reminders = await cursor.to_list(length=None)
-        print("Reminders cache has been loaded.")
+        print(f"Reminders cache has been loaded. | {len(self.reminders)} reminders")
 
         cursor = self.leveling_db.find({})
         self.leveling_cache = await cursor.to_list(length=None)
-        print("Leveling cache has been loaded.")
+        print(f"Leveling cache has been loaded. | {len(self.leveling_cache)} items")
 
         cursor = self.user_profile_db.find({})
         self.user_profile_cache = await cursor.to_list(length=None)
-        print("User profile cache has been loaded.")
+        print(f"User profile cache has been loaded. | {len(self.user_profile_cache)} profiles")
 
     async def get_blacklisted_users(self):
         cursor = self.blacklisted.find({})
         self.blacklisted_cache = await cursor.to_list(length=None)
-        print("Blacklisted users cache has been loaded.")
+        print(f"Blacklisted users cache has been loaded. | {len(self.blacklisted_cache)} users")
 
     async def load_extensions(self, filename_):
         # await self.wait_until_ready()
@@ -470,7 +470,7 @@ class EpicBot(commands.AutoShardedBot):
                 total += 1
                 try:
                     self.load_extension(f'{filename_[2:]}.{filename[:-3]}')
-                    cogs_text += f"🟢 Loaded {filename[:-3]}\n"
+                    # cogs_text += f"🟢 Loaded {filename[:-3]}\n"
                     i += 1
                 except Exception as e:
                     cogs_text += f"🔴 Unable to load {filename[:-3]} | {e}\n"
@@ -509,3 +509,22 @@ class EpicBot(commands.AutoShardedBot):
         if match is not None:
             return match.group(1)
         return prefix
+
+    async def load_rolemenus(self, dropdown_view, button_view):
+        i = 0
+        cursor = self.self_roles.find({})
+        h = await cursor.to_list(length=None)
+        for amogus in h:
+            guild = self.get_guild(amogus['_id'])
+            if guild is not None:
+                role_menus = amogus['role_menus']
+                for msg_id, menu in role_menus.items():
+                    if menu['type'] == 'dropdown':
+                        self.add_view(dropdown_view(guild, menu['stuff']), message_id=int(msg_id))
+                        i += 1
+                    if menu['type'] == 'button':
+                        self.add_view(button_view(guild, menu['stuff']), message_id=int(msg_id))
+                        i += 1
+        self.rolemenus_loaded = True
+
+        print(f"Self role views has been loaded. | {i} views")
