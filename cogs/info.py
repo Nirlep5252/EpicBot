@@ -260,11 +260,12 @@ Joined At: {user.joined_at.replace(tzinfo=None).strftime("%d/%m/%y | %H:%M:%S")}
 **Stickers:** `{len(guild.stickers)}`
                 """
         )
-        embed.add_field(
-            name="Features:",
-            value=', '.join([feature.replace('_', ' ').title() for feature in guild.features]),
-            inline=False
-        )
+        if guild.features:
+            embed.add_field(
+                name="Features:",
+                value=', '.join([feature.replace('_', ' ').title() for feature in guild.features]),
+                inline=False
+            )
         if guild.banner is not None:
             embed.set_image(url=guild.banner.url)
 
