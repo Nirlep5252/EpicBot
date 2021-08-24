@@ -234,7 +234,7 @@ class DropDownSelfRoleSelect(discord.ui.Select):
             role = self.guild.get_role(int(self.options[0].value))
             await interaction.user.remove_roles(role, reason="EpicBot Selfroles")
             await interaction.response.send_message(f"Removed the {role.mention} role.", ephemeral=True)
-            return
+            return 
         role = self.guild.get_role(int(self.values[0]))
         if role is None:
             return

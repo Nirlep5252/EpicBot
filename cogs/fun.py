@@ -40,6 +40,18 @@ from io import BytesIO
 
 uwu = OwO()
 dadjoke = Dadjoke()
+f_channels = {}
+class PressFView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.button(label='Press F', style = discord.ButtonStyle.primary, emoji = '🇫')
+    async def press_f_nice(self, button: discord.Button, interaction: discord.Interaction):
+        if interaction.user.id in f_channels[interaction.channel.id]["reacted"]:
+            return 
+        user = interaction.user
+        await interaction.channel.send(f"**{user.name}** has paid their respects.")
+        f_channels[interaction.message.channel.id]["reacted"].append(user.id)
 
 
 class fun(commands.Cog, description="Wanna have some fun?"):
@@ -53,7 +65,6 @@ class fun(commands.Cog, description="Wanna have some fun?"):
 
         self.beer_parties = {}
         self.drank_beer = {}
-        self.f_channels = {}
 
     @commands.cooldown(1, 86400, commands.BucketType.user)
     @commands.cooldown(1, 120, commands.BucketType.guild)
@@ -105,35 +116,21 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
     @commands.bot_has_guild_permissions(add_reactions=True)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def f(self, ctx):
-        if ctx.channel.id in self.f_channels:
-            msgg = await ctx.channel.fetch_message(int(self.f_channels[ctx.channel.id]['msg_id']))
+        if ctx.channel.id in f_channels:
+            msgg = await ctx.channel.fetch_message(int(f_channels[ctx.channel.id]['msg_id']))
             return await ctx.reply(embed=success_embed(
                 "A pay respect event is already active!",
                 f"[Click Here To Go There]({msgg.jump_url})"
             ))
 
-        msg = await ctx.send("**It's Time To Pay Respects**\n\nLet us all pay respects here!")
-        await msg.add_reaction("🇫")
-        self.f_channels[ctx.channel.id] = {"msg_id": msg.id, "reacted": []}
+        msg = await ctx.send("**It's Time To Pay Respects**\n\nLet us all pay respects here!", view=PressFView())
+        f_channels[ctx.channel.id] = {"msg_id": msg.id, "reacted": []}
         await asyncio.sleep(30)
-        amount = len(self.f_channels[ctx.channel.id]["reacted"])
+        amount = len(f_channels[ctx.channel.id]["reacted"])
         word = "person has" if amount == 1 else "people have"
         await ctx.send(f"**{amount}** {word} paid respect!")
-        del self.f_channels[ctx.channel.id]
+        del f_channels[ctx.channel.id]
 
-    @commands.Cog.listener('on_reaction_add')
-    async def f_handler(self, reaction, user):
-        if reaction.message.channel.id not in self.f_channels:
-            return
-        if self.f_channels[reaction.message.channel.id]["msg_id"] != reaction.message.id:
-            return
-        if user.id == self.client.user.id:
-            return
-        if reaction.emoji != "🇫":
-            return
-        if user.id not in self.f_channels[reaction.message.channel.id]["reacted"]:
-            await reaction.message.channel.send(f"**{user.name}** has paid their respects.")
-            self.f_channels[reaction.message.channel.id]["reacted"].append(user.id)
 
     @commands.command(help="Start a beer party!", aliases=['beerparty'])
     async def beer(self, ctx: commands.Context):
