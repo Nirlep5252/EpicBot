@@ -41,14 +41,16 @@ from io import BytesIO
 uwu = OwO()
 dadjoke = Dadjoke()
 f_channels = {}
+
+
 class PressFView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    @discord.ui.button(label='Press F', style = discord.ButtonStyle.primary, emoji = '🇫')
+    @discord.ui.button(emoji='🇫')
     async def press_f_nice(self, button: discord.Button, interaction: discord.Interaction):
         if interaction.user.id in f_channels[interaction.channel.id]["reacted"]:
-            return 
+            return await interaction.response.send_message("You have already paid respects!", ephemeral=True)
         user = interaction.user
         await interaction.channel.send(f"**{user.name}** has paid their respects.")
         f_channels[interaction.message.channel.id]["reacted"].append(user.id)
@@ -115,7 +117,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
     @commands.command(help="Pay respects! F", aliases=['press_f', 'pressf'])
     @commands.bot_has_guild_permissions(add_reactions=True)
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def f(self, ctx):
+    async def f(self, ctx: commands.Context):
         if ctx.channel.id in f_channels:
             msgg = await ctx.channel.fetch_message(int(f_channels[ctx.channel.id]['msg_id']))
             return await ctx.reply(embed=success_embed(
@@ -123,14 +125,17 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
                 f"[Click Here To Go There]({msgg.jump_url})"
             ))
 
-        msg = await ctx.send("**It's Time To Pay Respects**\n\nLet us all pay respects here!", view=PressFView())
+        msg = await ctx.send(
+            embed=discord.Embed(color=MAIN_COLOR).set_author(name="It's time to pay respects!", icon_url=ctx.author.avatar.url),
+            view=PressFView()
+        )
         f_channels[ctx.channel.id] = {"msg_id": msg.id, "reacted": []}
         await asyncio.sleep(30)
         amount = len(f_channels[ctx.channel.id]["reacted"])
         word = "person has" if amount == 1 else "people have"
-        await ctx.send(f"**{amount}** {word} paid respect!")
+        await msg.reply(f"**{amount}** {word} paid respects!")
+        await msg.edit(view=None)
         del f_channels[ctx.channel.id]
-
 
     @commands.command(help="Start a beer party!", aliases=['beerparty'])
     async def beer(self, ctx: commands.Context):
