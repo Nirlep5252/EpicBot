@@ -22,6 +22,7 @@ from discord.ext import commands
 from config import EMOJIS, MAIN_COLOR
 from utils.embed import success_embed
 from datetime import datetime
+from DiscordUtils.Music import MusicPlayer
 from utils.ui import Paginator
 from utils.bot import EpicBot
 
@@ -36,7 +37,7 @@ class music(commands.Cog, description="Jam to some awesome tunes! 🎶"):
         self.client = client
         self.skip_votes = {}
 
-    def error_msg(self, error):
+    def error_msg(self, error) -> str:
         if error == 'not_in_voice_channel':
             return f"{EMOJIS['tick_no']}You need to join a voice channel first."
         elif error == 'not_in_same_vc':
@@ -44,7 +45,7 @@ class music(commands.Cog, description="Jam to some awesome tunes! 🎶"):
         else:
             return "An error occured ._."
 
-    def now_playing_embed(self, ctx, song):
+    def now_playing_embed(self, ctx, song) -> discord.Embed:
         return discord.Embed(
             title=song.title,
             url=song.url,
@@ -70,9 +71,11 @@ class music(commands.Cog, description="Jam to some awesome tunes! 🎶"):
         try:
             await ctx.author.voice.channel.connect()
             await ctx.message.add_reaction('✅')
-        except Exception:
+        except Exception as e:
             ctx.command.reset_cooldown(ctx)
-            return await ctx.reply("I wasn't able to connect to your voice channel.\nPlease make sure I have enough permissions.")
+            return await ctx.reply(
+                f"I wasn't able to connect to your voice channel.\nPlease make sure I have enough permissions.\nError: {e}"
+            )
 
     @commands.command(help="I will leave your voice channel :c", aliases=['dc', 'disconnect'])
     @commands.cooldown(3, 5, commands.BucketType.user)
@@ -319,7 +322,45 @@ class music(commands.Cog, description="Jam to some awesome tunes! 🎶"):
             else:
                 await ctx.reply(f"⏭️ Skip vote added: `{len(self.skip_votes[ctx.guild.id])}/{round(hoomans/2)}` votes.")
 
+    @commands.command(help="Remove a song from the queue!")
+    @commands.cooldown(3, 30, commands.BucketType.user)
+    async def remove(self, ctx: commands.Context, index: str = None):
+        if not ctx.author.voice:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(self.error_msg('not_in_voice_channel'))
+        if not ctx.guild.me.voice:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply("I am not in a voice channel ._.")
+        if ctx.author.voice.channel != ctx.guild.me.voice.channel:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(self.error_msg("not_in_same_vc"))
+        player: MusicPlayer = music_.get_player(guild_id=ctx.guild.id)
+        if not player:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply("There is no music playing, please queue some songs.")
+        if not ctx.voice_client.is_playing():
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply("There is no music playing ._.")
+
+        prefix = ctx.clean_prefix
+        if index is None:
+            ctx.command.reset_cooldown(ctx)
+        try:
+            index = int(index)
+            if index <= 0:
+                ctx.command.reset_cooldown(ctx)
+                return await ctx.reply(f"{EMOJIS['tick_no']}The number should be a positive number!")
+        except ValueError:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(f"Please enter an integer!\n\nUsage: `{prefix}remove <number>`\nExample: `{prefix}remove 69`")
+        try:
+            song = await player.remove_from_queue(index)
+            return await ctx.reply(f"{EMOJIS.get('tick_yes')} Removed `{song.name}` from the queue!")
+        except Exception as e:
+            return await ctx.reply(f"{e}")
+
     @commands.command(help="Get lyrics of a song.")
+    @commands.cooldown(3, 30, commands.BucketType.user)
     async def lyrics(self, ctx, *, song=None):
         error_msg = f"Please enter the song name.\nExample: `{ctx.clean_prefix}lyrics Never Gonna Give You Up`"
         if song is None:
