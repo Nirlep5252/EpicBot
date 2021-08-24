@@ -96,7 +96,7 @@ class config(commands.Cog, description="Configure your server with amazing EpicB
             print(f"ERROR in getting image for {url} in autoposting: {e}")
             return 'pain'
 
-    async def get_webhook_autopost(self, channel_id: int):
+    async def get_webhook_autopost(self, channel_id: int) -> discord.Webhook:
         channel = self.client.get_channel(channel_id)
         if not channel:
             return False
@@ -338,7 +338,7 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                 ), view=view)
                 await view.wait()
                 if not view.value:
-                    ctx.command.reset_cooldown()
+                    ctx.command.reset_cooldown(ctx)
                     return await main_msg.edit(content=f"{EMOJIS['tick_no']}Command cancelled.", embed=None, view=None)
                 if view.value == 'add':
                     await main_msg.edit(embed=success_embed(
@@ -379,7 +379,7 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                         update={"$set": {"role_menus": role_menus}}
                     )
                     await prepare_rolemenu(ctx, stuff, self.client.get_channel(current_role_menu['channel']), current_role_menu['type'], message_id, edit=True)
-                    return await main_msg.edit(f"{EMOJIS['tick_yes']}The rolemenu has been updated!", embed=None, view=None)
+                    return await main_msg.edit(content=f"{EMOJIS['tick_yes']}The rolemenu has been updated!", embed=None, view=None)
                 if view.value == 'remove':
                     current_role_menu = role_menus[str(message_id)]
                     if len(current_role_menu['stuff']) == 1:
@@ -421,7 +421,7 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                         update={"$set": {"role_menus": role_menus}}
                     )
                     await prepare_rolemenu(ctx, stuff, self.client.get_channel(current_role_menu['channel']), current_role_menu['type'], message_id, edit=True)
-                    return await main_msg.edit(f"{EMOJIS['tick_yes']}The rolemenu has been updated!", embed=None, view=None)
+                    return await main_msg.edit(content=f"{EMOJIS['tick_yes']}The rolemenu has been updated!", embed=None, view=None)
 
             await ctx.reply(embed=info_embed)
 
@@ -2298,7 +2298,7 @@ Logging is currently {'set in ' if log_chan is not None else ''}**{EMOJIS['tick_
     @commands.cooldown(3, 120, commands.BucketType.guild)
     async def ticket(self, ctx: commands.Context, option: t.Union[discord.TextChannel, str] = None, *, setting: t.Union[discord.Role, str] = None):
 
-        if 'PRIVATE_THREADS' not in ctx.guild.features or 'THREADS_ENABLED' not in ctx.guild.features:
+        if 'PRIVATE_THREADS' not in ctx.guild.features:
             return await ctx.reply(f"{EMOJIS['tick_no']}Unfortunately, private threads are not enabled in your server...\nYou cannot use this command without `PRIVATE_THREADS`")
 
         async def please_enable():
