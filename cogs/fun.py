@@ -52,7 +52,7 @@ class PressFView(discord.ui.View):
         if interaction.user.id in f_channels[interaction.channel.id]["reacted"]:
             return await interaction.response.send_message("You have already paid respects!", ephemeral=True)
         user = interaction.user
-        await interaction.channel.send(f"**{user.name}** has paid their respects.")
+        await interaction.channel.send(f"**{escape_markdown(user.name)}** has paid their respects.")
         f_channels[interaction.message.channel.id]["reacted"].append(user.id)
 
 
@@ -133,7 +133,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         await asyncio.sleep(30)
         amount = len(f_channels[ctx.channel.id]["reacted"])
         word = "person has" if amount == 1 else "people have"
-        await msg.reply(f"**{amount}** {word} paid respects!")
+        await msg.reply(f"**{amount}** {word} paid respect!")
         await msg.edit(view=None)
         del f_channels[ctx.channel.id]
 
