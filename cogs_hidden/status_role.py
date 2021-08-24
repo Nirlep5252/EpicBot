@@ -32,31 +32,31 @@ PERKS = """
 class StatusRole(commands.Cog):
     def __init__(self, client: EpicBot):
         self.client = client
-        self.guild = self.client.get_guild(746202728031584358)
         self.status = ".gg/nirlep"
-        self.role = self.guild.get_role(853174979758522388)
 
     @commands.Cog.listener("on_presence_update")
     async def sex(self, before, after):
 
         if before.bot:
             return
-
-        if before.guild.id != self.guild.id:
+        guild = self.client.get_guild(746202728031584358)
+        if before.guild.id != guild.id:
             return
 
         if before.activity == after.activity:
             return
 
-        if self.status in str(after.activity).lower() and self.role not in after.roles:
-            await after.add_roles(self.role, reason="Thank you for having 'discord.gg/nirlep' in your status!")
+        role = guild.get_role(853174979758522388)
+
+        if self.status in str(after.activity).lower() and role not in after.roles:
+            await after.add_roles(role, reason="Thank you for having 'discord.gg/nirlep' in your status!")
             # await after.send(embed=success_embed(
             #     f"<a:hugs:839739273083224104>  I love you!",
             #     f"**Thank you for having `discord.gg/nirlep` in your status!**\n{PERKS}"
             # ).set_thumbnail(url="https://cdn.discordapp.com/emojis/802801495153967154.png?v=1"))
 
-        elif self.status not in str(after.activity).lower() and self.role in after.roles:
-            await after.remove_roles(self.role, reason="Pain. This kid removed 'discord.gg/nirlep' from their status.")
+        elif self.status not in str(after.activity).lower() and role in after.roles:
+            await after.remove_roles(role, reason="Pain. This kid removed 'discord.gg/nirlep' from their status.")
 
 
 def setup(client):
