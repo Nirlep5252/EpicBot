@@ -180,7 +180,7 @@ ID: {user.id}
             value=f"""
 ```yaml
 Created At: {user.created_at.replace(tzinfo=None).strftime("%d/%m/%y | %H:%M:%S")}
-Joined At: {user.joined_at.replace(tzinfo=None).strftime("%d/%m/%y | %H:%M:%S")}
+Joined At: {"Not in server" if isinstance(user, discord.User) else user.joined_at.replace(tzinfo=None).strftime("%d/%m/%y | %H:%M:%S")}
 ```
             """,
             inline=False
