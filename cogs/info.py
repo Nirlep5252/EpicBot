@@ -188,21 +188,22 @@ Joined At: {"Not in server" if isinstance(user, discord.User) else user.joined_a
 
         roles = ""
 
-        for role in user.roles[::-1]:
-            if len(roles) > 500:
-                roles += "and more roles..."
-                break
-            if str(role) != "@everyone":
-                roles += f"{role.mention}, "
+        if isinstance(user, discord.Member):
+            for role in user.roles[::-1]:
+                if len(roles) > 500:
+                    roles += "and more roles..."
+                    break
+                if str(role) != "@everyone":
+                    roles += f"{role.mention}, "
 
-        if len(roles) == 0:
-            roles = "No roles."
+            if len(roles) == 0:
+                roles = "No roles."
 
-        embed.add_field(
-            name="Roles",
-            value=roles,
-            inline=False
-        )
+            embed.add_field(
+                name="Roles",
+                value=roles,
+                inline=False
+            )
 
         embed.set_thumbnail(url=user.avatar.url)
 
