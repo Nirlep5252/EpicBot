@@ -20,6 +20,7 @@ humanfriendly
 pillow
 typing
 DiscordUtils
+youtube_dl
 python-dotenv
 epicbot-images
 
