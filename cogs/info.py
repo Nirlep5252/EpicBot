@@ -274,16 +274,13 @@ Joined At: {"Not in server" if isinstance(user, discord.User) else user.joined_a
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(aliases=['av', 'pfp'], help="Get the user's avatar")
-    async def avatar(self, ctx, user: discord.User = None):
-        if user is None:
-            user = ctx.author
+    async def avatar(self, ctx: commands.Context, user: Optional[Union[discord.Member, discord.User]] = None):
+        user = user or ctx.author
         embed = discord.Embed(
             title=f"Avatar of {escape_markdown(str(user))}",
             color=user.color
         ).set_image(url=user.display_avatar.url)
         await ctx.message.reply(embed=embed)
-
-    # fuck statcord
 
     @commands.cooldown(1, 60, commands.BucketType.user)
     @commands.command(aliases=['stats'], help="Get info about me!")

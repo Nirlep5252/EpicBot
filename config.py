@@ -16,9 +16,6 @@ limitations under the License.
 
 import time
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 # LOL TOKEN GO BRR
 BOT_TOKEN = os.environ.get("TOKEN")
