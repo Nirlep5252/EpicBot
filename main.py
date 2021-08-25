@@ -24,7 +24,7 @@ from discord import (
 from config import EMOJIS, BOT_TOKEN
 from utils.embed import success_embed
 from utils.bot import EpicBot
-from utils.help2 import EpicBotHelp
+from utils.help import EpicBotHelp
 from os import environ
 from utils.ui import ButtonSelfRoleView, DropDownSelfRoleView, TicketView
 
