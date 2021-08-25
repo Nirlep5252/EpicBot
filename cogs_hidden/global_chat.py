@@ -18,7 +18,10 @@ import discord
 import urllib
 import re
 from discord.ext import commands
-from config import DEFAULT_BANNED_WORDS, GLOBAL_CHAT_RULES, EMOJIS, RED_COLOR
+from config import (
+    DEFAULT_BANNED_WORDS, GLOBAL_CHAT_RULES,
+    EMOJIS, RED_COLOR, EMPTY_CHARACTER, OWNERS
+)
 from utils.embed import success_embed, error_embed
 from collections import Counter
 from utils.ui import Confirm
@@ -37,7 +40,8 @@ class GlobalChat(commands.Cog):
 
         self.confirmation_cooldown = commands.CooldownMapping.from_cooldown(1, 60, commands.BucketType.user)
 
-    async def check_message(self, content):
+    async def check_message(self, content: str, user_id: int) -> bool:
+        content = content.replace("\n", "").replace(EMPTY_CHARACTER, "").replace(" ", "")
         for w in DEFAULT_BANNED_WORDS:
             if w in content.lower():
                 return False
@@ -55,7 +59,7 @@ class GlobalChat(commands.Cog):
         if invite_match:
             return False
 
-        if re.search(self.url_regex, content):
+        if re.search(self.url_regex, content) and user_id not in OWNERS:
             return False
 
         if self.zalgo_regex.search(urllib.parse.quote(content.encode("utf-8"))):
@@ -81,7 +85,7 @@ class GlobalChat(commands.Cog):
         if message.channel != self.client.get_channel(g['globalchat']):
             return
 
-        if not await self.check_message(message.content) or message.content == "":
+        if not await self.check_message(message.content, message.author.id) or message.content == "":
             await message.add_reaction('❌')
             return
 
