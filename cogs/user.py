@@ -85,7 +85,7 @@ class user(commands.Cog, description="Commands related to the user!"):
         embed = discord.Embed(
             description=f"You have **{real}** invites (**{total}** total, **{'-' if left != 0 else ''}{left}** left, **{'-' if fake != 0 else ''}{fake}** fake)",
             color=MAIN_COLOR
-        ).set_author(name=user, icon_url=user.avatar.url)
+        ).set_author(name=user, icon_url=user.display_avatar.url)
         await ctx.reply(embed=embed)
 
     @commands.command(help="Check who invited this member.")
@@ -98,7 +98,7 @@ class user(commands.Cog, description="Commands related to the user!"):
             return await ctx.reply(embed=discord.Embed(
                 description=f"{user.mention} was invited by {inviter_id}\n\nThey either joined via a vanity URL.\nOr were invited before I was here.",
                 color=MAIN_COLOR
-            ).set_author(name=user, icon_url=user.avatar.url))
+            ).set_author(name=user, icon_url=user.display_avatar.url))
         invites = await self.client.fetch_invites(inviter_id, ctx.guild.id)
         return await ctx.reply(embed=discord.Embed(
             description=f"{user.mention} was invited by <@{inviter_id}>.\nThey have **{invites}** invites."
@@ -117,7 +117,7 @@ class user(commands.Cog, description="Commands related to the user!"):
         embed.title = "Leaderboard"
         if option is not None:
             embed.title = "Leaderboard" if option.lower() not in lb_options else option.lower().title() + " Leaderboard"
-        embed.set_thumbnail(url=self.client.user.avatar.url)
+        embed.set_thumbnail(url=self.client.user.display_avatar.url)
         embed.add_field(
             name=EMPTY_CHARACTER,
             value=f"[Invite EpicBot]({WEBSITE_LINK}/invite) | [Vote EpicBot]({WEBSITE_LINK}/vote) | [Support Server]({SUPPORT_SERVER_LINK})",
@@ -456,7 +456,7 @@ Make sure to upload image as an attachment.
             embed = discord.Embed(
                 description=nice,
                 color=MAIN_COLOR
-            ).set_author(name=user_.name, icon_url=user_.avatar.url
+            ).set_author(name=user_.name, icon_url=user_.display_avatar.url
             )  # .set_image(url="attachment://rank.png")
 
             embed.add_field(name="Badges:", value=badge_text, inline=True)
@@ -476,7 +476,7 @@ Make sure to upload image as an attachment.
                 name=EMPTY_CHARACTER,
                 value=f"Your current rankcard template is `{user_profile['rank_card_template']}`:",
                 inline=False
-            ).set_thumbnail(url=user_.avatar.url)
+            ).set_thumbnail(url=user_.display_avatar.url)
 
             await ctx.reply(embed=embed)
 
@@ -586,7 +586,7 @@ Make sure to upload image as an attachment.
                 description=proposal_text or "W-W-Would you like to marry me?... *blushes*",
                 color=PINK_COLOR_2
             ).set_image(url="https://media1.tenor.com/images/58bd69fb056bd54b80c92581f3cd9cf9/tenor.gif?itemid=10799169"
-            ).set_author(name=f"{ctx.author.name} 💘 {user.name}", icon_url=ctx.author.avatar.url),
+            ).set_author(name=f"{ctx.author.name} 💘 {user.name}", icon_url=ctx.author.display_avatar.url),
             view=view,
             allowed_mentions=discord.AllowedMentions(
                 users=True,
@@ -610,7 +610,7 @@ Make sure to upload image as an attachment.
                     description=f"**{user.name}** denied your proposal :(",
                     color=RED_COLOR
                 ).set_image(url="https://media1.tenor.com/images/79b965bb99fd58b94d2550b384093e75/tenor.gif?itemid=13668435"
-                ).set_author(name=f"{ctx.author.name} 💔 {user.name}", icon_url=ctx.author.avatar.url),
+                ).set_author(name=f"{ctx.author.name} 💔 {user.name}", icon_url=ctx.author.display_avatar.url),
                 view=None
             )
         user_profile.update({"married_to": user.id, "married_at": round(time.time())})
@@ -622,7 +622,7 @@ Make sure to upload image as an attachment.
                 description="This is the cutest thing ever!",
                 color=PINK_COLOR_2
             ).set_image(url="https://media1.tenor.com/images/d0cd64030f383d56e7edc54a484d4b8d/tenor.gif?itemid=17382422"
-            ).set_author(name=f"{ctx.author.name} 💞 {user.name}", icon_url=ctx.author.avatar.url),
+            ).set_author(name=f"{ctx.author.name} 💞 {user.name}", icon_url=ctx.author.display_avatar.url),
             view=None
         )
 
@@ -697,7 +697,7 @@ Make sure to upload image as an attachment.
                 title="User Reported",
                 description=reason,
                 color=ORANGE_COLOR
-            ).set_author(name=ctx.author, icon_url=ctx.author.avatar.url
+            ).set_author(name=ctx.author, icon_url=ctx.author.display_avatar.url
             ).add_field(name="Reported User:", value=f"`{user} ({user.id})` {user.mention}", inline=False),
             allowed_mentions=discord.AllowedMentions(
                 everyone=False,

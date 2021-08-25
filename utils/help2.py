@@ -35,7 +35,7 @@ async def get_cog_help(ctx: commands.Context, cog_name: str) -> discord.Embed:
         title=f"{cog_name.title()} Category",
         description="**Here are all the commands:**\n\n" + "\n".join([f"{EMOJIS['cmd_arrow']} `{e.name}` • {e.help}" for e in cog.get_commands()]),
         color=MAIN_COLOR
-    ).set_thumbnail(url=ctx.bot.user.avatar.url
+    ).set_thumbnail(url=ctx.bot.user.display_avatar.url
     ).add_field(name=EMPTY_CHARACTER, value=f"[Invite EpicBot]({WEBSITE_LINK}/invite) | [Vote EpicBot]({WEBSITE_LINK}/vote) | [Support Server]({SUPPORT_SERVER_LINK})", inline=False)
 
 
@@ -60,9 +60,9 @@ async def get_command_help(ctx: commands.Context, command_name: str) -> discord.
                     """,
         color=MAIN_COLOR,
         timestamp=datetime.datetime.utcnow()
-    ).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url
-    ).set_author(name=ctx.bot.user.name, icon_url=ctx.bot.user.avatar.url
-    ).set_thumbnail(url=ctx.bot.user.avatar.url
+    ).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.display_avatar.url
+    ).set_author(name=ctx.bot.user.name, icon_url=ctx.bot.user.display_avatar.url
+    ).set_thumbnail(url=ctx.bot.user.display_avatar.url
     ).add_field(name=EMPTY_CHARACTER, value=f"[Invite EpicBot]({WEBSITE_LINK}/invite) | [Vote EpicBot]({WEBSITE_LINK}/vote) | [Support Server]({SUPPORT_SERVER_LINK})", inline=False)
 
 
@@ -73,8 +73,8 @@ async def get_bot_help(ctx: commands.Context, mapping) -> discord.Embed:
             [f"{EMOJIS_FOR_COGS[cog.qualified_name]} • **{cog.qualified_name.title()}** [ `{len(cmds)}` ]" for cog, cmds in mapping.items() if cog is not None and cog.qualified_name == cog.qualified_name.lower()]),
         color=MAIN_COLOR,
         timestamp=datetime.datetime.utcnow()
-    ).set_author(name=ctx.bot.user.name, icon_url=ctx.bot.user.avatar.url
-    ).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url
+    ).set_author(name=ctx.bot.user.name, icon_url=ctx.bot.user.display_avatar.url
+    ).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.display_avatar.url
     ).add_field(name="Links:", value=f"""
 [Dashboard]({WEBSITE_LINK}) | [Support]({SUPPORT_SERVER_LINK}) | [Invite]({WEBSITE_LINK}/invite) | [Winlep](https://www.winlep.cf/)
     """, inline=False)
@@ -86,8 +86,8 @@ async def get_commands_list(ctx: commands.Context, mapping) -> discord.Embed:
         description=f"Please use `{ctx.clean_prefix}help <command>` for more info.",
         color=MAIN_COLOR,
         timestamp=datetime.datetime.utcnow()
-    ).set_author(name=ctx.bot.user.name, icon_url=ctx.bot.user.avatar.url
-    ).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
+    ).set_author(name=ctx.bot.user.name, icon_url=ctx.bot.user.display_avatar.url
+    ).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.display_avatar.url)
 
     for cog, commands_ in mapping.items():
         if cog is not None and cog.qualified_name == cog.qualified_name.lower():

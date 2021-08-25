@@ -408,7 +408,7 @@ Here are you settings:
         await log_channel.send(embed=success_embed(
             "Alts kicked!",
             f"**{kicked_count}** alts have been kicked by {ctx.author.mention}"
-        ).set_author(name=ctx.author, icon_url=ctx.author.avatar.url
+        ).set_author(name=ctx.author, icon_url=ctx.author.display_avatar.url
         ).set_footer(text=f"ID: {ctx.author.id}"))
 
     @commands.command(help="Ban all resitricted users by alt protection system.", aliases=['banrestricted'])
@@ -456,7 +456,7 @@ Here are you settings:
         await log_channel.send(embed=success_embed(
             "Alts banned!",
             f"**{banned_count}** alts have been banned by {ctx.author.mention}"
-        ).set_author(name=ctx.author, icon_url=ctx.author.avatar.url
+        ).set_author(name=ctx.author, icon_url=ctx.author.display_avatar.url
         ).set_footer(text=f"ID: {ctx.author.id}"))
 
     @commands.command(help="Give server access to a user who is restricted.", aliases=['giveaccess', 'unrestrict'])

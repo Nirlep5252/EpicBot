@@ -51,7 +51,7 @@ class AntiAlts(commands.Cog):
             description=f"{member.mention} {discord.utils.escape_markdown(str(member))}",
             color=ORANGE_COLOR,
             timestamp=datetime.datetime.utcnow()
-        ).set_author(name=member, icon_url=member.avatar.url
+        ).set_author(name=member, icon_url=member.display_avatar.url
         ).set_footer(text=f"ID: {member.id}")
 
         if level == 1:

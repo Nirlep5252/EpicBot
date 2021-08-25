@@ -32,7 +32,7 @@ async def get_cog_help(cog, context):
     embed = discord.Embed(
         title=f"{cog.qualified_name.title()} Category",
         color=MAIN_COLOR
-    ).set_thumbnail(url=context.bot.user.avatar.url
+    ).set_thumbnail(url=context.bot.user.display_avatar.url
                     ).add_field(name=EMPTY_CHARACTER, value=f"[Invite EpicBot]({WEBSITE_LINK}/invite) | [Vote EpicBot]({WEBSITE_LINK}/vote) | [Support Server]({SUPPORT_SERVER_LINK})", inline=False)
 
     nice = ""
@@ -68,9 +68,9 @@ class EpicBotHelp(commands.HelpCommand):
             description="Hello, I am a simple, multipurpose Discord bot, built to make your Discord life easier!\n\n**Select a category:**",
             color=MAIN_COLOR,
             timestamp=datetime.datetime.utcnow()
-        ).set_thumbnail(url=self.context.bot.user.avatar.url
-        ).set_author(name=self.context.bot.user.name, icon_url=self.context.bot.user.avatar.url
-        ).set_footer(text=f"Requested by {self.context.author}", icon_url=self.context.author.avatar.url)
+        ).set_thumbnail(url=self.context.bot.user.display_avatar.url
+        ).set_author(name=self.context.bot.user.name, icon_url=self.context.bot.user.display_avatar.url
+        ).set_footer(text=f"Requested by {self.context.author}", icon_url=self.context.author.display_avatar.url)
 
         view_ui = discord.ui.View(timeout=None)
         options = []
@@ -137,9 +137,9 @@ class EpicBotHelp(commands.HelpCommand):
                         """,
             color=MAIN_COLOR,
             timestamp=datetime.datetime.utcnow()
-        ).set_footer(text=f"Requested by {self.context.author}", icon_url=self.context.author.avatar.url
-        ).set_author(name=self.context.bot.user.name, icon_url=self.context.bot.user.avatar.url
-        ).set_thumbnail(url=self.context.bot.user.avatar.url
+        ).set_footer(text=f"Requested by {self.context.author}", icon_url=self.context.author.display_avatar.url
+        ).set_author(name=self.context.bot.user.name, icon_url=self.context.bot.user.display_avatar.url
+        ).set_thumbnail(url=self.context.bot.user.display_avatar.url
         ).add_field(name=EMPTY_CHARACTER, value=f"[Invite EpicBot]({WEBSITE_LINK}/invite) | [Vote EpicBot]({WEBSITE_LINK}/vote) | [Support Server]({SUPPORT_SERVER_LINK})", inline=False)
         await self.context.reply(embed=embed)
 

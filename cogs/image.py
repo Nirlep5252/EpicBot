@@ -54,7 +54,7 @@ class image(commands.Cog, description="Cool image commands!"):
         if -25 > intensity > 25:
             ctx.command.reset_cooldown(ctx)
             return await ctx.reply(f"{EMOJIS['tick_no']}The blur intensity can't be greater than `25`")
-        avatar_bytes = await user.avatar.replace(format='png', size=256).read()
+        avatar_bytes = await user.display_avatar.replace(format='png', size=256).read()
         async with ctx.channel.typing():
             await ctx.reply(
                 file=discord.File(await self.client.loop.run_in_executor(None, functools.partial(effects.blur, avatar_bytes, intensity)))
@@ -99,7 +99,7 @@ class image(commands.Cog, description="Cool image commands!"):
                     avatar_bytes = await attachment.read()
                     break
         else:
-            avatar_bytes = await user.avatar.replace(format='png', size=512).read()
+            avatar_bytes = await user.display_avatar.replace(format='png', size=512).read()
         async with ctx.channel.typing():
             await ctx.reply(file=discord.File(await self.client.loop.run_in_executor(None, functools.partial(effects.enhance, avatar_bytes, **amogus))))
 
@@ -111,16 +111,16 @@ class image(commands.Cog, description="Cool image commands!"):
         thingy_bytes = None
 
         if not thing and len(ctx.message.attachments) == 0:
-            thingy_bytes = await ctx.author.avatar.replace(format='png', size=128).read()
+            thingy_bytes = await ctx.author.display_avatar.replace(format='png', size=128).read()
         elif not thing and len(ctx.message.attachments) != 0:
             for attachment in ctx.message.attachments:
                 if attachment.content_type == "image/png":
                     thingy_bytes = await attachment.read()
                     break
-            thingy_bytes = thingy_bytes or await ctx.author.avatar.replace(format='png', size=128).read()
+            thingy_bytes = thingy_bytes or await ctx.author.display_avatar.replace(format='png', size=128).read()
         else:
             if isinstance(thing, discord.Member):
-                thingy_bytes = await thing.avatar.replace(format='png', size=128).read()
+                thingy_bytes = await thing.display_avatar.replace(format='png', size=128).read()
             else:
                 thingy_bytes = await thing.read()
 
@@ -354,7 +354,7 @@ class image(commands.Cog, description="Cool image commands!"):
         if message is None:
             ctx.command.reset_cooldown(ctx)
             return await ctx.message.reply(embed=error_embed("Error!", f"Incorrect Usage! Use like this: `{PREFIX}comment <text>`"))
-        url = f"https://some-random-api.ml/canvas/youtube-comment?avatar={ctx.author.avatar.with_format('png')}&username={ctx.author.name}&comment={message}"
+        url = f"https://some-random-api.ml/canvas/youtube-comment?avatar={ctx.author.display_avatar.with_format('png')}&username={ctx.author.name}&comment={message}"
         await ctx.send(embed=discord.Embed(color=MAIN_COLOR).set_image(url=url.replace(" ", "%20")))
 
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -362,7 +362,7 @@ class image(commands.Cog, description="Cool image commands!"):
     async def wasted(self, ctx, user: discord.Member = None):
         if user is None:
             user = ctx.author
-        url = f"https://some-random-api.ml/canvas/wasted?avatar={user.avatar.with_format('png')}"
+        url = f"https://some-random-api.ml/canvas/wasted?avatar={user.display_avatar.with_format('png')}"
         await ctx.send(embed=discord.Embed(color=MAIN_COLOR).set_image(url=url))
 
 

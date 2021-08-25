@@ -57,7 +57,7 @@ Database : {round((db_time2-db_time1)*1000)}ms
 {shard_text}
 ```
             """
-        ).set_thumbnail(url=self.client.user.avatar.url)
+        ).set_thumbnail(url=self.client.user.display_avatar.url)
         await msg.edit(embed=embed)
 
     @commands.cooldown(1, 2, commands.BucketType.user)
@@ -104,7 +104,7 @@ Database : {round((db_time2-db_time1)*1000)}ms
             title="Credits",
             description="This bot wouldn't have been possible without them!",
             color=MAIN_COLOR
-        ).set_thumbnail(url=self.client.user.avatar.url).add_field(
+        ).set_thumbnail(url=self.client.user.display_avatar.url).add_field(
             name="Owner",
             value="- [`Nirlep_5252_`](https://github.com/Nirlep5252)",
             inline=False
@@ -146,7 +146,7 @@ Database : {round((db_time2-db_time1)*1000)}ms
             files.append(await file.to_file())
 
         embed = success_embed("Suggestion!", suggestion
-                ).set_author(name=ctx.author, icon_url=ctx.author.avatar.url
+                ).set_author(name=ctx.author, icon_url=ctx.author.display_avatar.url
                 ).set_footer(text=f"User ID: {ctx.author.id} | Guild ID: {ctx.guild.id}")
 
         msg = await self.client.get_channel(SUGGESTION_CHANNEL).send(embed=embed, files=files)
@@ -175,7 +175,7 @@ Database : {round((db_time2-db_time1)*1000)}ms
             """,
             color=MAIN_COLOR
         )
-        embed.set_author(name=ctx.author, icon_url=ctx.author.avatar.url)
+        embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar.url)
         embed.set_footer(text=f"User ID: {ctx.author.id} | Guild ID: {ctx.guild.id}")
         await self.client.get_channel(BUG_REPORT_CHANNEL).send(embed=embed)
         await ctx.reply(embed=success_embed(

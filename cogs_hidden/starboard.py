@@ -56,7 +56,7 @@ class Starboard(commands.Cog):
             description=msg.content or EMPTY_CHARACTER,
             color=STARBOARD_COLOR,
             timestamp=datetime.utcnow()
-        ).set_author(name=msg.author, icon_url=msg.author.avatar.url, url=msg.jump_url
+        ).set_author(name=msg.author, icon_url=msg.author.display_avatar.url, url=msg.jump_url
         ).set_footer(text=f"Message ID: {msg.id}"
         )
 
@@ -135,7 +135,7 @@ class Starboard(commands.Cog):
             description=msg.content or EMPTY_CHARACTER,
             color=STARBOARD_COLOR,
             timestamp=datetime.utcnow()
-        ).set_author(name=msg.author, icon_url=msg.author.avatar.url, url=msg.jump_url
+        ).set_author(name=msg.author, icon_url=msg.author.display_avatar.url, url=msg.jump_url
         ).set_footer(text=f"Message ID: {msg.id}"
         )
 

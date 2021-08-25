@@ -57,7 +57,7 @@ class music(commands.Cog, description="Jam to some awesome tunes! 🎶"):
                         """
         ).set_image(url=song.thumbnail
         ).set_footer(text=f"Loop: {'✅' if song.is_looping else '❌'}", icon_url=ctx.guild.icon.url if ctx.guild.icon is not None else 'https://cdn.discordapp.com/embed/avatars/1.png'
-        ).set_author(name=ctx.author.name, icon_url=ctx.author.avatar.url)
+        ).set_author(name=ctx.author.name, icon_url=ctx.author.display_avatar.url)
 
     @commands.command(help="I will join your voice channel.", aliases=['connect'])
     @commands.cooldown(3, 5, commands.BucketType.user)
@@ -133,7 +133,7 @@ class music(commands.Cog, description="Jam to some awesome tunes! 🎶"):
 **Duration:** {humanfriendly.format_timespan(song.duration)}
 **Channel:** [{song.channel}]({song.channel_url})
                             """
-            ).set_author(name=ctx.author.name, icon_url=ctx.author.avatar.url
+            ).set_author(name=ctx.author.name, icon_url=ctx.author.display_avatar.url
             ).set_thumbnail(url=song.thumbnail
             ).set_footer(text=f"Song added to queue | Loop: {'✅' if song.is_looping else '❌'}", icon_url=ctx.guild.icon.url if ctx.guild.icon is not None else 'https://cdn.discordapp.com/embed/avatars/1.png'))
 

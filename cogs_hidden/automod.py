@@ -349,7 +349,7 @@ class Automod(commands.Cog):
                 # description=f"**Victims** : {string}\n**Message:** {msgobj.content}",
                 timestamp=msgobj.created_at,
                 color=RED_COLOR
-            ).set_author(name=msgobj.author, icon_url=msgobj.author.avatar.url
+            ).set_author(name=msgobj.author, icon_url=msgobj.author.display_avatar.url
             ).add_field(name="Offender:", value=msgobj.author.mention, inline=False
             ).add_field(name="Victims:", value=string, inline=False
             ).set_thumbnail(url="https://cdn.discordapp.com/emojis/527884882010177536.png?v=1"
@@ -403,7 +403,7 @@ class Automod(commands.Cog):
                 description=f"[Original Message]({after.jump_url})",
                 color=RED_COLOR,
                 timestamp=after.edited_at
-            ).set_author(name=after.author, icon_url=after.author.avatar.url
+            ).set_author(name=after.author, icon_url=after.author.display_avatar.url
             ).add_field(name="Offender:", value=after.author.mention, inline=False
             ).add_field(name="Victims:", value=string, inline=False
             ).set_thumbnail(url="https://cdn.discordapp.com/emojis/527884882010177536.png?v=1"

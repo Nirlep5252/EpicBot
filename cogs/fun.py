@@ -139,7 +139,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             ))
 
         msg = await ctx.send(
-            embed=discord.Embed(color=MAIN_COLOR).set_author(name="It's time to pay respects!", icon_url=ctx.author.avatar.url),
+            embed=discord.Embed(color=MAIN_COLOR).set_author(name="It's time to pay respects!", icon_url=ctx.author.display_avatar.url),
             view=PressFView()
         )
         f_channels[ctx.channel.id] = {"msg_id": msg.id, "reacted": []}
@@ -206,7 +206,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             title="Your PP",
             description=pp,
             color=color
-        ).set_author(name=user.name, icon_url=user.avatar.url).set_footer(text=footer)
+        ).set_author(name=user.name, icon_url=user.display_avatar.url).set_footer(text=footer)
 
         await msg.edit(embed=embed)
 
@@ -216,7 +216,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         embed = success_embed(
             "FREE NITRO",
             f"Your nitro: [**https://discord.gift/NBnj8bySBWr63Q99**](https://discord.gg/Zj7h8Fp)\n\n*[Disclaimer]({WEBSITE_LINK}/disclaimer)*"
-        ).set_footer(text=f"Requested by: {ctx.author}", icon_url=ctx.author.avatar.url)
+        ).set_footer(text=f"Requested by: {ctx.author}", icon_url=ctx.author.display_avatar.url)
 
         try:
             await ctx.message.delete()
@@ -366,7 +366,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             description=thing['content'],
             color=MAIN_COLOR,
             timestamp=thing['time']
-        ).set_author(name=thing['author'].name, icon_url=thing['author'].avatar.url)
+        ).set_author(name=thing['author'].name, icon_url=thing['author'].display_avatar.url)
 
         for sticker in thing['stickers']:
             embed.add_field(
@@ -422,7 +422,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         embed = discord.Embed(
             color=MAIN_COLOR,
             timestamp=thing['time']
-        ).set_author(name=thing['author'].name, icon_url=thing['author'].avatar.url
+        ).set_author(name=thing['author'].name, icon_url=thing['author'].display_avatar.url
         ).add_field(name="Before:", value=thing['before'] if len(thing['before']) <= 1024 else thing['before'][0: 1023], inline=False
         ).add_field(name="After:", value=thing['after'] if len(thing['after']) <= 1024 else thing['after'][0: 1023], inline=False)
 
@@ -659,7 +659,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             description=f"**{escape_markdown(str(user))}** is gonna die in **{thingy}**",
             color=embed_color,
         )
-        embed.set_author(name=user.name, icon_url=user.avatar.url)
+        embed.set_author(name=user.name, icon_url=user.display_avatar.url)
         embed.set_footer(text=funny_text)
 
         await msg.edit(embed=embed)
@@ -861,7 +861,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
                 return await ctx.reply(f"{EMOJIS['tick_no']}Only `png` format is allowed.")
 
         if isinstance(text, discord.Member):
-            file_bytes = await text.avatar.replace(format='png', size=256).read()
+            file_bytes = await text.display_avatar.replace(format='png', size=256).read()
 
         if isinstance(text, str):
             res = pyfiglet.figlet_format(text)

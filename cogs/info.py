@@ -163,7 +163,7 @@ Members: {len(role.members)}
         user = user or ctx.author
 
         embed = discord.Embed(color=user.color)
-        embed.set_author(name=user, icon_url=user.avatar.url)
+        embed.set_author(name=user, icon_url=user.display_avatar.url)
         embed.add_field(
             name="Basic Info",
             value=f"""
@@ -205,7 +205,7 @@ Joined At: {"Not in server" if isinstance(user, discord.User) else user.joined_a
                 inline=False
             )
 
-        embed.set_thumbnail(url=user.avatar.url)
+        embed.set_thumbnail(url=user.display_avatar.url)
 
         await ctx.reply(embed=embed)
 
@@ -219,7 +219,7 @@ Joined At: {"Not in server" if isinstance(user, discord.User) else user.joined_a
             color=MAIN_COLOR
         ).set_author(
             name=guild.name,
-            icon_url=guild.me.avatar.url if guild.icon is None else guild.icon.url
+            icon_url=guild.me.display_avatar.url if guild.icon is None else guild.icon.url
         ).set_footer(text=f"ID: {guild.id}")
         if guild.icon is not None:
             embed.set_thumbnail(url=guild.icon.url)
@@ -280,7 +280,7 @@ Joined At: {"Not in server" if isinstance(user, discord.User) else user.joined_a
         embed = discord.Embed(
             title=f"Avatar of {escape_markdown(str(user))}",
             color=user.color
-        ).set_image(url=user.avatar.url)
+        ).set_image(url=user.display_avatar.url)
         await ctx.message.reply(embed=embed)
 
     # fuck statcord
@@ -293,7 +293,7 @@ Joined At: {"Not in server" if isinstance(user, discord.User) else user.joined_a
             title="Information About Me!",
             description="I am a simple, multipurpose Discord bot, built to make ur Discord life easier!",
             color=MAIN_COLOR
-        ).set_thumbnail(url=self.client.user.avatar.url)
+        ).set_thumbnail(url=self.client.user.display_avatar.url)
         embed.add_field(
             name="Stats",
             value=f"""

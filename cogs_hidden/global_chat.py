@@ -126,7 +126,7 @@ class GlobalChat(commands.Cog):
                         message.content,
                         allowed_mentions=self.peng,
                         username=str(message.author) if p['gc_nick'] is None or channel.id == 863375202284077066 else p['gc_nick'],
-                        avatar_url=message.author.avatar.url if p['gc_avatar'] is None or channel.id == 863375202284077066 else p['gc_avatar']
+                        avatar_url=message.author.display_avatar.url if p['gc_avatar'] is None or channel.id == 863375202284077066 else p['gc_avatar']
                     )
 
 

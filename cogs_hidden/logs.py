@@ -82,7 +82,7 @@ class Logs(commands.Cog):
 **Humans:** {len(list(filter(lambda m: not m.bot, guild.members)))}
 **Bots:** {len(list(filter(lambda m: m.bot, guild.members)))}
             """
-        ).set_author(name=guild.owner, icon_url=guild.owner.avatar.url
+        ).set_author(name=guild.owner, icon_url=guild.owner.display_avatar.url
         ).set_thumbnail(url=guild.icon.url)
         await self.client.get_channel(793832499645644800).send(embed=embed)
 
@@ -101,8 +101,8 @@ Let me tell you more about me!
 I hope you have a fun time with me, UwU!~
                         """,
             color=MAIN_COLOR
-        ).set_thumbnail(url=self.client.user.avatar.url
-        ).set_author(name=self.client.user.name, icon_url=self.client.user.avatar.url
+        ).set_thumbnail(url=self.client.user.display_avatar.url
+        ).set_author(name=self.client.user.name, icon_url=self.client.user.display_avatar.url
         ).add_field(name=EMPTY_CHARACTER, value=f"[Invite EpicBot]({WEBSITE_LINK}/invite) | [Vote EpicBot]({WEBSITE_LINK}/vote) | [Support Server]({SUPPORT_SERVER_LINK})", inline=False)
 
         for channel in guild.channels:

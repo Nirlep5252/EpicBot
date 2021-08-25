@@ -118,7 +118,7 @@ class config(commands.Cog, description="Configure your server with amazing EpicB
     async def send_from_webhook_autopost(self, webhook, embed):
         await webhook.send(
             embed=embed,
-            avatar_url=self.client.user.avatar.url
+            avatar_url=self.client.user.display_avatar.url
         )
 
     @tasks.loop(seconds=autoposting_delay)

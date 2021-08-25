@@ -79,7 +79,7 @@ async def replace_things_in_string_fancy_lemao(bot, array, string_):
         inviter_tag = 'Unknown' if inviter__ is None else inviter_name + '#' + inviter_discrim
         inviter_id_ = 'Unknown' if inviter__ is None else inviter__.id
         inviter_mention = 'Unknown' if inviter__ is None else inviter__.mention
-        inviter_avatar = 'https://cdn.discordapp.com/embed/avatars/1.png' if inviter__ is None else inviter__.avatar.url
+        inviter_avatar = 'https://cdn.discordapp.com/embed/avatars/1.png' if inviter__ is None else inviter__.display_avatar.url
         inviter_invites = 'Unknown' if inviter__ is None else await bot.fetch_invites(inviter_id_, guild.id)
 
     nice = {
@@ -89,7 +89,7 @@ async def replace_things_in_string_fancy_lemao(bot, array, string_):
         "{user_tag}": author.name + '#' + str(author.discriminator),
         "{user_id}": author.id,
         "{user_mention}": author.mention,
-        "{user_avatar}": author.avatar.url,
+        "{user_avatar}": author.display_avatar.url,
 
         "{guild_name}": guild.name,
         "{guild_id}": guild.id,

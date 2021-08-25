@@ -334,7 +334,7 @@ class Leveling(commands.Cog):
         rank_template = Image.open(f"assets/images/rank_cards/{template_name}.png")
 
         # getting avatar
-        avatar_asset = user.avatar.with_format('png')
+        avatar_asset = user.display_avatar.with_format('png')
         avatar_data = BytesIO(await avatar_asset.read())
         user_avatar = Image.open(avatar_data)
         user_avatar = user_avatar.resize((t['avatar_resize'], t['avatar_resize']))

@@ -51,7 +51,7 @@ class GuildLogs(commands.Cog):
         if embed is None:
             await webhook.send(
                 allowed_mentions=self.no_mentions,
-                avatar_url=self.client.user.avatar.url,
+                avatar_url=self.client.user.display_avatar.url,
                 files=files,
                 embeds=embeds
             )
@@ -59,7 +59,7 @@ class GuildLogs(commands.Cog):
             await webhook.send(
                 embed=embed,
                 allowed_mentions=self.no_mentions,
-                avatar_url=self.client.user.avatar.url,
+                avatar_url=self.client.user.display_avatar.url,
                 files=files
             )
 
@@ -74,13 +74,13 @@ class GuildLogs(commands.Cog):
             description=f"{member.mention} {escape_markdown(str(member))}",
             timestamp=datetime.datetime.utcnow(),
             color=MAIN_COLOR
-        ).set_author(name="Member Joined!", icon_url=member.avatar.url
+        ).set_author(name="Member Joined!", icon_url=member.display_avatar.url
         ).add_field(
             name="Account Age",
             value=format_timespan((datetime.datetime.utcnow() - member.created_at.replace(tzinfo=None)).total_seconds()),
             inline=False
         ).set_footer(text=f"ID: {member.id}"
-        ).set_thumbnail(url=member.avatar.url)
+        ).set_thumbnail(url=member.display_avatar.url)
         await self.send_from_webhook(w, e)
 
     @commands.Cog.listener("on_member_remove")
@@ -94,9 +94,9 @@ class GuildLogs(commands.Cog):
             description=f"{member.mention} {escape_markdown(str(member))}",
             timestamp=datetime.datetime.utcnow(),
             color=RED_COLOR
-        ).set_author(name="Member Left!", icon_url=member.avatar.url
-        ).set_footer(text=f"ID: {member.id}", icon_url=member.avatar.url
-        ).set_thumbnail(url=member.avatar.url)
+        ).set_author(name="Member Left!", icon_url=member.display_avatar.url
+        ).set_footer(text=f"ID: {member.id}", icon_url=member.display_avatar.url
+        ).set_thumbnail(url=member.display_avatar.url)
 
         roles = ""
         for role in member.roles[::-1]:
@@ -126,9 +126,9 @@ class GuildLogs(commands.Cog):
             description=f"{user.mention} {escape_markdown(str(user))}",
             timestamp=datetime.datetime.utcnow(),
             color=RED_COLOR
-        ).set_author(name="Member Banned!", icon_url=user.avatar.url
+        ).set_author(name="Member Banned!", icon_url=user.display_avatar.url
         ).set_footer(text=f"ID: {user.id}"
-        ).set_thumbnail(url=user.avatar.url)
+        ).set_thumbnail(url=user.display_avatar.url)
 
         await self.send_from_webhook(w, e)
 
@@ -143,9 +143,9 @@ class GuildLogs(commands.Cog):
             description=f"{user.mention} {escape_markdown(str(user))}",
             timestamp=datetime.datetime.utcnow(),
             color=MAIN_COLOR
-        ).set_author(name="Member Unbanned!", icon_url=user.avatar.url
+        ).set_author(name="Member Unbanned!", icon_url=user.display_avatar.url
         ).set_footer(text=f"ID: {user.id}"
-        ).set_thumbnail(url=user.avatar.url)
+        ).set_thumbnail(url=user.display_avatar.url)
 
         await self.send_from_webhook(w, e)
 
@@ -167,10 +167,10 @@ class GuildLogs(commands.Cog):
             description=msg.content,
             timestamp=datetime.datetime.utcnow(),
             color=RED_COLOR
-        ).set_author(name=f"{msg.author} ({msg.author.id})", icon_url=msg.author.avatar.url
+        ).set_author(name=f"{msg.author} ({msg.author.id})", icon_url=msg.author.display_avatar.url
         ).set_footer(text=f"Message ID: {msg.id}"
         ).add_field(name="Channel:", value=msg.channel.mention, inline=False
-        ).set_thumbnail(url=msg.author.avatar.url)
+        ).set_thumbnail(url=msg.author.display_avatar.url)
 
         await self.send_from_webhook(w, e, f)
 
@@ -194,9 +194,9 @@ class GuildLogs(commands.Cog):
             description=f"**Message edited in {before.channel.mention}**\n[Jump to message!]({before.jump_url})",
             timestamp=datetime.datetime.utcnow(),
             color=MAIN_COLOR
-        ).set_author(name=f"{before.author} ({before.author.id})", icon_url=before.author.avatar.url
+        ).set_author(name=f"{before.author} ({before.author.id})", icon_url=before.author.display_avatar.url
         ).set_footer(text=f"Message ID: {before.id}"
-        ).set_thumbnail(url=before.author.avatar.url)
+        ).set_thumbnail(url=before.author.display_avatar.url)
         e1 = discord.Embed(
             title="Before:",
             description=before.content,
@@ -433,7 +433,7 @@ class GuildLogs(commands.Cog):
             description=f"Role{'s' if len(roles) > 1 else ''} {role_text} {'were' if len(roles) > 1 else 'was'} {'added to' if len(before.roles) < len(after.roles) else 'removed from'} {after.mention}",
             timestamp=datetime.datetime.utcnow(),
             color=RED_COLOR if len(before.roles) > len(after.roles) else MAIN_COLOR
-        ).set_author(name=after, icon_url=after.avatar.url
+        ).set_author(name=after, icon_url=after.display_avatar.url
         ).set_footer(text=f"ID: {after.id}")
         await self.send_from_webhook(w, e)
 
@@ -450,7 +450,7 @@ class GuildLogs(commands.Cog):
             description=f"`{before.nick}` ➜ `{after.nick}`",
             timestamp=datetime.datetime.utcnow(),
             color=MAIN_COLOR
-        ).set_author(name=after, icon_url=after.avatar.url
+        ).set_author(name=after, icon_url=after.display_avatar.url
         ).set_footer(text=f"ID: {after.id}")
         await self.send_from_webhook(w, e)
 
@@ -480,7 +480,7 @@ class GuildLogs(commands.Cog):
                 timestamp=datetime.datetime.utcnow(),
                 color=MAIN_COLOR
             )
-        e.set_author(name=member, icon_url=member.avatar.url)
+        e.set_author(name=member, icon_url=member.display_avatar.url)
         e.set_footer(text=f"ID: {member.id}")
         await self.send_from_webhook(w, e)
 
@@ -633,7 +633,7 @@ class GuildLogs(commands.Cog):
             """,
             timestamp=datetime.datetime.utcnow(),
             color=MAIN_COLOR
-        ).set_author(name=thread.owner, icon_url=thread.owner.avatar.url if thread.owner is not None else "https://amogus.org/amogus.png"
+        ).set_author(name=thread.owner, icon_url=thread.owner.display_avatar.url if thread.owner is not None else "https://amogus.org/amogus.png"
         ).set_footer(text=f"ID: {thread.id}"
         ).add_field(name="Auto Archive Duration:", value=format_timespan(thread.auto_archive_duration), inline=False)
         await self.send_from_webhook(w, e)
@@ -653,7 +653,7 @@ class GuildLogs(commands.Cog):
             """,
             timestamp=datetime.datetime.utcnow(),
             color=RED_COLOR
-        ).set_author(name=thread.owner, icon_url=thread.owner.avatar.url if thread.owner is not None else "https://amogus.org/amogus.png"
+        ).set_author(name=thread.owner, icon_url=thread.owner.display_avatar.url if thread.owner is not None else "https://amogus.org/amogus.png"
         ).set_footer(text=f"ID: {thread.id}")
         await self.send_from_webhook(w, e)
 
@@ -667,7 +667,7 @@ class GuildLogs(commands.Cog):
             description="**Thread updated**",
             color=MAIN_COLOR,
             timestamp=datetime.datetime.utcnow()
-        ).set_author(name=after.owner, icon_url=after.owner.avatar.url if after.owner is not None else "https://amogus.org/amogus.png"
+        ).set_author(name=after.owner, icon_url=after.owner.display_avatar.url if after.owner is not None else "https://amogus.org/amogus.png"
         ).set_footer(text=f"ID: {after.id}")
 
         if before.archived != after.archived:
@@ -694,9 +694,9 @@ class GuildLogs(commands.Cog):
     #         description=f"{member.mention} {escape_markdown(str(member))} has been kicked by {entry.user.mention} {escape_markdown(str(entry.user))}",
     #         color=RED_COLOR,
     #         timestamp=datetime.datetime.utcnow()
-    #     ).set_author(name=member, icon_url=member.avatar.url
-    #     ).set_footer(icon_url=member.avatar.url, text=f"ID: {member.guild.id}"
-    #     ).set_thumbnail(url=member.avatar.url
+    #     ).set_author(name=member, icon_url=member.display_avatar.url
+    #     ).set_footer(icon_url=member.display_avatar.url, text=f"ID: {member.guild.id}"
+    #     ).set_thumbnail(url=member.display_avatar.url
     #     ).add_field(name='Reason:', value=entry.reason or 'No reason provided.', inline=False)
 
     #     await self.send_from_webhook(w, e)

@@ -274,7 +274,7 @@ class emojis(commands.Cog, description="Emoji related commands!"):
                 final_msg,
                 files=msg_attachments,
                 username=message.author.name,
-                avatar_url=message.author.avatar.url,
+                avatar_url=message.author.display_avatar.url,
                 allowed_mentions=discord.AllowedMentions.none()
             )
 

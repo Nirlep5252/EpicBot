@@ -362,7 +362,7 @@ class utility(commands.Cog, description="Commands that make your Discord experie
             color=MAIN_COLOR,
             description=msg.content,
             timestamp=datetime.datetime.utcnow()
-        ).set_author(name=msg.author, icon_url=msg.author.avatar.url
+        ).set_author(name=msg.author, icon_url=msg.author.display_avatar.url
         ).set_footer(text=f"Msg ID: {msg.id} | Author ID: {msg.author.id}")
         nice = ""
         for e in msg.attachments:
