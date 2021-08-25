@@ -526,7 +526,7 @@ Here are you settings:
         if user.bot:
             ctx.command.reset_cooldown(ctx)
             return await ctx.reply(embed=error_embed(f"{EMOJIS['tick_no']} Bruh!", "You can't mute bots!"))
-        if int(user.top_role.position) >= int(ctx.author.top_role.position):
+        if int(user.top_role.position) >= int(ctx.author.top_role.position) and ctx.author.id != ctx.guild.owner_id:
             ctx.command.reset_cooldown(ctx)
             return await ctx.message.reply(embed=error_embed(
                 f"{EMOJIS['tick_no']} No!",
@@ -722,7 +722,7 @@ Here are you settings:
         if user == self.client.user:
             ctx.command.reset_cooldown(ctx)
             return await ctx.message.reply("Bruh why u wanna kick me :(")
-        if int(user.top_role.position) >= int(ctx.author.top_role.position):
+        if int(user.top_role.position) >= int(ctx.author.top_role.position) and ctx.author.id != ctx.guild.owner_id:
             ctx.command.reset_cooldown(ctx)
             return await ctx.message.reply(embed=error_embed(
                 f"{EMOJIS['tick_no']} No!",
@@ -794,7 +794,7 @@ Here are you settings:
             ctx.command.reset_cooldown(ctx)
             return await ctx.send("Bruh why u wanna ban me :(")
         if isinstance(user, discord.Member):
-            if int(user.top_role.position) >= int(ctx.author.top_role.position):
+            if int(user.top_role.position) >= int(ctx.author.top_role.position) and ctx.author.id != ctx.guild.owner_id:
                 ctx.command.reset_cooldown(ctx)
                 return await ctx.send(embed=error_embed(
                     f"{EMOJIS['tick_no']} No!",
