@@ -40,7 +40,12 @@ class GlobalChat(commands.Cog):
 
         self.confirmation_cooldown = commands.CooldownMapping.from_cooldown(1, 60, commands.BucketType.user)
 
-        self.replace_stuff = ['\n', ' ', '~', '.', ',', '!', EMPTY_CHARACTER]
+        self.replace_stuff = [
+            '\n', ' ', '~', '.', ',', '!', EMPTY_CHARACTER,
+            '*', '@', '#', '$', '%', '^', '&', '(', ')', '-',
+            '_', '=', '+', '/', '\\', ';', ':', '[', ']', '{',
+            '}', '\'', '"', '<', '>', '?', '`'
+        ]
 
     async def check_message(self, content: str, user_id: int) -> bool:
         for stuff in self.replace_stuff:
