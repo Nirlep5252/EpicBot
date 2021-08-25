@@ -48,12 +48,26 @@ class GlobalChat(commands.Cog):
             '​'
         ]
 
+    def isinglish(self, s: str):
+        try:
+            s.encode(encoding='utf-8').decode('ascii')
+        except UnicodeDecodeError:
+            return False
+        else:
+            return True
+
     async def check_message(self, content: str, user_id: int) -> bool:
+        temp_cont = content
+
         for stuff in self.replace_stuff:
-            content = content.replace(stuff, "")
+            temp_cont = temp_cont.replace(stuff, "")
+
         for w in DEFAULT_BANNED_WORDS:
-            if w in content.lower():
+            if w in temp_cont.lower():
                 return False
+
+        if not self.isinglish(content):
+            return False
 
         if len(content) > 150:
             c_ = Counter(content.lower())
