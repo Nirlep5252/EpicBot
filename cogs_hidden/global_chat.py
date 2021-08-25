@@ -40,8 +40,11 @@ class GlobalChat(commands.Cog):
 
         self.confirmation_cooldown = commands.CooldownMapping.from_cooldown(1, 60, commands.BucketType.user)
 
+        self.replace_stuff = ['\n', ' ', '~', '.', ',', '!', EMPTY_CHARACTER]
+
     async def check_message(self, content: str, user_id: int) -> bool:
-        content = content.replace("\n", "").replace(EMPTY_CHARACTER, "").replace(" ", "")
+        for stuff in self.replace_stuff:
+            content = content.replace(stuff, "")
         for w in DEFAULT_BANNED_WORDS:
             if w in content.lower():
                 return False
