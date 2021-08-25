@@ -24,6 +24,7 @@ youtube_dl
 python-dotenv
 pytz
 statcord.py
+emojis
 
 git+https://github.com/nirlep5252/epicbot-images
 git+https://github.com/nirlep5252/Discord-Games.git

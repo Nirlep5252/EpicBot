@@ -17,6 +17,7 @@ limitations under the License.
 import discord
 import urllib
 import re
+import emojis
 from discord.ext import commands
 from config import (
     DEFAULT_BANNED_WORDS, GLOBAL_CHAT_RULES,
@@ -49,6 +50,7 @@ class GlobalChat(commands.Cog):
         ]
 
     def isinglish(self, s: str):
+        s = emojis.decode(s)
         try:
             s.encode(encoding='utf-8').decode('ascii')
         except UnicodeDecodeError:
