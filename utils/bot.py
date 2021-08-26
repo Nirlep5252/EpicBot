@@ -461,22 +461,23 @@ class EpicBot(commands.AutoShardedBot):
         print(f"Blacklisted users cache has been loaded. | {len(self.blacklisted_cache)} users")
 
     async def load_extensions(self, filename_):
-        # await self.wait_until_ready()
-        cogs_text = ""
+        loaded = []
+        not_loaded = {}
         i = 0
         total = 0
         for filename in os.listdir(filename_):
             if filename.endswith('.py'):
                 total += 1
+                h = f'{filename_[2:]}.{filename[:-3]}'
                 try:
-                    self.load_extension(f'{filename_[2:]}.{filename[:-3]}')
-                    # cogs_text += f"🟢 Loaded {filename[:-3]}\n"
+                    self.load_extension(h)
+                    loaded.append(h)
                     i += 1
                 except Exception as e:
-                    cogs_text += f"🔴 Unable to load {filename[:-3]} | {e}\n"
+                    not_loaded.update({h: e})
         # await self.get_channel(ONLINE_LOG_CHANNEL).send(embed=success_embed("Cogs Loaded", f"```{cogs_text}```"))
         print(f"Loaded {i}/{total} extensions from {filename_}")
-        print(cogs_text)
+        return loaded, not_loaded
 
     async def fetch_prefix(self, message: discord.Message):
         if not message.guild:

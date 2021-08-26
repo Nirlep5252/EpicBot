@@ -92,8 +92,8 @@ if not client.cache_loaded:
 if not client.cogs_loaded:
     client.load_extension('jishaku')
     print("Loaded jsk!")
-    client.loop.run_until_complete(client.load_extensions('./cogs'))
-    client.loop.run_until_complete(client.load_extensions('./cogs_hidden'))
+    loaded, not_loaded = client.loop.run_until_complete(client.load_extensions('./cogs'))
+    loaded_hidden, not_loaded_hidden = client.loop.run_until_complete(client.load_extensions('./cogs_hidden'))
     client.cogs_loaded = True
 
 
@@ -132,6 +132,29 @@ async def on_ready():
     print(f"Connected to: {len(client.emojis)} emojis")
     print(f"Connected to: {len(client.voice_clients)} voice_clients")
     print(f"Connected to: {len(client.private_channels)} private_channels")
+
+    channel = client.get_channel(757168151141285929)
+    embed = success_embed(
+        "Bot is ready!",
+        f"""
+**Loaded cogs:** {len(loaded)}/{len(loaded) + len(not_loaded)}
+**Loaded hidden cogs:** {len(loaded_hidden)}/{len(loaded_hidden) + len(not_loaded_hidden)}
+        """
+    )
+    if not_loaded:
+        embed.add_field(
+            name="Not loaded cogs",
+            value="\n".join([f"`{cog}` - {error}" for cog, error in not_loaded.items()]),
+            inline=False
+        )
+    if not_loaded_hidden:
+        embed.add_field(
+            name="Not loaded hidden cogs",
+            value="\n".join([f"`{cog}` - {error}" for cog, error in not_loaded_hidden.items()]),
+            inline=False
+        )
+    if channel is not None:
+        await channel.send(embed=embed)
 
 if __name__ == '__main__':
     client.run(BOT_TOKEN)
