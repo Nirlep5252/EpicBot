@@ -31,6 +31,7 @@ from utils.embed import success_embed, error_embed, edit_msg_multiple_times
 from utils.custom_checks import not_opted_out
 from utils.random import email_fun, passwords, DMs, discord_servers
 from utils.reddit import pick_random_url_from_reddit
+from utils.constants import brain_images
 from owotext import OwO
 from dadjokes import Dadjoke
 from discord.utils import escape_markdown
@@ -209,6 +210,41 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         ).set_author(name=user.name, icon_url=user.display_avatar.url).set_footer(text=footer)
 
         await msg.edit(embed=embed)
+
+    @commands.command(help="Check your brain size!", aliases=['brain', 'iq'])
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def brainsize(self, ctx, user: Union[discord.Member, str] = None):
+        user = user or ctx.author
+        iq = random.randint(0, 200)
+        if iq == 0:
+            color = RED_COLOR
+            footer = "ur brain is just like my life. non existent."
+            size = "no_brain"
+        elif iq in range(1, 50):
+            color = RED_COLOR
+            footer = "lol ur brain is almost the same size as ur pp"
+            size = "small"
+        elif iq in range(50, 100):
+            color = ORANGE_COLOR
+            footer = "damn, how do u manage to be so dumb!"
+            size = "small"
+        elif iq in range(100, 150):
+            color = MAIN_COLOR
+            footer = "damn, pretty smart 👀"
+            size = "medium"
+        elif iq in range(150, 201):
+            color = MAIN_COLOR
+            footer = "damn ur a genius! not as smart as me though"  # by this i mean epicbot is smart not me, im dumb lol
+            size = "big"
+        embed = discord.Embed(
+            title="🧠 Your IQ",
+            description=f"**{escape_markdown(str(user))}** has an IQ of **{iq}**",
+            color=color
+        ).set_footer(text=footer).set_thumbnail(url=random.choice(brain_images[size]))
+
+        m = await ctx.reply("Calculating IQ...")
+        await asyncio.sleep(0.5)
+        await m.edit(content="", embed=embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Free Nitro!!!")
