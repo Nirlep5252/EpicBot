@@ -31,7 +31,8 @@ from utils.embed import success_embed, error_embed, edit_msg_multiple_times
 from utils.custom_checks import not_opted_out
 from utils.random import email_fun, passwords, DMs, discord_servers
 from utils.reddit import pick_random_url_from_reddit
-from utils.constants import brain_images
+from utils.constants import 
+_images
 from owotext import OwO
 from dadjokes import Dadjoke
 from discord.utils import escape_markdown
@@ -225,10 +226,6 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             color = RED_COLOR
             footer = "ur brain is just like my life. non existent."
             size = "no_brain"
-        elif iq == 10000000000:
-            color = MAIN_COLOR
-            footer = "Ah yes the best genius guy in the world THE MOST GENIUS GUY!"
-            size = 'big'
         elif iq in range(1, 50):
             color = RED_COLOR
             footer = "lol ur brain is almost the same size as ur pp"
