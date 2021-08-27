@@ -62,12 +62,21 @@ Be sure to follow the [license](https://github.com/Nirlep5252/EpicBot/blob/main/
 Here are the steps that you can follow to sefhost EpicBot which would work with <b>most</b> hosting providers:
 
 - Clone the repo: <br>
-  ```$ git clone https://github.com/Nirlep5252/EpicBot ```
+
+    ```
+    $ git clone https://github.com/Nirlep5252/EpicBot 
+    ```
 - Install all the required packages: <br>
-  ```$ pip install -r requirements.txt ```
+
+    ```
+    $ pip install -r requirements.txt 
+    ```
 - Setup the [`config.py`](https://github.com/Nirlep5252/EpicBot/blob/main/other/CONFIG.md) file.
 - Run the bot: <br>
- ```$ python main.py ```
+
+    ```
+    $ python main.py 
+    ```
 - [Enjoy!](https://discord.gg/Zj7h8Fp)
 
 <h4><b>Note:</b> We do not provide support for self-hosting. If you are unable to self host EpicBot by yourself, just use EpicBot which we put lot's of work into.</h4>
