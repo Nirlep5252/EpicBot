@@ -216,15 +216,17 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
     async def brainsize(self, ctx, user: Union[discord.Member, str] = None):
         user = user or ctx.author
         iq = random.randint(0, 200)
-        if user.id == 558861606063308822:
+        if user.id == 558861606063308822 or user.id == 679677267164921866:
             iq = 10000000000
+        if user.id == 521640052195852298:
+            iq = 0
         if iq == 0:
             color = RED_COLOR
             footer = "ur brain is just like my life. non existent."
             size = "no_brain"
         elif iq == 10000000000:
             color = MAIN_COLOR
-            footer = "Ah yes the best genius guy in the world THE GENIUSLEP!"
+            footer = "Ah yes the best genius guy in the world THE MOST GENIUS GUY!"
             size = 'big'
         elif iq in range(1, 50):
             color = RED_COLOR
