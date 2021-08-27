@@ -31,8 +31,7 @@ from utils.embed import success_embed, error_embed, edit_msg_multiple_times
 from utils.custom_checks import not_opted_out
 from utils.random import email_fun, passwords, DMs, discord_servers
 from utils.reddit import pick_random_url_from_reddit
-from utils.constants import 
-_images
+from utils.constants import brain_images
 from owotext import OwO
 from dadjokes import Dadjoke
 from discord.utils import escape_markdown
