@@ -31,7 +31,7 @@ from config import (
 )
 from utils.embed import error_embed, success_embed, process_embeds_from_json
 from utils.bot import EpicBot
-from utils.ui import Confirm, SelfRoleEditor, SelfRoleOptionSelecter, TicketView
+from utils.ui import Confirm, Paginator, SelfRoleEditor, SelfRoleOptionSelecter, TicketView
 from utils.converters import AddRemoveConverter, Lower
 from utils.message import wait_for_msg
 from utils.recursive_utils import prepare_emojis_and_roles
@@ -1142,19 +1142,27 @@ Here are the tags that you can use in custom commands:
         if "custom_cmds" not in guild_config:
             guild_config.update({"custom_cmds": []})
         custom_cmds_list = guild_config["custom_cmds"]
-        text = ""
         if len(custom_cmds_list) == 0:
-            text = f"There are no custom commands for this server!\nPlease use `{prefix}cc create` to create a custom command!"
+            return await ctx.reply(embed=success_embed(
+                f"{EMOJIS['settings_color']} Custom commands list",
+                f"There are no custom commands for this server!\nPlease use `{prefix}cc create` to create a custom command!"
+            ))
         else:
+            paginator = commands.Paginator(prefix="", suffix="", max_size=500)
             i = 1
             for e in custom_cmds_list:
-                text += f"{i} - `{e['name']}` - {e['desc']}\n"
+                paginator.add_line(f"{i} - `{e['name']}` - {e['desc']}")
                 i += 1
-        embed = success_embed(
-            f"{EMOJIS['settings_color']} Custom Commands ({len(custom_cmds_list)})",
-            text
-        )
-        return await ctx.reply(embed=embed)
+        embeds = []
+        for page in paginator.pages:
+            embeds.append(success_embed(
+                f"{EMOJIS['settings_color']} Custom commands list",
+                page
+            ))
+        if len(embeds) == 1:
+            return await ctx.reply(embed=embeds[0])
+        view = Paginator(ctx, embeds)
+        return await ctx.reply(embed=embeds[0], view=view)
 
     @commands.has_guild_permissions(manage_guild=True)
     @commands.bot_has_guild_permissions(manage_guild=True)

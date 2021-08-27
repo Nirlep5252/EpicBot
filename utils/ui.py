@@ -53,13 +53,16 @@ class Paginator(discord.ui.View):
 
     async def edit(self, msg, pos):
         em = self.embeds[pos]
-        em.set_footer(text=f"Page: {pos+1}")
-        await msg.edit(embed=em)
+        em.set_footer(text=f"Page: {pos+1}/{len(self.embeds)}")
+        await msg.edit(embed=em, view=self)
 
     @discord.ui.button(emoji='◀️', style=discord.ButtonStyle.blurple)
     async def bac(self, b, i):
         if self.current == 0:
-            return
+            b.disabled = True
+            return await i.message.edit(view=self)
+        for item in self.children:
+            item.disabled = False
         await self.edit(i.message, self.current - 1)
         self.current -= 1
 
@@ -70,7 +73,10 @@ class Paginator(discord.ui.View):
     @discord.ui.button(emoji='▶️', style=discord.ButtonStyle.blurple)
     async def nex(self, b, i):
         if self.current + 1 == len(self.embeds):
-            return
+            b.disabled = True
+            return await i.message.edit(view=self)
+        for item in self.children:
+            item.disabled = False
         await self.edit(i.message, self.current + 1)
         self.current += 1
 
