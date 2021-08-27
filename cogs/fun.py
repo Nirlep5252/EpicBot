@@ -237,7 +237,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             color = MAIN_COLOR
             footer = "damn, pretty smart 👀"
             size = "medium"
-        elif iq in range(150, 69420):
+        elif iq in range(150, 69421):
             color = MAIN_COLOR
             footer = "damn ur a genius! not as smart as me though"  # by this i mean epicbot is smart not me, im dumb lol
             size = "big"
