@@ -136,20 +136,26 @@ User profile DB: {round(time.time() - self.client.last_updated_user_profile_db)}
 
     @commands.is_owner()
     @commands.command(help="DM some kid.")
-    async def dm(self, ctx: commands.Context, user: discord.User = None, *, msg=None):
+    async def dm(self, ctx: commands.Context, user_id: int = None, *, msg=None):
         prefix = ctx.clean_prefix
-        if user is None:
+        if user_id is None:
             return await ctx.reply(embed=error_embed(
                 f"{EMOJIS['tick_no']} Invalid Usage!",
-                f"Mention who you wanna unblacklist next time.\nExample: `{prefix}dm @egirl UwU Hi Cutie!`"
+                f"Mention who you wanna unblacklist next time.\nExample: `{prefix}dm 679677267164921866 UwU Hi Cutie!`"
             ))
         if msg is None:
             return await ctx.reply(embed=error_embed(
                 f"{EMOJIS['tick_no']} Invalid Usage!",
-                f"Please enter a message next time.\nExample: `{prefix}dm @egirl UwU Hi Cutie!`"
+                f"Please enter a message next time.\nExample: `{prefix}dm 679677267164921866 UwU Hi Cutie!`"
+            ))
+        user = self.client.get_user(user_id)
+        if user is None:
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Invalid User!",
+                "Looks like that user doesn't exist, please try again."
             ))
         await user.send(msg)
-        await ctx.reply(f"{EMOJIS['tick_yes']} Successfully DMed **{escape_markdown(str(user))}**")
+        await ctx.reply(f"{EMOJIS['tick_yes']} Successfully DMed **{escape_markdown(str(user))} ({user_id})**")
 
 
 def setup(client):
