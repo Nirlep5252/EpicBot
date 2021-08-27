@@ -31,7 +31,8 @@ from utils.embed import success_embed, error_embed, edit_msg_multiple_times
 from utils.custom_checks import not_opted_out
 from utils.random import email_fun, passwords, DMs, discord_servers
 from utils.reddit import pick_random_url_from_reddit
-from utils.constants import brain_images
+from utils.constants import 
+_images
 from owotext import OwO
 from dadjokes import Dadjoke
 from discord.utils import escape_markdown
@@ -215,7 +216,12 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def brainsize(self, ctx, user: Union[discord.Member, str] = None):
         user = user or ctx.author
-        iq = random.randint(0, 200)
+        if user.id in [521640052195852298, 679677267164921866]:
+            iq = 69420
+        elif user.id == 558861606063308822:
+            iq = 0
+        else:
+            iq = random.randint(0, 200)
         if iq == 0:
             color = RED_COLOR
             footer = "ur brain is just like my life. non existent."
@@ -232,7 +238,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             color = MAIN_COLOR
             footer = "damn, pretty smart 👀"
             size = "medium"
-        elif iq in range(150, 201):
+        elif iq in range(150, 69420):
             color = MAIN_COLOR
             footer = "damn ur a genius! not as smart as me though"  # by this i mean epicbot is smart not me, im dumb lol
             size = "big"
