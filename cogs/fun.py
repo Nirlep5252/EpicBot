@@ -216,7 +216,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
     async def brainsize(self, ctx, user: Union[discord.Member, str] = None):
         user = user or ctx.author
         iq = random.randint(0, 200)
-        if ctx.author.id == 558861606063308822:
+        if user.id == 558861606063308822:
             iq = 10000000000
         if iq == 0:
             color = RED_COLOR
