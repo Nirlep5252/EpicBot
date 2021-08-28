@@ -2374,13 +2374,13 @@ Ticket roles: {t_roles if len(t_roles) != 0 else 'No roles.'}
             t_overwrites = {
                 ctx.guild.me: discord.PermissionOverwrite(
                     send_messages=True,
-                    use_threads=True,
-                    use_private_threads=True
+                    create_public_threads=True,
+                    create_private_threads=True
                 ),
                 ctx.guild.default_role: discord.PermissionOverwrite(
                     send_messages=False,
-                    use_threads=False,
-                    use_private_threads=True
+                    create_public_threads=False,
+                    create_private_threads=True
                 )
             }
             if m.content.lower() == 'create':
