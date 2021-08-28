@@ -133,7 +133,6 @@ async def on_ready():
     print(f"Connected to: {len(client.voice_clients)} voice_clients")
     print(f"Connected to: {len(client.private_channels)} private_channels")
 
-    channel = client.get_channel(757168151141285929)
     embed = success_embed(
         "Bot is ready!",
         f"""
@@ -153,8 +152,8 @@ async def on_ready():
             value="\n".join([f"`{cog}` - {error}" for cog, error in not_loaded_hidden.items()]),
             inline=False
         )
-    if channel is not None:
-        await channel.send(embed=embed)
+    webhook = client.get_cog("Webhooks").webhooks.get("startup")
+    await webhook.send(embed=embed)
 
 if __name__ == '__main__':
     client.run(BOT_TOKEN)
