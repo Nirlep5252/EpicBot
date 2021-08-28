@@ -539,7 +539,7 @@ class EpicBot(commands.AutoShardedBot):
 
         e = discord.Embed(title="Error in an event", color=RED_COLOR)
         e.add_field(name="Event", value=event_method)
-        e.description = f"```py\n{traceback.format_exception(exc_type, exc, tb)}\n```"
+        e.description = f"```py\n{''.join(traceback.format_exception(exc_type, exc, tb))}\n```"
 
         args_str = ['```py']
         for index, arg in enumerate(args):
