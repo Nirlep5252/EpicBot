@@ -49,7 +49,9 @@ class Logs(commands.Cog):
         ).add_field(name="User:", value=f"{ctx.author.mention}```{ctx.author}\n{ctx.author.id}```", inline=False
         ).add_field(name="Server:", value=f"```{ctx.guild}\n{ctx.guild.id}```", inline=False
         ).add_field(name="Channel:", value=f"{ctx.channel.mention}```{ctx.channel}\n{ctx.channel.id}```", inline=False)
-        await self.client.get_channel(775949886842994698).send(embed=embed)
+        webhooks = self.client.get_cog("Webhooks").webhooks
+        webhook = webhooks.get("cmd_uses")
+        await webhook.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):

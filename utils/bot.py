@@ -20,10 +20,12 @@ import os
 import re
 import discord
 import aiohttp
+import sys
+import traceback
 
 from config import (
     MONGO_DB_URL, DEFAULT_AUTOMOD_CONFIG,
-    DB_UPDATE_INTERVAL
+    DB_UPDATE_INTERVAL, RED_COLOR
 )
 from discord.ext import commands, tasks
 from pymongo import UpdateOne
@@ -63,6 +65,7 @@ class EpicBot(commands.AutoShardedBot):
         self.bookmarks = self.db['bookmarks']
         self.self_roles = self.db['self_roles']
 
+        # i'm gonna fill these up with my cu- i mean cache!
         self.prefixes_cache = []
         self.blacklisted_cache = []
         self.serverconfig_cache = []
@@ -475,7 +478,6 @@ class EpicBot(commands.AutoShardedBot):
                     i += 1
                 except Exception as e:
                     not_loaded.update({h: e})
-        # await self.get_channel(ONLINE_LOG_CHANNEL).send(embed=success_embed("Cogs Loaded", f"```{cogs_text}```"))
         print(f"Loaded {i}/{total} extensions from {filename_}")
         return loaded, not_loaded
 
@@ -529,3 +531,24 @@ class EpicBot(commands.AutoShardedBot):
         self.rolemenus_loaded = True
 
         print(f"Self role views has been loaded. | {i} views")
+
+    async def on_error(self, event_method: str, *args, **kwargs) -> None:
+        (exc_type, exc, tb) = sys.exc_info()
+        if isinstance(exc, commands.CommandInvokeError):
+            return
+
+        e = discord.Embed(title="Error in an event", color=RED_COLOR)
+        e.add_field(name="Event", value=event_method)
+        e.description = f"```py\n{traceback.format_exception(exc_type, exc, tb)}\n```"
+
+        args_str = ['```py']
+        for index, arg in enumerate(args):
+            args_str.append(f'[{index}]: {arg!r}')
+        args_str.append('```')
+        e.add_field(name='Args', value='\n'.join(args_str), inline=False)
+        webhooks = self.get_cog("Webhooks").webhooks
+        webhook = webhooks.get("event_error")
+        try:
+            await webhook.send(embed=e)
+        except Exception:
+            return await super().on_error(event_method, *args, **kwargs)

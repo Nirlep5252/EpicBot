@@ -54,6 +54,16 @@ RANK_CARD_SUBMIT_CHANNEL = 856512113580703814
 SUGGESTION_CHANNEL = 746202728648146986
 USER_REPORT_CHANNEL = 863768592159473694
 
+# WEBHOOK LOGS
+
+WEBHOOKS = {
+    "startup": (880847339378573403, os.environ.get("startup_webhook")),
+    "add_remove": (880847516537585734, os.environ.get("add_remove_webhook")),
+    "cmd_uses": (880847705809760276, os.environ.get("cmd_uses_webhook")),
+    "cmd_error": (880846787349446778, os.environ.get("cmd_error_webhook")),
+    "event_error": (880844779565506601, os.environ.get("event_error_webhook")),
+}
+
 # COLORS
 
 # MAIN_COLOR = 0xDC143C # crimson

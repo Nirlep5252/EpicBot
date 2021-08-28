@@ -1,4 +1,4 @@
-git+https://github.com/Rapptz/discord.py
+git+https://github.com/Nirlep5252/discord.py
 requests
 aiohttp
 pyfiglet

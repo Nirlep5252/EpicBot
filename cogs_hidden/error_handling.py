@@ -214,7 +214,9 @@ class ErrorHandling(commands.Cog):
             ).set_footer(text=f"ERROR ID: {random_error_id}")
 
             try:
-                await self.client.get_channel(800252938869669898).send(embed=error_embed_)
+                webhooks = self.client.get_cog("Webhooks").webhooks
+                webhook = webhooks.get("cmd_error")
+                await webhook.send(embed=error_embed_)
             except Exception:
                 traceback.print_exception(etype=type(error), value=error, tb=error.__traceback__)
 
