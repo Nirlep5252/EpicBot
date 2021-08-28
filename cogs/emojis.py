@@ -251,7 +251,7 @@ class emojis(commands.Cog, description="Emoji related commands!"):
 
                         # by nitro emoji i mean "<:emoji_name:ID>" and by fake emoji i mean ":emoji_name:"
                         # we only want to replace if it contains a fake emoji and not a real emoji
-                        if emoji is not None and (hmm[h + 1][18: 19] != ">"):
+                        if emoji is not None and emoji.is_usable() and (hmm[h + 1][18: 19] != ">"):
                             interesting += str(emoji)
                         else:
                             interesting += ":" + ee + (":" if len(hmm) != i else "")
