@@ -76,6 +76,24 @@ class Logs(commands.Cog):
     async def on_guild_join(self, guild: discord.Guild):
         await self.client.get_guild_config(guild.id)
 
+        embed = success_embed(
+            f"{EMOJIS['add']}  EpicBot Added",
+            f"""
+**Server:** ```{guild} ({guild.id})```
+**Owner:** {guild.owner.mention}```{guild.owner} ({guild.owner_id})```
+**Members:** {guild.member_count}
+**Humans:** {len(list(filter(lambda m: not m.bot, guild.members)))}
+**Bots:** {len(list(filter(lambda m: m.bot, guild.members)))}
+            """
+        ).set_author(name=guild.owner, icon_url=guild.owner.display_avatar.url)
+        if guild.icon is not None:
+            embed.set_thumbnail(url=guild.icon.url)
+        try:
+            webhook = self.client.get_cog("Webhooks").webhooks.get("add_remove")
+            await webhook.send(embed=embed)
+        except Exception:
+            pass
+
         send_embed = discord.Embed(
             title=f"{EMOJIS['wave_1']} Hi, UwU!~",
             description=f"""
@@ -114,21 +132,6 @@ I hope you have a fun time with me, UwU!~
                 return await channel.send(embed=send_embed)
             except Exception:
                 pass
-
-        embed = success_embed(
-            f"{EMOJIS['add']}  EpicBot Added",
-            f"""
-**Server:** ```{guild} ({guild.id})```
-**Owner:** {guild.owner.mention}```{guild.owner} ({guild.owner_id})```
-**Members:** {guild.member_count}
-**Humans:** {len(list(filter(lambda m: not m.bot, guild.members)))}
-**Bots:** {len(list(filter(lambda m: m.bot, guild.members)))}
-            """
-        ).set_author(name=guild.owner, icon_url=guild.owner.display_avatar.url)
-        if guild.icon is not None:
-            embed.set_thumbnail(url=guild.icon.url)
-        webhook = self.client.get_cog("Webhooks").webhooks.get("add_remove")
-        await webhook.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild):
