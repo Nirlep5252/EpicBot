@@ -227,7 +227,7 @@ Joined At: {"Not in server" if isinstance(user, discord.User) else user.joined_a
             name="Basic Info:",
             value=f"""
 **Owner:** <@{guild.owner_id}>
-**Created At:** <t:{datetime_to_seconds(guild.created_at)}:F>
+**Created At:** <t:{round(time.time() - (datetime_to_seconds(guild.created_at) - time.time()))}:F>
 **Region:** {str(guild.region).title()}
 **System Channel:** {"None" if guild.system_channel is None else guild.system_channel.mention}
 **Verification Level:** {str(guild.verification_level).title()}
