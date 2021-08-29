@@ -273,7 +273,7 @@ class emojis(commands.Cog, description="Emoji related commands!"):
             await webhook.send(
                 final_msg,
                 files=msg_attachments,
-                username=message.author.name,
+                username=message.author.display_name,
                 avatar_url=message.author.display_avatar.url,
                 allowed_mentions=discord.AllowedMentions.none()
             )
