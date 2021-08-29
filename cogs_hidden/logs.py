@@ -143,7 +143,6 @@ I hope you have a fun time with me, UwU!~
 **Members:** {guild.member_count}
 **Humans:** {len(list(filter(lambda m: not m.bot, guild.members)))}
 **Bots:** {len(list(filter(lambda m: m.bot, guild.members)))}
-```
             """
         ).set_author(name=guild.owner, icon_url=guild.owner.display_avatar.url)
         if guild.icon is not None:
