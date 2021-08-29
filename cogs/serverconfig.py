@@ -280,6 +280,8 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                     f"I have found **{len(roles)}** in your message.\n\n{' '.join(role.mention for role in roles)}\n\nNow you need to react to this message with the corresponding emojis for the rolemenu to be complete!"
                 ), view=None)
                 final_output = await prepare_emojis_and_roles(ctx, roles, main_msg)
+                if final_output is None:
+                    return
                 msg_id = await prepare_rolemenu(ctx, final_output, text_channel, self_role_type, custom_msg_id)
                 role_menus = guild_self_roles['role_menus']
                 role_menus.update({
@@ -368,6 +370,8 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                         f"I have found **{len(roles)}** in your message.\n\n{' '.join(role.mention for role in roles)}\n\nNow you need to react to this message with the corresponding emojis for the rolemenu to be complete!"
                     ), view=None)
                     final_output = await prepare_emojis_and_roles(ctx, roles, main_msg)
+                    if final_output is None:
+                        return
                     current_role_menu = role_menus[str(message_id)]
                     stuff = current_role_menu['stuff']
                     for role_id, emoji in final_output.items():

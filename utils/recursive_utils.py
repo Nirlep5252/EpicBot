@@ -1,6 +1,7 @@
 from typing import List
 from discord import Role, Reaction, Member, Message, PartialEmoji
 from discord.ext.commands import Context
+from asyncio import TimeoutError
 
 
 async def prepare_emojis_and_roles(ctx: Context, roles: List[Role], message: Message):
@@ -16,7 +17,11 @@ async def prepare_emojis_and_roles(ctx: Context, roles: List[Role], message: Mes
         embed.add_field(name=f"Role ({roles.index(role) + 1}/{len(roles)}):", value=role.mention, inline=False)
         await message.edit(embed=embed)
 
-        reaction, user = await ctx.bot.wait_for("reaction_add", check=check)
+        try:
+            reaction, user = await ctx.bot.wait_for("reaction_add", check=check, timeout=60)
+        except TimeoutError:
+            await message.edit(content="You didn't respond in time!", embed=None, view=None)
+            return None
 
         if isinstance(reaction.emoji, PartialEmoji):
             await ctx.send("Please only use the emojis that I can access.", delete_after=5)
