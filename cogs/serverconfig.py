@@ -180,7 +180,7 @@ class config(commands.Cog, description="Configure your server with amazing EpicB
     @commands.has_permissions(manage_guild=True, manage_roles=True)
     @commands.bot_has_permissions(administrator=True)
     @commands.cooldown(3, 120, commands.BucketType.guild)
-    @commands.max_concurrency(1, commands.BucketType.guild)
+    @commands.max_concurrency(3, commands.BucketType.guild)
     async def selfroles(self, ctx: commands.Context, option: Lower = None, message_id: t.Optional[int] = None):
         async with ctx.typing():
             prefix = ctx.clean_prefix
