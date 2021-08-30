@@ -345,6 +345,7 @@ class music(commands.Cog, description="Jam to some awesome tunes! 🎶"):
         prefix = ctx.clean_prefix
         if index is None:
             ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(f"{prefix}remove <index>")
         try:
             index = int(index)
             if index <= 0:
@@ -361,7 +362,7 @@ class music(commands.Cog, description="Jam to some awesome tunes! 🎶"):
 
     @commands.command(help="Get lyrics of a song.")
     @commands.cooldown(3, 30, commands.BucketType.user)
-    async def lyrics(self, ctx, *, song=None):
+    async def lyrics(self, ctx: commands.Context, *, song=None):
         error_msg = f"Please enter the song name.\nExample: `{ctx.clean_prefix}lyrics Never Gonna Give You Up`"
         if song is None:
             player = music_.get_player(guild_id=ctx.guild.id)
@@ -371,10 +372,11 @@ class music(commands.Cog, description="Jam to some awesome tunes! 🎶"):
                 return await ctx.reply(error_msg)
             current_song = player.now_playing()
             song = current_song.name
+        main_msg = await ctx.reply(f"{EMOJIS['loading']} Searching for lyrics...")
         embeds = []
         async with self.client.session.get(f'https://some-random-api.ml/lyrics?title={song.lower()}') as r:
             if r.status != 200:
-                return await ctx.reply("An error occured while accessing the API, please try again later.")
+                return await main_msg.edit("An error occured while accessing the API, please try again later.")
             rj = await r.json()
             if "error" in rj:
                 return await ctx.reply(rj['error'])
@@ -405,7 +407,7 @@ class music(commands.Cog, description="Jam to some awesome tunes! 🎶"):
                     ).set_thumbnail(url=rj['thumbnail']['genius']))
                     break
                 i += 3999
-            return await ctx.reply(embed=embeds[0], view=Paginator(ctx=ctx, embeds=embeds))
+            return await main_msg.edit(content="", embed=embeds[0], view=Paginator(ctx=ctx, embeds=embeds))
 
 
 def setup(client):
