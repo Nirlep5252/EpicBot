@@ -25,18 +25,32 @@ import traceback
 
 from config import (
     MONGO_DB_URL, DEFAULT_AUTOMOD_CONFIG,
-    DB_UPDATE_INTERVAL, RED_COLOR
+    DB_UPDATE_INTERVAL, RED_COLOR, EMOJIS
 )
 from discord.ext import commands, tasks
 from pymongo import UpdateOne
+from utils.embed import success_embed
+from utils.ui import TicketView, DropDownSelfRoleView, ButtonSelfRoleView
+from utils.help import EpicBotHelp
 
 
 cluster = motor.AsyncIOMotorClient(MONGO_DB_URL)
 
 
 class EpicBot(commands.AutoShardedBot):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self):
+        intents = discord.Intents.default()
+        intents.members = True
+        super().__init__(
+            command_prefix=EpicBot.get_custom_prefix,
+            intents=intents,
+            case_insensitive=True,
+            allowed_mentions=discord.AllowedMentions.none(),
+            strip_after_prefix=True,
+            help_command=EpicBotHelp(),
+            cached_messages=10000,
+            activity=discord.Activity(type=discord.ActivityType.playing, name="e!help | epic-bot.com")
+        )
 
         self.session = aiohttp.ClientSession()
         self.cache_loaded = False
@@ -79,6 +93,18 @@ class EpicBot(commands.AutoShardedBot):
         self.update_serverconfig_db.start()
         self.update_leveling_db.start()
         self.update_user_profile_db.start()
+
+        if not self.cache_loaded:
+            self.loop.run_until_complete(self.get_cache())
+            self.loop.run_until_complete(self.get_blacklisted_users())
+            self.cache_loaded = True
+
+        if not self.cogs_loaded:
+            self.load_extension('jishaku')
+            print("Loaded jsk!")
+            self.loaded, self.not_loaded = self.loop.run_until_complete(self.load_extensions('./cogs'))
+            self.loaded_hidden, self.not_loaded_hidden = self.loop.run_until_complete(self.load_extensions('./cogs_hidden'))
+            self.cogs_loaded = True
 
     async def set_default_guild_config(self, guild_id):
         pain = {
@@ -552,3 +578,86 @@ class EpicBot(commands.AutoShardedBot):
             await webhook.send(embed=e)
         except Exception:
             return await super().on_error(event_method, *args, **kwargs)
+
+    async def on_message(self, message: discord.Message):
+        if not self.cache_loaded:
+            return
+        if message.author.bot:
+            return
+        for e in self.blacklisted_cache:
+            if message.author.id == e['_id']:
+                return
+        if message.content.lower() in [f'<@{self.user.id}>', f'<@!{self.user.id}>']:
+            prefixes = await self.fetch_prefix(message)
+            prefix_text = ""
+            for prefix in prefixes:
+                prefix_text += f"`{prefix}`, "
+            prefix_text = prefix_text[:-2]
+            return await message.reply(embed=success_embed(
+                f"{EMOJIS['wave_1']} Hello!",
+                f"My prefix{'es' if len(prefixes) > 1 else ''} for this server {'are' if len(prefixes) > 1 else 'is'}: {prefix_text}"
+            ))
+
+        await self.process_commands(message)
+
+    async def on_message_edit(self, before: discord.Message, after: discord.Message):
+        if before.content == after.content or before.author.bot or not self.cache_loaded or not self.cogs_loaded:
+            return
+        self.dispatch("message", after)
+
+    async def on_ready(self):
+        if not self.views_loaded:
+            self.add_view(TicketView())
+            self.views_loaded = True
+            print("Ticket view has been loaded.")
+
+        if not self.rolemenus_loaded:
+            await self.load_rolemenus(DropDownSelfRoleView, ButtonSelfRoleView)
+
+        print("""
+
+
+         _            _        _           _             _               _          _
+        /\ \         /\ \     /\ \       /\ \           / /\            /\ \       /\ \\
+       /  \ \       /  \ \    \ \ \     /  \ \         / /  \          /  \ \      \_\ \\
+      / /\ \ \     / /\ \ \   /\ \_\   / /\ \ \       / / /\ \        / /\ \ \     /\__ \\
+     / / /\ \_\   / / /\ \_\ / /\/_/  / / /\ \ \     / / /\ \ \      / / /\ \ \   / /_ \ \\
+    / /_/_ \/_/  / / /_/ / // / /    / / /  \ \_\   / / /\ \_\ \    / / /  \ \_\ / / /\ \ \\
+   / /____/\    / / /__\/ // / /    / / /    \/_/  / / /\ \ \___\  / / /   / / // / /  \/_/
+  / /\____\/   / / /_____// / /    / / /          / / /  \ \ \__/ / / /   / / // / /
+ / / /______  / / /   ___/ / /__  / / /________  / / /____\_\ \  / / /___/ / // / /
+/ / /_______\/ / /   /\__\/_/___\/ / /_________\/ / /__________\/ / /____\/ //_/ /
+\/__________/\/_/    \/_________/\/____________/\/_____________/\/_________/ \_\/
+
+
+        """)
+        print(f"Logged in as {self.user}")
+        print(f"Connected to: {len(self.guilds)} guilds")
+        print(f"Connected to: {len(self.users)} users")
+        print(f"Connected to: {len(self.cogs)} cogs")
+        print(f"Connected to: {len(self.commands)} commands")
+        print(f"Connected to: {len(self.emojis)} emojis")
+        print(f"Connected to: {len(self.voice_selfs)} voice_selfs")
+        print(f"Connected to: {len(self.private_channels)} private_channels")
+
+        embed = success_embed(
+            "Bot is ready!",
+            f"""
+    **Loaded cogs:** {len(self.loaded)}/{len(self.loaded) + len(self.not_loaded)}
+    **Loaded hidden cogs:** {len(self.loaded_hidden)}/{len(self.loaded_hidden) + len(self.not_loaded_hidden)}
+            """
+        )
+        if self.not_loaded:
+            embed.add_field(
+                name="Not loaded cogs",
+                value="\n".join([f"`{cog}` - {error}" for cog, error in self.not_loaded.items()]),
+                inline=False
+            )
+        if self.not_loaded_hidden:
+            embed.add_field(
+                name="Not loaded hidden cogs",
+                value="\n".join([f"`{cog}` - {error}" for cog, error in self.not_loaded_hidden.items()]),
+                inline=False
+            )
+        webhook = self.get_cog("Webhooks").webhooks.get("startup")
+        await webhook.send(embed=embed)
