@@ -133,11 +133,14 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def f(self, ctx: commands.Context):
         if ctx.channel.id in f_channels:
-            msgg = await ctx.channel.fetch_message(int(f_channels[ctx.channel.id]['msg_id']))
-            return await ctx.reply(embed=success_embed(
-                "A pay respect event is already active!",
-                f"[Click Here To Go There]({msgg.jump_url})"
-            ))
+            try:
+                msgg = await ctx.fetch_message(int(f_channels[ctx.channel.id]['msg_id']))
+                return await ctx.reply(embed=success_embed(
+                    "A pay respect event is already active!",
+                    f"[Click Here To Go There]({msgg.jump_url})"
+                ))
+            except discord.NotFound:
+                pass
 
         msg = await ctx.send(
             embed=discord.Embed(color=MAIN_COLOR).set_author(name="It's time to pay respects!", icon_url=ctx.author.display_avatar.url),
@@ -147,8 +150,11 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         await asyncio.sleep(30)
         amount = len(f_channels[ctx.channel.id]["reacted"])
         word = "person has" if amount == 1 else "people have"
-        await msg.reply(f"**{amount}** {word} paid respect!")
-        await msg.edit(view=None)
+        try:
+            await msg.reply(f"**{amount}** {word} paid respect!")
+            await msg.edit(view=None)
+        except discord.NotFound:
+            pass
         del f_channels[ctx.channel.id]
 
     @commands.command(help="Start a beer party!", aliases=['beerparty'])
