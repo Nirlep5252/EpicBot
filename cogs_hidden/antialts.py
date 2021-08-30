@@ -15,10 +15,12 @@ limitations under the License.
 """
 
 import discord
-from discord.ext import commands
 import datetime
+import time
+from discord.ext import commands
 from config import ORANGE_COLOR
 from utils.bot import EpicBot
+from utils.time import datetime_to_seconds
 
 
 class AntiAlts(commands.Cog):
@@ -46,9 +48,11 @@ class AntiAlts(commands.Cog):
         if logchannel is None or restricted_role is None:
             return
 
+        account_age = f"<t:{round(2 * time.time() - datetime_to_seconds(member.created_at))}:F>"
+
         embed = discord.Embed(
             title="Alt account detected.",
-            description=f"{member.mention} {discord.utils.escape_markdown(str(member))}",
+            description=f"{member.mention} {discord.utils.escape_markdown(str(member))}\n\n**Account Age:** {account_age}",
             color=ORANGE_COLOR,
             timestamp=datetime.datetime.utcnow()
         ).set_author(name=member, icon_url=member.display_avatar.url
