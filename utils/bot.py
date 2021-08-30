@@ -637,7 +637,7 @@ class EpicBot(commands.AutoShardedBot):
         print(f"Connected to: {len(self.cogs)} cogs")
         print(f"Connected to: {len(self.commands)} commands")
         print(f"Connected to: {len(self.emojis)} emojis")
-        print(f"Connected to: {len(self.voice_selfs)} voice_selfs")
+        print(f"Connected to: {len(self.voice_clients)} voice clients")
         print(f"Connected to: {len(self.private_channels)} private_channels")
 
         embed = success_embed(
