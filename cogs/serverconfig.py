@@ -209,8 +209,8 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                 ctx.command.reset_cooldown(ctx)
                 return await ctx.reply(embed=info_embed)
             if option in ['create', 'new']:
-                if len(role_menus) >= 10:
-                    return await ctx.reply("You can only have max `10` rolemenus.")
+                if len(role_menus) >= 20:
+                    return await ctx.reply("You can only have max `20` rolemenus.")
                 view = SelfRoleOptionSelecter(ctx)
                 main_msg = await ctx.reply(embed=success_embed(
                     f"{EMOJIS['loading']} Rolemenu creation...",
