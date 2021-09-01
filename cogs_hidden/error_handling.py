@@ -25,12 +25,12 @@ from utils.embed import (
     error_embed
 )
 from config import (
-    OWNERS, EMOJIS, MAIN_COLOR,
+    OWNERS, EMOJIS, MAIN_COLOR, SUPPORT_SERVER_LINK,
     VOTE_LINK, RED_COLOR
 )
 from utils.random import gen_random_string
 from utils.custom_checks import NotVoted, NotBotMod, OptedOut, PrivateCommand
-from utils.converters import InvalidTimeZone, InvalidCategory
+from utils.converters import ImportantCategory, InvalidTimeZone, InvalidCategory
 from humanfriendly import format_timespan
 from utils.bot import EpicBot
 
@@ -193,6 +193,12 @@ class ErrorHandling(commands.Cog):
             await ctx.reply(embed=error_embed(
                 f"{EMOJIS['tick_no']} Invalid Category!",
                 f"The category `{error.category}` is not a valid category!\nPlease use `{prefix}help` to see the list of valid categories."
+            ))
+        elif isinstance(error, ImportantCategory):
+            ctx.command.reset_cooldown(ctx)
+            await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Important Category!",
+                f"You cannot disable the `{error.category}` category!\nIt has contains the core features of epicbot\nFor more info join our [Support Server]({SUPPORT_SERVER_LINK})."
             ))
         elif isinstance(error, PrivateCommand):
             await ctx.reply(embed=error_embed(
