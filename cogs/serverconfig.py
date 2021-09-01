@@ -71,7 +71,8 @@ class config(commands.Cog, description="Configure your server with amazing EpicB
             'help', 'ping', 'invite', 'vote', 'support',
             'credits', 'uptime', 'privacy', 'bugreport',
             'disable', 'enable', 'disabled_list', 'prefix',
-            'autopost', 'customcommand', 'customlist'
+            'autopost', 'customcommand', 'customlist', 'disablecategory',
+            'enablecategory'
         ]
         self.actual_autoposting_lmao.start()
 

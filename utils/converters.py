@@ -31,6 +31,11 @@ class InvalidCategory(BadArgument):
         self.category = category
 
 
+class ImportantCategory(BadArgument):
+    def __init__(self, category: str):
+        self.category = category
+
+
 class AddRemoveConverter(Converter):
     async def convert(self, ctx: Context, argument: str):
         if argument.lower() in ['add']:
@@ -58,7 +63,10 @@ class TimeZone(Converter):
 class Category(Converter):
     async def convert(self, ctx: Context, argument: str):
         categories: list = [cog for cog in ctx.bot.cogs if cog.lower() == cog and len(ctx.bot.get_cog(cog).get_commands()) != 0]
-        if argument.lower() in categories:
+        imp_categories = ['config', 'user']
+        if argument.lower() in imp_categories:
+            raise ImportantCategory(argument)
+        elif argument.lower() in categories:
             return ctx.bot.get_cog(argument.lower())
         else:
             raise InvalidCategory(argument)
