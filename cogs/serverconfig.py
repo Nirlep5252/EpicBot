@@ -900,25 +900,29 @@ You can also use `@{self.client.user.name}`
     @commands.cooldown(1, 20, commands.BucketType.user)
     async def disabled_list(self, ctx: commands.Context):
         guild_config = await self.client.get_guild_config(ctx.guild.id)
-        ğ = guild_config['disabled_cmds']
-        amogus = guild_config['disabled_channels']
-        text = ""
-        if len(ğ) == 0:
-            text = "No commands are disabled :)"
-        else:
-            for e in ğ:
-                text += f"`{e}`, "
-            text = text[:-2]
-        text_ = ""
-        if len(amogus) == 0:
-            text_ = "No channels are disabled :)"
-        else:
-            for ee in amogus:
-                text_ += f"<#{ee}>\n"
+        cmds = guild_config['disabled_cmds']
+        channels = guild_config['disabled_channels']
+        categories = guild_config['disabled_categories']
         embed = success_embed(
-            "🛠️  Disabled list!",
-            f"**`{len(ğ)}` Disabled commands:**\n{text}\n\n**`{len(amogus)}` Disabled channels:**\n{text_}"
+            "Disabled list!",
+            "These are all the disabled commands/channels/categories for this server!"
         )
+        embed.add_field(
+            name=f"[ {len(cmds)}/{len(self.client.commands)} ] Commands",
+            value=', '.join(f"`{cmd}`" for cmd in cmds) or "No disabled commands :)",
+            inline=False
+        )
+        embed.add_field(
+            name=f"[ {len(channels)}/{len(ctx.guild.text_channels)} ] Channels",
+            value='\n'.join(f"<#{channel}>" for channel in channels) or "No disabled channels :)",
+            inline=False
+        )
+        embed.add_field(
+            name=f"[ {len(categories)}/{len([cog for cog in self.client.cogs if cog.lower() == cog and len(self.client.get_cog(cog).get_commands()) != 0])} ] Categories",
+            value=', '.join(f"`{category}`" for category in categories) or "No disabled categories :)",
+            inline=False
+        )
+
         return await ctx.reply(embed=embed)
 
     async def wait_for_msg(self, ctx: commands.Context, timeout, msg_to_edit) -> discord.Message:
