@@ -759,7 +759,13 @@ You can also use `@{self.client.user.name}`
     @commands.has_guild_permissions(manage_guild=True)
     @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command(help="Disable a command category in your server!", aliases=['disable_category'])
-    async def disablecategory(self, ctx: commands.Context, category: Category):
+    async def disablecategory(self, ctx: commands.Context, category: Category = None):
+        if category is None:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Invalid Usage!",
+                "Please specify a category to disable."
+            ))
         category: commands.Cog = category  # dont mind me type hinting :scared:
         prefix = ctx.clean_prefix
         g = await self.client.get_guild_config(ctx.guild.id)
@@ -780,7 +786,13 @@ You can also use `@{self.client.user.name}`
     @commands.has_guild_permissions(manage_guild=True)
     @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command(help="Enable a command category in your server!", aliases=['enable_category'])
-    async def enablecategory(self, ctx: commands.Context, category: Category):
+    async def enablecategory(self, ctx: commands.Context, category: Category = None):
+        if category is None:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Invalid Usage!",
+                "Please specify a category to enable."
+            ))
         category: commands.Cog = category
         prefix = ctx.clean_prefix
         g = await self.client.get_guild_config(ctx.guild.id)
