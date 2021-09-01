@@ -24,7 +24,7 @@ import sys
 import traceback
 
 from config import (
-    MONGO_DB_URL, DEFAULT_AUTOMOD_CONFIG,
+    MONGO_DB_URL, MONGO_DB_URL_BETA, DEFAULT_AUTOMOD_CONFIG,
     DB_UPDATE_INTERVAL, RED_COLOR, EMOJIS
 )
 from discord.ext import commands, tasks
@@ -34,11 +34,9 @@ from utils.ui import TicketView, DropDownSelfRoleView, ButtonSelfRoleView
 from utils.help import EpicBotHelp
 
 
-cluster = motor.AsyncIOMotorClient(MONGO_DB_URL)
-
-
 class EpicBot(commands.AutoShardedBot):
-    def __init__(self):
+    def __init__(self, beta: bool = False):
+        self.beta = beta
         intents = discord.Intents.default()
         intents.members = True
         super().__init__(
@@ -49,9 +47,9 @@ class EpicBot(commands.AutoShardedBot):
             strip_after_prefix=True,
             help_command=EpicBotHelp(),
             cached_messages=10000,
-            activity=discord.Activity(type=discord.ActivityType.playing, name="e!help | epic-bot.com")
+            activity=discord.Activity(type=discord.ActivityType.playing, name="e!help | epic-bot.com" if not beta else "nirlep is doing some weird shit rn")
         )
-
+        cluster = motor.AsyncIOMotorClient(MONGO_DB_URL if not beta else MONGO_DB_URL_BETA)
         self.session = aiohttp.ClientSession()
         self.cache_loaded = False
         self.cogs_loaded = False
@@ -384,8 +382,9 @@ class EpicBot(commands.AutoShardedBot):
                     {"_id": eee['_id']},
                     {"$set": {
                         "disabled_cmds": eee['disabled_cmds'],
-                        "disabled_channels": [] if "disabled_channels" not in eee else eee['disabled_channels'],
-                        "custom_cmds": eee['custom_cmds'] if 'custom_cmds' in eee else [],
+                        "disabled_channels": eee.get('disabled_channels', []),
+                        "disabled_categories": eee.get('disabled_categories', []),
+                        "custom_cmds": eee.get("custom_cmds", []),
                         "welcome": eee['welcome'],
                         "leave": eee['leave'],
                         "autorole": eee['autorole'],
@@ -395,15 +394,15 @@ class EpicBot(commands.AutoShardedBot):
                         "youtube": eee['youtube'],
                         "twitch": eee['twitch'],
                         "starboard": eee['starboard'],
-                        "logging": None if "logging" not in eee else eee['logging'],
-                        "chatbot": None if "chatbot" not in eee else eee['chatbot'],
-                        "automod": DEFAULT_AUTOMOD_CONFIG if "automod" not in eee else eee['automod'],
-                        "ghost_ping": False if "ghost_ping" not in eee else eee['ghost_ping'],
-                        "bump_reminders": False if "bump_reminders" not in eee else eee['bump_reminders'],
-                        "antialts": False if "antialts" not in eee else eee['antialts'],
-                        "globalchat": False if "globalchat" not in eee else eee['globalchat'],
-                        "counting": None if "counting" not in eee else eee['counting'],
-                        "antihoisting": False if "antihoisting" not in eee else eee['antihoisting'],
+                        "logging": eee.get("logging", None),
+                        "chatbot": eee.get("chatbot", None),
+                        "automod": eee.get("automod", DEFAULT_AUTOMOD_CONFIG),
+                        "ghost_ping": eee.get("ghost_ping", False),
+                        "bump_reminders": eee.get("bump_reminders", False),
+                        "antialts": eee.get("antialts", False),
+                        "globalchat": eee.get("globalchat", False),
+                        "counting": eee.get("counting", None),
+                        "antihoisting": eee.get("antihoisting", False),
                         "tickets": {"message_id": None, "channel": None, "roles": []} if "tickets" not in eee else eee['tickets'],
                         "counters": {"members": None, "huamns": None, "bots": None, "channels": None, "categories": None, "roles": None, "emojis": None} if "counters" not in eee else eee['counters']
                     }},
@@ -659,5 +658,7 @@ class EpicBot(commands.AutoShardedBot):
                 value="\n".join([f"`{cog}` - {error}" for cog, error in self.not_loaded_hidden.items()]),
                 inline=False
             )
+        if self.beta:
+            embed.set_footer(text="Beta version.")
         webhook = self.get_cog("Webhooks").webhooks.get("startup")
         await webhook.send(embed=embed)

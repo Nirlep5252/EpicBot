@@ -32,7 +32,7 @@ from config import (
 from utils.embed import error_embed, success_embed, process_embeds_from_json
 from utils.bot import EpicBot
 from utils.ui import Confirm, Paginator, SelfRoleEditor, SelfRoleOptionSelecter, TicketView
-from utils.converters import AddRemoveConverter, Lower
+from utils.converters import AddRemoveConverter, Category, Lower
 from utils.message import wait_for_msg
 from utils.recursive_utils import prepare_emojis_and_roles
 from utils.reactions import prepare_rolemenu
@@ -755,6 +755,48 @@ You can also use `@{self.client.user.name}`
             if ee['_id'] == ctx.guild.id:
                 ee['prefix'].append(prefix)
                 return await ctx.reply(f"{EMOJIS['tick_yes']}The prefix `{prefix}` has been added.")
+
+    @commands.has_guild_permissions(manage_guild=True)
+    @commands.cooldown(1, 15, commands.BucketType.user)
+    @commands.command(help="Disable a command category in your server!", aliases=['disable_category'])
+    async def disablecategory(self, ctx: commands.Context, category: Category):
+        category: commands.Cog = category  # dont mind me type hinting :scared:
+        prefix = ctx.clean_prefix
+        g = await self.client.get_guild_config(ctx.guild.id)
+        disabled_categories: list = g.get('disabled_categories', [])
+        if category.qualified_name in disabled_categories:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Already disabled!",
+                f"The category `{category.qualified_name}` is already disabled."
+            ).set_footer(text=f"You can use \"{prefix}disabled\" to get a list of all disabled commands/categories."))
+        disabled_categories.append(category.qualified_name)
+        g.update({'disabled_categories': disabled_categories})
+        return await ctx.reply(embed=success_embed(
+            f"{EMOJIS['tick_yes']} Category disabled!",
+            f"The category `{category.qualified_name}` has been disabled."
+        ).set_footer(text=f"You can use \"{prefix}disabled\" to get a list of all disabled commands/categories."))
+
+    @commands.has_guild_permissions(manage_guild=True)
+    @commands.cooldown(1, 15, commands.BucketType.user)
+    @commands.command(help="Enable a command category in your server!", aliases=['enable_category'])
+    async def enablecategory(self, ctx: commands.Context, category: Category):
+        category: commands.Cog = category
+        prefix = ctx.clean_prefix
+        g = await self.client.get_guild_config(ctx.guild.id)
+        disabled_categories: list = g.get('disabled_categories', [])
+        if category.qualified_name not in disabled_categories:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Already enabled!",
+                f"The category `{category.qualified_name}` is already enabled."
+            ).set_footer(text=f"You can use \"{prefix}disabled\" to get a list of all disabled commands/categories."))
+        disabled_categories.remove(category.qualified_name)
+        g.update({'disabled_categories': disabled_categories})
+        return await ctx.reply(embed=success_embed(
+            f"{EMOJIS['tick_yes']} Category enabled!",
+            f"The category `{category.qualified_name}` has been enabled."
+        ).set_footer(text=f"You can use \"{prefix}disabled\" to get a list of all disabled commands/categories."))
 
     @commands.has_guild_permissions(manage_guild=True)
     @commands.cooldown(3, 20, commands.BucketType.user)

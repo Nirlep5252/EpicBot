@@ -19,13 +19,16 @@ import os
 
 # LOL TOKEN GO BRR
 BOT_TOKEN = os.environ.get("TOKEN")  # your discord bot token
+BOT_TOKEN_BETA = os.environ.get("TOKEN_BETA")  # the token of the beta bot (optional)
+
 MONGO_DB_URL = os.environ.get("MONGO")  # your mongodb database connection url string
+MONGO_DB_URL_BETA = os.environ.get("MONGO_BETA")  # database for the beta bot (optional)
 DB_UPDATE_INTERVAL = 60  # the interval at which the database is updated
+
 PREFIX = "e!"  # the default prefix for the bot
 OWNERS = [558861606063308822]  # the bot owners
 COOLDOWN_BYPASS = [558861606063308822, 344313283714613248, 679677267164921866]  # the users that bypass the cooldown
 EPICBOT_GUILD_ID = 746202728031584358  # the id of the epicbot guild
-
 PREMIUM_GUILDS = [746202728031584358, 749996055369875456]  # the ids of the premium guilds (it bypasses some cmd requirements)
 
 # AFK KEYS
@@ -39,6 +42,7 @@ CHAT_BID = os.environ.get("CHAT_BID")
 CHAT_API_KEY = os.environ.get("CHAT_API_KEY")
 DAGPI_KEY = os.environ.get("DAGPI_KEY")
 STATCORD_KEY = os.environ.get("STATCORD_KEY")
+YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY")
 
 # SECRET LOGS HEHE :3
 

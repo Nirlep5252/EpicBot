@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from utils.converters import InvalidTimeZone
 import discord
 import traceback
 import json
@@ -31,6 +30,7 @@ from config import (
 )
 from utils.random import gen_random_string
 from utils.custom_checks import NotVoted, NotBotMod, OptedOut, PrivateCommand
+from utils.converters import InvalidTimeZone, InvalidCategory
 from humanfriendly import format_timespan
 from utils.bot import EpicBot
 
@@ -188,6 +188,12 @@ class ErrorHandling(commands.Cog):
                 f"{EMOJIS['tick_no']} Invalid Timezone!",
                 f"Please use a valid timezone.\nClick **[here](https://github.com/nirlep5252/epicbot/tree/main/other/timezones.txt)** to see the list of valid timezones.\n\nYou can also set your timezone using `{ctx.clean_prefix}settimezone <timezone>` for all commands."
             ))
+        elif isinstance(error, InvalidCategory):
+            ctx.command.reset_cooldown(ctx)
+            await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Invalid Category!",
+                f"The category `{error.category}` is not a valid category!\nPlease use `{prefix}help` to see the list of valid categories."
+            ))
         elif isinstance(error, PrivateCommand):
             await ctx.reply(embed=error_embed(
                 f"{EMOJIS['tick_no']} Private Command!",
@@ -195,7 +201,8 @@ class ErrorHandling(commands.Cog):
             ))
         elif isinstance(error, commands.CheckFailure):
             ctx.command.reset_cooldown(ctx)
-            await ctx.message.add_reaction('❌')
+            if not self.client.beta:
+                await ctx.message.add_reaction('❌')
         else:
             random_error_id = gen_random_string(10)
             ctx.command.reset_cooldown(ctx)
