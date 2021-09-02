@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from typing import Union
+from config import EPICBOT_GUILD_ID, STAFF_ROLE, OWNER_ROLE
 import discord
 import json
 
@@ -44,6 +46,17 @@ class InviteTracking(commands.Cog):
         if g['welcome']['channel_id'] is not None:
             await self.client.update_guild_before_invites(invite.guild.id)
 
+    async def check_staff(self, user: Union[discord.Member, discord.User]):
+        epicbot_guild = self.client.get_guild(EPICBOT_GUILD_ID)
+        if epicbot_guild not in user.mutual_guilds:
+            return False
+        member = epicbot_guild.get_member(user.id)
+        if epicbot_guild.get_role(OWNER_ROLE) in member.roles:
+            return "owner"
+        elif epicbot_guild.get_role(STAFF_ROLE) in member.roles:
+            return "staff"
+        return False
+
     @commands.Cog.listener(name="on_member_join")
     async def welcome_msg(self, member: discord.Member):
         guild = member.guild
@@ -57,6 +70,7 @@ class InviteTracking(commands.Cog):
         channel_id = welcome_config['channel_id']
         embed = welcome_config['embed']
 
+        inviter = "Unknown"
         if old_invites == 'pain':
             inviter = 'Unknown'
         else:
@@ -79,6 +93,7 @@ class InviteTracking(commands.Cog):
         if channel is None:
             return
 
+        staff = await self.check_staff(member)
         if embed:
             embed_json = json.loads(welcome_config['message'])
             things = await process_embeds_from_json(self.client, [member, guild], embed_json)
@@ -86,10 +101,26 @@ class InviteTracking(commands.Cog):
             if things[0] is not None:
                 return await channel.send(things[0], embed=things[1])
 
-            return await channel.send(embed=things[1])
+            await channel.send(embed=things[1])
+            if not staff:
+                return
+            else:
+                if staff == 'owner':
+                    await channel.send(f"{member.mention} is my mom 😊")
+                elif staff == 'staff':
+                    await channel.send(f"{member.mention} is a staff member 😊")
+            return
 
         nice = await replace_things_in_string_fancy_lemao(self.client, [member, guild], welcome_config['message'])
-        return await channel.send(nice)
+        await channel.send(nice)
+        if not staff:
+            return
+        else:
+            if staff == 'owner':
+                await channel.send(f"{member.mention} is my mom 😊")
+            elif staff == 'staff':
+                await channel.send(f"{member.mention} is an epicbot staff member 😊")
+        return
 
     @commands.Cog.listener(name="on_member_remove")
     async def leave_msg(self, member: discord.Member):

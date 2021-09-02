@@ -8,7 +8,6 @@ git+https://github.com/Gorialis/jishaku@master
 pymongo
 dnspython
 psutil
-git+https://github.com/LiBa001/disputils
 PyNaCl
 chatbotAI
 topggpy
@@ -25,6 +24,7 @@ python-dotenv
 pytz
 statcord.py
 emojis
+python-youtube
 
 git+https://github.com/nirlep5252/epicbot-images
 git+https://github.com/nirlep5252/Discord-Games.git
