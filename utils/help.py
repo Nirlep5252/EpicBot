@@ -18,6 +18,7 @@ import discord
 import datetime
 from discord.ext import commands
 from utils.embed import error_embed
+from typing import Mapping, Optional, List
 from config import (
     EMOJIS, EMOJIS_FOR_COGS, MAIN_COLOR,
     EMPTY_CHARACTER, WEBSITE_LINK, SUPPORT_SERVER_LINK
@@ -56,7 +57,7 @@ async def get_command_help(ctx: commands.Context, command_name: str) -> discord.
 {ctx.clean_prefix}{command.name} {' '.join(['<' + str(param) + '>' for param in command.clean_params])}
 ```
 **Aliases:** {','.join(['`' + str(alias) + '`' for alias in command.aliases])}
-**Cooldown:** {0 if command._buckets._cooldown == None else command._buckets._cooldown.per} seconds
+**Cooldown:** {0 if command._buckets._cooldown is None else command._buckets._cooldown.per} seconds
                     """,
         color=MAIN_COLOR,
         timestamp=datetime.datetime.utcnow()
@@ -66,11 +67,14 @@ async def get_command_help(ctx: commands.Context, command_name: str) -> discord.
     ).add_field(name=EMPTY_CHARACTER, value=f"[Invite EpicBot]({WEBSITE_LINK}/invite) | [Vote EpicBot]({WEBSITE_LINK}/vote) | [Support Server]({SUPPORT_SERVER_LINK})", inline=False)
 
 
-async def get_bot_help(ctx: commands.Context, mapping) -> discord.Embed:
+async def get_bot_help(ctx: commands.Context, mapping: Mapping[Optional[commands.Cog], List[commands.Command]]) -> discord.Embed:
+    all_cogs = [cog for cog, cmds in mapping.items() if cog is not None and cog.qualified_name.islower() and len(cmds) > 0 and cog.qualified_name != "nsfw"]
+    if ctx.channel.is_nsfw():
+        all_cogs.append(ctx.bot.get_cog('nsfw'))
     return discord.Embed(
         title="All the categories:",
         description="\n".join(
-            [f"{EMOJIS_FOR_COGS[cog.qualified_name]} • **{cog.qualified_name.title()}** [ `{len(cmds)}` ]" for cog, cmds in mapping.items() if cog is not None and cog.qualified_name == cog.qualified_name.lower() and len(cmds) > 0]),
+            [f"{EMOJIS_FOR_COGS[cog.qualified_name]} • **{cog.qualified_name.title()}** [ `{len(cog.get_commands())}` ]" for cog in all_cogs]),
         color=MAIN_COLOR,
         timestamp=datetime.datetime.utcnow()
     ).set_author(name=ctx.bot.user.name, icon_url=ctx.bot.user.display_avatar.url
@@ -148,8 +152,12 @@ class HelpMenu(discord.ui.View):
 
 
 class EpicBotHelp(commands.HelpCommand):
-    async def send_bot_help(self, mapping):
+    async def send_bot_help(self, mapping: Mapping[Optional[commands.Cog], List[commands.Command]]):
         embed = await get_bot_help(self.context, mapping)
+        all_cogs = [cog for cog, cmds in mapping.items() if
+                    cog is not None and cog.qualified_name.islower() and len(cmds) > 0 and cog.qualified_name != "nsfw"]
+        if self.context.channel.is_nsfw():
+            all_cogs.append(self.context.bot.get_cog('nsfw'))
         view = HelpMenu(self.context, mapping)
         select = HelpSelect(
             self.context,
@@ -158,7 +166,7 @@ class EpicBotHelp(commands.HelpCommand):
                 emoji=EMOJIS_FOR_COGS[cog.qualified_name],
                 value=cog.qualified_name,
                 description=cog.description
-            ) for cog, cmds in mapping.items() if cog is not None and cog.qualified_name == cog.qualified_name.lower()]
+            ) for cog in all_cogs]
         )
         view.add_item(select)
         await self.context.reply(embed=embed, view=view)
@@ -173,4 +181,18 @@ class EpicBotHelp(commands.HelpCommand):
         return await self.context.reply(embed=error_embed(f"{EMOJIS['tick_no']} Error", error))
 
     async def send_group_help(self, group):
-        return await super().send_group_help(group)
+        prefix = self.context.clean_prefix
+        embed = discord.Embed(
+            title=f"Group command help: `{group.qualified_name}`",
+            description=f"{group.description}\n\n**Aliases:** {', '.join(group.aliases)}",
+            color=MAIN_COLOR
+        ).set_author(name=self.context.bot.user.name, icon_url=self.context.bot.user.avatar.url
+        ).set_thumbnail(url=self.context.bot.user.avatar.url
+        ).set_footer(text=f"Requested by: {self.context.author}", icon_url=self.context.author.display_avatar.url)
+
+        embed.add_field(
+            name="Subcommands:",
+            value="\n".join([f"`{prefix}{cmd.qualified_name} {cmd.signature}` - {cmd.help}" for cmd in group.commands]),
+            inline=False
+        )
+        return await self.context.reply(embed=embed)
