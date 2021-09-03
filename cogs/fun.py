@@ -369,6 +369,8 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
                 await ctx.send("**After:**", embed=after[0])
 
     async def get_sniped_msg_embed(self, channel_id: int, amount: int = 1) -> Tuple[discord.Embed, List[discord.File]]:
+        if amount > len(self.sniped_msgs[channel_id]):
+            raise KeyError
         thing = self.sniped_msgs[channel_id][len(self.sniped_msgs[channel_id]) - amount]
 
         embed = discord.Embed(
@@ -423,13 +425,11 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         channel = channel or ctx.channel
         embeds = []
         msg = await ctx.reply(f"{EMOJIS['loading']}Fetching sniped messages...")
-        for i in range(0, 6):
+        for i in range(1, 6):
             try:
-                embed, _files = await self.get_sniped_msg_embed(channel.id, i)
+                embed, useless = await self.get_sniped_msg_embed(channel.id, i)
                 embeds.append(embed)
-            except IndexError:
-                pass
-            except KeyError:
+            except Exception:
                 pass
         if len(embeds) == 0:
             ctx.command.reset_cooldown(ctx)
