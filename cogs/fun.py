@@ -21,7 +21,7 @@ import pyfiglet
 import functools
 
 from discord.ext import commands
-from typing import Optional, Union
+from typing import Optional, Union, List, Tuple
 from config import (
     DAGPI_KEY, EMOJIS, MAIN_COLOR, BIG_PP_GANG, NO_PP_GANG,
     RED_COLOR, ORANGE_COLOR, PINK_COLOR, CHAT_BID,
@@ -32,6 +32,7 @@ from utils.custom_checks import not_opted_out
 from utils.random import email_fun, passwords, DMs, discord_servers
 from utils.reddit import pick_random_url_from_reddit
 from utils.constants import brain_images
+from utils.ui import Paginator
 from owotext import OwO
 from dadjokes import Dadjoke
 from discord.utils import escape_markdown
@@ -367,47 +368,8 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             else:
                 await ctx.send("**After:**", embed=after[0])
 
-    @commands.cooldown(1, 15, commands.BucketType.user)
-    @not_opted_out()
-    # @voter_only()
-    @commands.command(aliases=['s'], help="Snipe the last deleted message.")
-    async def snipe(self, ctx: commands.Context, amount='1', channel: discord.TextChannel = None):
-        prefix = ctx.clean_prefix
-        if channel is None:
-            channel = ctx.channel
-        if amount == 'last' and channel.id in self.sniped_msgs:
-            amount = len(self.sniped_msgs[channel.id])
-        if amount == 'first':
-            amount = 1
-        try:
-            amount = int(amount)
-            if amount <= 0:
-                return await ctx.reply(embed=error_embed(
-                    f"{EMOJIS['tick_no']} Positive values only!",
-                    "The amount should be a positive integer."
-                ))
-            if amount > 5:
-                return await ctx.reply(embed=error_embed(
-                    f"{EMOJIS['tick_no']} Too big!",
-                    "You can only snipe upto 5 messages!"
-                ))
-        except Exception:
-            return await ctx.reply(embed=error_embed(
-                f"{EMOJIS['tick_no']} Not an integer!",
-                f"The amount must be an integer!\nExample: `{prefix}snipe 3`"
-            ))
-        if channel.id not in self.sniped_msgs:
-            return await ctx.reply(embed=error_embed(
-                f"{EMOJIS['tick_no']} No deleted messages!",
-                f"No messages were deleted in {channel.mention}"
-            ))
-        if len(self.sniped_msgs[channel.id]) < amount:
-            return await ctx.reply(embed=error_embed(
-                f"{EMOJIS['tick_no']} No deleted message!",
-                f"This channel has only **{len(self.sniped_msgs[channel.id])}** deleted messages!"
-            ))
-
-        thing = self.sniped_msgs[channel.id][len(self.sniped_msgs[channel.id]) - amount]
+    async def get_sniped_msg_embed(self, channel_id: int, amount: int = 1) -> Tuple[discord.Embed, List[discord.File]]:
+        thing = self.sniped_msgs[channel_id][len(self.sniped_msgs[channel_id]) - amount]
 
         embed = discord.Embed(
             description=thing['content'],
@@ -422,36 +384,76 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             )
         if len(thing['stickers']) == 1:
             embed.set_thumbnail(url=thing['stickers'][0].url)
-        await ctx.send(embed=embed, files=thing['attachments'])
 
-    @commands.cooldown(1, 15, commands.BucketType.user)
+        return embed, thing['attachments']
+
+    @commands.cooldown(3, 15, commands.BucketType.user)
+    @not_opted_out()
+    # @voter_only()
+    @commands.command(aliases=['s'], help="Snipe the last deleted message.")
+    async def snipe(self, ctx: commands.Context, amount: Optional[int] = 1, channel: discord.TextChannel = None):
+        channel = channel or ctx.channel
+        if amount <= 0:
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Positive values only!",
+                "The amount should be a positive integer."
+            ))
+        if amount > 5:
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Too big!",
+                "You can only snipe upto 5 messages!"
+            ))
+        if channel.id not in self.sniped_msgs:
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} No deleted messages!",
+                f"No messages were deleted in {channel.mention}"
+            ))
+        if len(self.sniped_msgs[channel.id]) < amount:
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} No deleted message!",
+                f"This channel has only **{len(self.sniped_msgs[channel.id])}** deleted messages!"
+            ))
+        embed, files = await self.get_sniped_msg_embed(channel.id, amount)
+        await ctx.send(embed=embed, files=files)
+
+    @commands.cooldown(1, 60, commands.BucketType.user)
+    @not_opted_out()
+    @commands.command(aliases=['ms'], help="Get the last 5 snipe messages.")
+    async def multisnipe(self, ctx: commands.Context, channel: Optional[discord.TextChannel] = None):
+        channel = channel or ctx.channel
+        embeds = []
+        msg = await ctx.reply(f"{EMOJIS['loading']}Fetching sniped messages...")
+        for i in range(0, 6):
+            try:
+                embed, _files = await self.get_sniped_msg_embed(channel.id, i)
+                embeds.append(embed)
+            except IndexError:
+                pass
+            except KeyError:
+                pass
+        if len(embeds) == 0:
+            ctx.command.reset_cooldown(ctx)
+            return await msg.edit(content=f"{EMOJIS['tick_no']}There are no sniped messages in this channel.")
+        if len(embeds) == 1:
+            return await msg.edit(content="", embed=embeds[0])
+        view = Paginator(ctx, embeds)
+        await msg.edit(content="", embed=embeds[0].set_footer(text=f"Page: 1/{len(embeds)}"), view=view)
+
+    @commands.cooldown(3, 15, commands.BucketType.user)
     @not_opted_out()
     # @voter_only()
     @commands.command(aliases=['es'], help="Snipe the last edited message.")
-    async def editsnipe(self, ctx: commands.Context, amount=1, channel: discord.TextChannel = None):
-        prefix = ctx.clean_prefix
-        if channel is None:
-            channel = ctx.channel
-        if amount == 'last' and channel.id in self.edited_msgs:
-            amount = len(self.edited_msgs[channel.id])
-        if amount == 'first':
-            amount = 1
-        try:
-            amount = int(amount)
-            if amount <= 0:
-                return await ctx.reply(embed=error_embed(
-                    f"{EMOJIS['tick_no']} Positive values only!",
-                    "The amount should be a positive integer."
-                ))
-            if amount > 5:
-                return await ctx.reply(embed=error_embed(
-                    f"{EMOJIS['tick_no']} Too big!",
-                    "You can only snipe upto 5 messages!"
-                ))
-        except Exception:
+    async def editsnipe(self, ctx: commands.Context, amount: Optional[int] = 1, channel: discord.TextChannel = None):
+        channel = channel or ctx.channel
+        if amount <= 0:
             return await ctx.reply(embed=error_embed(
-                f"{EMOJIS['tick_no']} Not an integer!",
-                f"The amount must be an integer!\nExample: `{prefix}editsnipe 3`"
+                f"{EMOJIS['tick_no']} Positive values only!",
+                "The amount should be a positive integer."
+            ))
+        if amount > 5:
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Too big!",
+                "You can only snipe upto 5 messages!"
             ))
         if channel.id not in self.edited_msgs:
             return await ctx.reply(embed=error_embed(

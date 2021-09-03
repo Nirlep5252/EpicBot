@@ -34,27 +34,27 @@ class games(commands.Cog, description="Play some fun games with me!"):
         await aki_buttons.BetaAkinator().start(ctx, color=MAIN_COLOR)
 
     @commands.cooldown(1, 30, commands.BucketType.user)
-    @commands.command(category="games", name='2048', help="Play 2048 game.")
+    @commands.command(name='2048', help="Play 2048 game.")
     async def twenty(self, ctx):
         await twenty.play(ctx, self.client)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
-    @commands.command(category="games", name='minesweeper', aliases=['ms'], help="Play Minesweeper")
+    @commands.command(name='minesweeper', help="Play Minesweeper")
     async def minesweeper(self, ctx, columns=None, rows=None, bombs=None):
         await minesweeper.play(ctx, columns, rows, bombs)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
-    @commands.command(category="games", name='wumpus', help="Play Wumpus game")
+    @commands.command(name='wumpus', help="Play Wumpus game")
     async def _wumpus(self, ctx):
         await wumpus.play(self.client, ctx)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
-    @commands.command(category="games", aliases=['ttt', 'tic-tac-toe'], help="Play Tic-Tac-Toe")
+    @commands.command(aliases=['ttt', 'tic-tac-toe'], help="Play Tic-Tac-Toe")
     async def tictactoe(self, ctx):
         await tictactoe.play_game(self.client, ctx, chance_for_error=0.2)  # Win Plausible
 
     @commands.cooldown(1, 5, commands.BucketType.user)
-    @commands.command(category="games", name='rps', aliases=['rockpaperscissors'], help="Play Rock, Paper, Scissors game")
+    @commands.command(name='rps', aliases=['rockpaperscissors'], help="Play Rock, Paper, Scissors game")
     async def rps(self, ctx):
         def check_win(p, b):
             if p == '🌑':

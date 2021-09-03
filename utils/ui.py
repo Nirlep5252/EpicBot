@@ -56,9 +56,9 @@ class Paginator(discord.ui.View):
         em.set_footer(text=f"Page: {pos+1}/{len(self.embeds)}")
         await msg.edit(embed=em, view=self)
 
-    @discord.ui.button(emoji='◀️', style=discord.ButtonStyle.blurple)
+    @discord.ui.button(emoji='◀️', style=discord.ButtonStyle.blurple, disabled=True)
     async def bac(self, b, i):
-        if self.current == 0:
+        if self.current - 1 == 0:
             b.disabled = True
             return await i.message.edit(view=self)
         for item in self.children:
