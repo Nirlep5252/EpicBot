@@ -47,7 +47,8 @@ class EpicBot(commands.AutoShardedBot):
             strip_after_prefix=True,
             help_command=EpicBotHelp(),
             cached_messages=10000,
-            activity=discord.Activity(type=discord.ActivityType.playing, name="e!help | epic-bot.com" if not beta else "nirlep is doing some weird shit rn")
+            activity=discord.Activity(type=discord.ActivityType.playing, name="e!help | epic-bot.com" if not beta else "nirlep is doing some weird shit rn"),
+            shard_count=2  # remove this if your bot is under 1000 servers
         )
         cluster = motor.AsyncIOMotorClient(MONGO_DB_URL if not beta else MONGO_DB_URL_BETA)
         self.session = aiohttp.ClientSession()
