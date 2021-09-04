@@ -247,7 +247,8 @@ class DropDownSelfRoleSelect(discord.ui.Select):
         options = []
         for role_id, emoji in stuff.items():
             role = guild.get_role(int(role_id))
-            options.append(discord.SelectOption(label=role.name, emoji=emoji, value=str(role_id)))
+            if role is not None:
+                options.append(discord.SelectOption(label=role.name, emoji=emoji, value=str(role_id)))
         if len(options) == 1:
             options.append(discord.SelectOption(label="Remove role", emoji='❌', value='remove'))
         super().__init__(placeholder="Please select a role.", options=options, custom_id='selfrole-dropdown')
