@@ -278,7 +278,8 @@ Joined At: {"Not in server" if isinstance(user, discord.User) else user.joined_a
         user = user or ctx.author
         embed = discord.Embed(
             title=f"Avatar of {escape_markdown(str(user))}",
-            color=user.color
+            color=user.color,
+            description=f'Link as: [png]({user.avatar.replace(format="png",size=512).url}) | [jpg]({user.avatar.replace(format="jpg",size=512).url}) | [webp](({user.avatar.replace(format="webp",size=512).url}))'
         ).set_image(url=user.display_avatar.url)
         await ctx.message.reply(embed=embed)
 
