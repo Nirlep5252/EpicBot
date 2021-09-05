@@ -45,13 +45,9 @@ class image(commands.Cog, description="Cool image commands!"):
     @commands.command(help="Blur your friends ugly face...")
     @commands.bot_has_permissions(attach_files=True)
     @commands.cooldown(3, 45, commands.BucketType.user)
-    async def blur(self, ctx: commands.Context, user: Optional[discord.Member] = None, intensity: str = '5'):
+    async def blur(self, ctx: commands.Context, user: Optional[discord.Member] = None, intensity: Optional[int] = 5):
         user = user or ctx.author
-        try:
-            intensity = int(intensity)
-        except Exception:
-            intensity = 5
-        if -25 > intensity > 25:
+        if intensity > 25 or intensity < -25:
             ctx.command.reset_cooldown(ctx)
             return await ctx.reply(f"{EMOJIS['tick_no']}The blur intensity can't be greater than `25`")
         avatar_bytes = await user.display_avatar.replace(format='png', size=256).read()
