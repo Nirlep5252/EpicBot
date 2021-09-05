@@ -150,7 +150,7 @@ class GuildLogs(commands.Cog):
         await self.send_from_webhook(w, e)
 
     @commands.Cog.listener("on_message_delete")
-    async def send_del_msg(self, msg):
+    async def send_del_msg(self, msg: discord.Message):
         if msg.author.bot:
             return
         g = await self.check_enabled(msg.guild.id)
@@ -171,6 +171,14 @@ class GuildLogs(commands.Cog):
         ).set_footer(text=f"Message ID: {msg.id}"
         ).add_field(name="Channel:", value=msg.channel.mention, inline=False
         ).set_thumbnail(url=msg.author.display_avatar.url)
+
+        for sticker in msg.stickers:
+            e.add_field(
+                name=f"Sticker: `{sticker.name}`",
+                value=f"ID: [`{sticker.id}`]({sticker.url})"
+            )
+        if len(msg.stickers) == 1:
+            e.set_image(url=msg.stickers[0].url)
 
         await self.send_from_webhook(w, e, f)
 
