@@ -161,11 +161,14 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
     @commands.command(help="Start a beer party!", aliases=['beerparty'])
     async def beer(self, ctx: commands.Context):
         if ctx.guild.id in beer_parties:
-            msg = await ctx.fetch_message(beer_parties[ctx.guild.id])
-            return await ctx.reply(embed=success_embed(
-                "A beer party is already active",
-                f"[Click here to go to beer party!]({msg.jump_url})"
-            ))
+            try:
+                msg = await ctx.fetch_message(beer_parties[ctx.guild.id])
+                return await ctx.reply(embed=success_embed(
+                    "A beer party is already active",
+                    f"[Click here to go to beer party!]({msg.jump_url})"
+                ))
+            except discord.NotFound:
+                pass
         msg = await ctx.send(f"🍻  A beer party has been started by: {ctx.author.mention}", view=BeerView())
         beer_parties.update({ctx.guild.id: msg.id})
         drank_beer.update({msg.id: []})
@@ -178,11 +181,14 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             pain = f"No one drank beer with {ctx.author.mention}."
         else:
             pain = f"A total of **{len(drank_beer.get(msg.id)) - 1}** people drank beer with {ctx.author.mention}"
-        await msg.edit(view=None)
-        await msg.reply(embed=success_embed(
-            "🍻  The beer party ended!",
-            pain
-        ))
+        try:
+            await msg.edit(view=None)
+            await msg.reply(embed=success_embed(
+                "🍻  The beer party ended!",
+                pain
+            ))
+        except discord.NotFound:
+            pass
         beer_parties.pop(ctx.guild.id)
         drank_beer.pop(msg.id)
 
