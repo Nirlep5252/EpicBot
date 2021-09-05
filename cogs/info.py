@@ -279,7 +279,7 @@ Joined At: {"Not in server" if isinstance(user, discord.User) else user.joined_a
         embed = discord.Embed(
             title=f"Avatar of {escape_markdown(str(user))}",
             color=user.color,
-            description=f'Link as: [`png`]({user.display_avatar.replace(format="png",size=512).url}) | [`jpg`]({user.display_avatar.replace(format="jpg",size=512).url}) | [`webp`](({user.display_avatar.replace(format="webp",size=512).url}))'
+            description=f'Link as: [`png`]({user.display_avatar.replace(format="png").url}) | [`jpg`]({user.display_avatar.replace(format="jpg").url}) | [`webp`]({user.display_avatar.replace(format="webp").url})'
         ).set_image(url=user.display_avatar.url)
         await ctx.message.reply(embed=embed)
 
