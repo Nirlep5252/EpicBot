@@ -174,7 +174,6 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         drank_beer.update({msg.id: []})
 
         await asyncio.sleep(30)
-        msg = await ctx.channel.fetch_message(msg.id)
         if len(drank_beer.get(msg.id)) == 0:
             pain = f"No one drank beer with {ctx.author.mention}.\nNot even they drank beer."
         elif len(drank_beer.get(msg.id)) == 1:
