@@ -3,9 +3,10 @@ import asyncio
 from discord.ext import commands
 from config import RED_COLOR, EMOJIS
 from utils.embed import error_embed
+from typing import Union
 
 
-async def wait_for_msg(ctx: commands.Context, timeout: int, msg_to_edit: discord.Message):
+async def wait_for_msg(ctx: commands.Context, timeout: int, msg_to_edit: discord.Message) -> Union[discord.Message, str]:
     def c(m):
         return m.author == ctx.author and m.channel == ctx.channel
     try:

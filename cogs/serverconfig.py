@@ -24,10 +24,10 @@ from config import (
     EMOJIS, WEBSITE_LINK, SUPPORT_SERVER_LINK,
     MAIN_COLOR, DISABLE, PREMIUM_GUILDS,
     RED_COLOR, ENABLE, custom_cmds_tags_lemao,
-    DEFAULT_WELCOME_MSG, DEFAULT_TWITCH_MSG,
-    DEFAULT_LEAVE_MSG, DEFAULT_AUTOMOD_CONFIG,
-    GLOBAL_CHAT_RULES, DEFAULT_LEVEL_UP_MSG,
-    BADGE_EMOJIS, ANTIHOIST_CHARS, EMOJIS_FOR_COGS
+    DEFAULT_WELCOME_MSG, DEFAULT_LEAVE_MSG,
+    DEFAULT_AUTOMOD_CONFIG, GLOBAL_CHAT_RULES,
+    DEFAULT_LEVEL_UP_MSG, BADGE_EMOJIS, ANTIHOIST_CHARS,
+    EMOJIS_FOR_COGS
 )
 from utils.embed import error_embed, success_embed, process_embeds_from_json
 from utils.bot import EpicBot
@@ -1762,164 +1762,6 @@ In order to configure your autorole settings, you can use the following commands
             return await ctx.reply(embed=success_embed(
                 f"{EMOJIS['tick_yes']} Removed!",
                 "The role will no longer be given to new members!"
-            ))
-
-    @commands.has_permissions(manage_guild=True)
-    @commands.cooldown(3, 30, commands.BucketType.user)
-    @commands.command(help="Configure Twitch live notifications for your server!")
-    async def twitch(self, ctx: commands.Context, configuration=None):
-
-        notset = '❌ Not Set'
-        guild_config = await self.client.get_guild_config(ctx.guild.id)
-        twitch_config = guild_config['twitch']
-        prefix = ctx.clean_prefix
-        main_msg = await ctx.reply(embed=discord.Embed(title=f"Working on it... {EMOJIS['loading']}", color=MAIN_COLOR))
-        enabled = False if twitch_config['channel_id'] is None else True
-        not_enabled_embed = error_embed(
-            f"{EMOJIS['tick_no']} Not enabled!",
-            f"Twitch messages are not enabled yet!\nPlease enable them and try again.\nUsage: `{prefix}twitch enable`"
-        )
-        if 'message' not in twitch_config or 'currently_live' not in twitch_config:
-            twitch_config.update({"message": None, "currently_live": False})
-        if configuration is None:
-            embed = success_embed(
-                f"{EMOJIS['twitch']} Twitch Configuration!",
-                f"""
-**Streamer:** `{notset if twitch_config['username'] is None else twitch_config['username']}`
-**Channel:** {('`'+notset+'`') if twitch_config['channel_id'] is None else '<#'+str(twitch_config['channel_id'])+'>'}
-**Message:** ```
-{DEFAULT_TWITCH_MSG if twitch_config['message'] is None else twitch_config['message']}
-```
-**You can use the following commands to modify it:**
-
-`{prefix}twitch {'disable' if enabled else 'enable'}` - To enable/disable twitch live messages.
-`{prefix}twitch streamer` - To change the twitch streamer.
-`{prefix}twitch channel` - To change the twitch channel.
-`{prefix}twitch message` - To change the twitch live message.
-                """
-            )
-            embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/775735414362734622/852899330464415754/twitch_logo.png")
-            return await main_msg.edit(embed=embed)
-        elif configuration.lower() == 'enable':
-            if enabled:
-                return await main_msg.edit(embed=error_embed(
-                    f"{EMOJIS['twitch']} Already enabled!",
-                    f"The twitch messages are already enabled!\nTo edit them use `{prefix}twitch`"
-                ))
-            await main_msg.edit(embed=success_embed(
-                f"{EMOJIS['twitch']} Please enter the streamer name.",
-                "Make sure to enter the correct username."
-            ))
-            msg_streamer = await self.wait_for_msg(ctx, 60, main_msg)
-            if msg_streamer == 'pain':
-                return
-            twitch_config.update({"username": msg_streamer.content.lower()})
-            await main_msg.edit(embed=success_embed(
-                f"{EMOJIS['twitch']} Please enter the channel.",
-                "Enter the channel where you want the live notification to go."
-            ))
-            msg_channel = await self.wait_for_msg(ctx, 60, main_msg)
-            if msg_channel == 'pain':
-                return
-            try:
-                c_id = int(msg_channel.content[2:-1])
-            except Exception:
-                ctx.command.reset_cooldown(ctx)
-                return await ctx.send(embed=error_embed(
-                    f"{EMOJIS['tick_no']} Invalid Channel!",
-                    f"Please mention a channel properly, like this: {ctx.channel.mention}.\nPlease run the command again."
-                ))
-            channel = discord.utils.get(ctx.guild.channels, id=c_id)
-            if channel is None:
-                ctx.command.reset_cooldown(ctx)
-                return await ctx.send(embed=error_embed(
-                    f"{EMOJIS['tick_no']} Channel Not Found!",
-                    f"I wasn't able to find this channel: {msg_channel.content} please try again."
-                ))
-            twitch_config.update({"channel_id": c_id})
-            return await main_msg.edit(embed=success_embed(
-                f"{EMOJIS['twitch']} Twitch notifications setup!",
-                f"The twitch notifications have been set to channel {channel.mention}.\nTo edit the live message you can use `{prefix}twitch message`"
-            ))
-        elif configuration.lower() == 'disable':
-            if not enabled:
-                return await main_msg.edit(embed=not_enabled_embed)
-            twitch_config.update({
-                "channel_id": None,
-                "username": None,
-                "message": None,
-                "currently_live": False
-            })
-            return await main_msg.edit(embed=success_embed(
-                f"{EMOJIS['twitch']} Disabled!",
-                "The twitch live notifications have been disabled!"
-            ))
-        elif configuration.lower() == 'message':
-            if not enabled:
-                return await main_msg.edit(embed=not_enabled_embed)
-            await main_msg.edit(embed=success_embed(
-                f"{EMOJIS['twitch']} Edit live message!",
-                "Please enter a message.\n\nHere are the tags that you can use:\n\n`{streamer}` - The username of the streamer.\n`{url}` - The twitch link to the stream."
-            ))
-            msg = await self.wait_for_msg(ctx, 60, main_msg)
-            if msg == 'pain':
-                return
-            twitch_config.update({"message": msg.content})
-            return await main_msg.edit(embed=success_embed(
-                f"{EMOJIS['twitch']} Live message updated!",
-                "The twitch live message has been updated!"
-            ))
-        elif configuration.lower() == 'channel':
-            if not enabled:
-                return await main_msg.edit(embed=not_enabled_embed)
-            await main_msg.edit(embed=success_embed(
-                f"{EMOJIS['twitch']} Edit live channel!",
-                "Please enter a channel."
-            ))
-            msg = await self.wait_for_msg(ctx, 60, main_msg)
-            if msg == 'pain':
-                return
-            try:
-                c_id = int(msg.content[2:-1])
-            except Exception:
-                ctx.command.reset_cooldown(ctx)
-                return await ctx.send(embed=error_embed(
-                    f"{EMOJIS['tick_no']} Invalid Channel!",
-                    f"Please mention a channel properly, like this: {ctx.channel.mention}.\nPlease run the command again."
-                ))
-            channel = discord.utils.get(ctx.guild.channels, id=c_id)
-            if channel is None:
-                ctx.command.reset_cooldown(ctx)
-                return await ctx.send(embed=error_embed(
-                    f"{EMOJIS['tick_no']} Channel Not Found!",
-                    f"I wasn't able to find this channel: {msg.content} please try again."
-                ))
-            twitch_config.update({"channel_id": c_id})
-            return await main_msg.edit(embed=success_embed(
-                f"{EMOJIS['twitch']} Live Channel updated!",
-                f"The live channel has successfully been updated to: <#{c_id}>"
-            ))
-        elif configuration.lower() == 'streamer':
-            if not enabled:
-                return await main_msg.edit(embed=not_enabled_embed)
-            await main_msg.edit(embed=success_embed(
-                f"{EMOJIS['twitch']} Edit streamer name!",
-                "Please enter a streamer name."
-            ))
-            msg = await self.wait_for_msg(ctx, 60, main_msg)
-            if msg == 'pain':
-                return
-            content = msg.content
-            twitch_config.update({"username": content.lower()})
-            return await main_msg.edit(embed=success_embed(
-                f"{EMOJIS['twitch']} Username updated!",
-                f"Twitch username has successfully been updated to: `{content}`"
-            ))
-        else:
-            ctx.command.reset_cooldown(ctx)
-            return await main_msg.edit(embed=error_embed(
-                f"{EMOJIS['tick_no']} Invalid option!",
-                f"Please use `{prefix}twitch` to see all the available options!"
             ))
 
     @commands.has_permissions(manage_guild=True)

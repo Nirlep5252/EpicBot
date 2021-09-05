@@ -184,6 +184,7 @@ EMOJIS_FOR_COGS = {
     'starboard': '⭐',
     'utility': '🔧',
     'user': '<:EpicMembers:794075799422238720>',
+    'notifications': '<:notif:883324701181620304>'
 }
 CUTE_EMOJIS = [
     "<:shy:844039614032904222>",
