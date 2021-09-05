@@ -59,6 +59,7 @@
 <h2><img src="https://cdn.discordapp.com/emojis/585956493392871424.png?v=1" height="20px"> • How to selfhost EpicBot?</h2>
 
 Be sure to follow the [license](https://github.com/Nirlep5252/EpicBot/blob/main/LICENSE.md) <br>
+**If I ever find you running EpicBot's code without credits given to ALL of the contributors, you are X_X 🔪** <br><br>
 Here are the steps that you can follow to sefhost EpicBot which would work with <b>most</b> hosting providers:
 
 - Clone the repo: <br>
