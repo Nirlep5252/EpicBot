@@ -184,15 +184,14 @@ class EpicBotHelp(commands.HelpCommand):
         prefix = self.context.clean_prefix
         embed = discord.Embed(
             title=f"Group command help: `{group.qualified_name}`",
-            description=f"{group.description}\n\n**Aliases:** {', '.join(group.aliases)}",
+            description=group.description,
             color=MAIN_COLOR
         ).set_author(name=self.context.bot.user.name, icon_url=self.context.bot.user.avatar.url
-        ).set_thumbnail(url=self.context.bot.user.avatar.url
         ).set_footer(text=f"Requested by: {self.context.author}", icon_url=self.context.author.display_avatar.url)
 
         embed.add_field(
             name="Subcommands:",
-            value="\n".join([f"`{prefix}{cmd.qualified_name} {cmd.signature}` - {cmd.help}" for cmd in group.commands]),
+            value="\n".join([f"`{prefix}{cmd.qualified_name}{' ' + cmd.signature if cmd.signature else ''}` - {cmd.help}" for cmd in group.commands]),
             inline=False
         )
         return await self.context.reply(embed=embed)

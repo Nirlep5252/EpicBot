@@ -41,7 +41,10 @@ class notifications(commands.Cog):
     def __init__(self, client: EpicBot):
         self.client = client
 
-    @commands.group(aliases=['twitchnotification', 'twitch-notification', 'twitchnotif'])
+    @commands.group(
+        aliases=['twitchnotification', 'twitch-notification', 'twitchnotif'],
+        help="Configure twitch notifications for your server."
+    )
     @commands.cooldown(3, 30, commands.BucketType.user)
     async def twitch(self, ctx: commands.Context):
         if ctx.invoked_subcommand is None:
@@ -58,13 +61,18 @@ class notifications(commands.Cog):
             f"{EMOJIS['twitch']} Twitch Configuration!",
             "Here is your current twitch configuration:"
         )
-        embed.add_field(name="Streamer:", value=twitch_config['username'] or notset, inline=True)
+        embed.add_field(
+            name="Streamer:",
+            value=f"[{twitch_config['username']}](https://twitch.tv/{twitch_config['username']})" if twitch_config['username'] is not None else notset,
+            inline=True
+        )
         embed.add_field(name="Channel:", value=notset if twitch_config['channel_id'] is None else '<#'+str(twitch_config['channel_id'])+'>', inline=True)
         embed.add_field(name="Message:", value=f"```{DEFAULT_TWITCH_MSG if twitch_config['message'] is None else twitch_config['message']}```", inline=False)
         embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/775735414362734622/852899330464415754/twitch_logo.png")
         return await ctx.reply(embed=embed)
 
     @twitch.command(name="enable", help="Enable twitch configuration for your server!")
+    @commands.has_permissions(manage_guild=True)
     async def twitch_enable(self, ctx: commands.Context):
         guild_config = await self.client.get_guild_config(ctx.guild.id)
         twitch_config = guild_config['twitch']
@@ -98,10 +106,11 @@ class notifications(commands.Cog):
         twitch_config.update({"channel_id": twitch_channel.id})
         return await main_msg.edit(embed=success_embed(
             f"{EMOJIS['twitch']} Twitch notifications setup!",
-            f"The twitch notifications have been set to channel {twitch_channel.mention}.\nTo edit the live message you can use `{ctx.clean_prefix}twitch message`"
+            f"The twitch notifications have been set to channel {twitch_channel.mention}.\nTo edit the live message you can use `{ctx.clean_prefix}twitch edit`"
         ))
 
     @twitch.command(name="disable", help="Disable twitch notifications in your server.")
+    @commands.has_permissions(manage_guild=True)
     async def twitch_disable(self, ctx: commands.Context):
         guild_config = await self.client.get_guild_config(ctx.guild.id)
         twitch_config = guild_config['twitch']
@@ -121,6 +130,7 @@ class notifications(commands.Cog):
         ))
 
     @twitch.command(name="edit", help="Edit your twitch configuration.")
+    @commands.has_permissions(manage_guild=True)
     async def twitch_edit(self, ctx: commands.Context):
         guild_config = await self.client.get_guild_config(ctx.guild.id)
         twitch_config = guild_config['twitch']
@@ -140,14 +150,14 @@ class notifications(commands.Cog):
             return await main_msg.edit(content="Command cancelled or timed out!", embed=None, view=None)
         embed = success_embed(
             f"{EMOJIS['twitch']} Editing {view.value.replace('_id', '').title()}",
-            f"Your current value is: ```{twitch_config[view.value] or DEFAULT_TWITCH_MSG}```\n\nPlease send a message to edit this within 60 seconds!\nYou can send `cancel` to cancel this."
+            f"Your current value is: {'```' if view.value != 'channel_id' else '<#'}{twitch_config[view.value] or DEFAULT_TWITCH_MSG}{'```' if view.value != 'channel_id' else '>'}\n\nPlease send a message to edit this within 60 seconds!\nYou can send `cancel` to cancel this."
         )
         if view.value == 'message':
             embed.add_field(
                 name="Here are the tags that you can use:",
                 value="`{streamer}` - The username of the streamer.\n`{url}` - The twitch link to the stream."
             )
-        await main_msg.edit()
+        await main_msg.edit(embed=embed, view=None)
         m = await wait_for_msg(ctx, 60, main_msg)
         if m == 'pain':
             return
