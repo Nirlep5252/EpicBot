@@ -188,13 +188,14 @@ class notifications(commands.Cog, description="All the commands related to notif
         notset = '❌ Not Set'
         guild_config = await self.client.get_guild_config(ctx.guild.id)
         yt_config = guild_config['youtube']
+        yt_channel = await get_yt_channel(self.client, yt_config['youtube_id'])
         embed = success_embed(
             f"{EMOJIS['youtube']} YouTube Configuration!",
             "Here are your current settings:"
         )
         embed.add_field(
             name="YouTube Channel:",
-            value=f"[{yt_config['youtube_id']}](https://youtube.com/channel/{yt_config['youtube_id']})" if yt_config['youtube_id'] is not None else notset,
+            value=f"[{'404 Channel Not Found' if yt_channel is None else yt_channel.snippet.title}](https://youtube.com/channel/{yt_config['youtube_id']})" if yt_config['youtube_id'] is not None else notset,
             inline=True
         )
         embed.add_field(
@@ -248,7 +249,7 @@ class notifications(commands.Cog, description="All the commands related to notif
         if not view.value:
             ctx.command.reset_cooldown(ctx)
             return await main_msg.edit(content="Command cancelled or timed out.", embed=None, view=None)
-        yt_config.update({"youtube_id": msg_ytber.content.lower()})
+        yt_config.update({"youtube_id": yt_channel.id})
         await main_msg.edit(embed=success_embed(
             f"{EMOJIS['youtube']} YouTube configuration: 2/2",
             "Enter the channel where you want the video notifications to go."
@@ -271,7 +272,20 @@ class notifications(commands.Cog, description="All the commands related to notif
     @commands.has_permissions(manage_guild=True)
     @coming_soon()
     async def yt_disable(self, ctx: commands.Context):
-        pass
+        guild_config = await self.client.get_guild_config(ctx.guild.id)
+        yt_config = guild_config['youtube']
+        enabled = False if yt_config['channel_id'] is None else True
+        if not enabled:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Already disabled!",
+                f"YouTube notifications are already disabled!\nPlease use `{ctx.clean_prefix}youtube enable` to enable them."
+            ))
+        yt_config.update({'channel_id': None, 'youtube_id': None})
+        return await ctx.reply(embed=success_embed(
+            f"{EMOJIS['youtube']} YouTube Notifications disabled!",
+            f"You can reenable them using `{ctx.clean_prefix}youtube enable`"
+        ))
 
     @youtube.command(name="edit", help="Edit your YouTube configuration.")
     @commands.has_permissions(manage_guild=True)
