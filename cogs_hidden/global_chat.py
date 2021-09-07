@@ -79,12 +79,12 @@ class GlobalChat(commands.Cog):
 
         if len(content) > 500:
             return False
-
-        invite_match = self.invite_regex.findall(content)
+        susu = content.replace(" ", "").replace("\n", "")
+        invite_match = self.invite_regex.findall(susu)
         if invite_match:
             return False
 
-        if re.search(self.url_regex, content) and user_id not in OWNERS:
+        if re.search(self.url_regex, susu) and user_id not in OWNERS:
             return False
 
         if self.zalgo_regex.search(urllib.parse.quote(content.encode("utf-8"))):
