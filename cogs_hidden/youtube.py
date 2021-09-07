@@ -81,7 +81,7 @@ def format_yt_msg(text: str, video: Video, channel: Channel) -> str:
         "{video_title}": video.snippet.title,
     }
     for to_replace, replacement in stuff.items():
-        text.replace(to_replace, replacement)
+        text = text.replace(to_replace, replacement)
     return text
 
 
