@@ -17,7 +17,7 @@ limitations under the License.
 import discord
 from typing import Union
 from discord.ext import commands
-from config import TOP_GG_TOKEN, BOT_MOD_ROLE, EPICBOT_GUILD_ID, SUPPORTER_ROLE
+from config import TOP_GG_TOKEN, BOT_MOD_ROLE, EPICBOT_GUILD_ID, SUPPORTER_ROLE, OWNERS
 
 import aiohttp
 
@@ -35,6 +35,10 @@ class OptedOut(commands.CheckFailure):
 
 
 class PrivateCommand(commands.CheckFailure):
+    pass
+
+
+class ComingSoon(commands.CheckFailure):
     pass
 
 
@@ -104,4 +108,12 @@ def mutual_guild(guild_id: int):
             raise PrivateCommand('h')
         return True
 
+    return commands.check(predicate)
+
+
+def coming_soon():
+    def predicate(ctx):
+        if ctx.author.id in OWNERS:
+            return True
+        raise ComingSoon()
     return commands.check(predicate)

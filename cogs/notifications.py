@@ -1,6 +1,8 @@
 import discord.ui
 from discord.ext import commands
 from utils.bot import EpicBot
+from utils.constants import DEFAULT_YOUTUBE_MSG
+from utils.custom_checks import coming_soon
 from utils.embed import success_embed, error_embed
 from config import EMOJIS, DEFAULT_TWITCH_MSG
 from utils.message import wait_for_msg
@@ -43,14 +45,14 @@ class notifications(commands.Cog):
 
     @commands.group(
         aliases=['twitchnotification', 'twitch-notification', 'twitchnotif'],
-        help="Configure twitch notifications for your server."
+        help="Configure Twitch notifications for your server."
     )
     @commands.cooldown(3, 30, commands.BucketType.user)
     async def twitch(self, ctx: commands.Context):
         if ctx.invoked_subcommand is None:
             return await ctx.send_help(ctx.command)
 
-    @twitch.command(name="show", help="Get the current twitch configuration", aliases=['info'])
+    @twitch.command(name="show", help="Get the current Twitch configuration")
     async def twitch_show(self, ctx: commands.Context):
         notset = '❌ Not Set'
         guild_config = await self.client.get_guild_config(ctx.guild.id)
@@ -71,7 +73,7 @@ class notifications(commands.Cog):
         embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/775735414362734622/852899330464415754/twitch_logo.png")
         return await ctx.reply(embed=embed)
 
-    @twitch.command(name="enable", help="Enable twitch configuration for your server!")
+    @twitch.command(name="enable", help="Enable Twitch configuration for your server!")
     @commands.has_permissions(manage_guild=True)
     async def twitch_enable(self, ctx: commands.Context):
         guild_config = await self.client.get_guild_config(ctx.guild.id)
@@ -109,7 +111,7 @@ class notifications(commands.Cog):
             f"The twitch notifications have been set to channel {twitch_channel.mention}.\nTo edit the live message you can use `{ctx.clean_prefix}twitch edit`"
         ))
 
-    @twitch.command(name="disable", help="Disable twitch notifications in your server.")
+    @twitch.command(name="disable", help="Disable Twitch notifications in your server.")
     @commands.has_permissions(manage_guild=True)
     async def twitch_disable(self, ctx: commands.Context):
         guild_config = await self.client.get_guild_config(ctx.guild.id)
@@ -129,7 +131,7 @@ class notifications(commands.Cog):
             "The twitch live notifications have been disabled!"
         ))
 
-    @twitch.command(name="edit", help="Edit your twitch configuration.")
+    @twitch.command(name="edit", help="Edit your Twitch configuration.")
     @commands.has_permissions(manage_guild=True)
     async def twitch_edit(self, ctx: commands.Context):
         guild_config = await self.client.get_guild_config(ctx.guild.id)
@@ -175,6 +177,56 @@ class notifications(commands.Cog):
             f"{EMOJIS['twitch']} The twitch {view.value.replace('_id', '')} has successfully been edited!",
             f"You can use `{ctx.clean_prefix}twitch show` to see your current configuration."
         ))
+
+    @commands.group(
+        aliases=['yt', 'ytnotif', 'youtub', 'youtubee'],
+        help="Commands related to YouTube."
+    )
+    @commands.cooldown(3, 30, commands.BucketType.user)
+    async def youtube(self, ctx: commands.Context):
+        if ctx.invoked_subcommand is None:
+            return await ctx.send_help(ctx.command)
+
+    @youtube.command(name="show", help="Get the current YouTube configuration.")
+    async def yt_show(self, ctx: commands.Context):
+        notset = '❌ Not Set'
+        guild_config = await self.client.get_guild_config(ctx.guild.id)
+        yt_config = guild_config['youtube']
+        embed = success_embed(
+            f"{EMOJIS['youtube']} YouTube Configuration!",
+            "Here are your current settings:"
+        )
+        embed.add_field(
+            name="YouTube Channel:",
+            value=f"[{yt_config['youtube_id']}](https://youtube.com/c/{yt_config['youtube_id']})" if yt_config['youtube_id'] is not None else notset,
+            inline=True
+        )
+        embed.add_field(
+            name="Notification Channel:",
+            value=notset if yt_config['channel_id'] is None else '<#'+str(yt_config['channel_id'])+'>',
+            inline=True
+        )
+        embed.add_field(name="Message:", value=f"```{yt_config['message'] or DEFAULT_YOUTUBE_MSG}```", inline=False)
+        embed.set_thumbnail(url="https://gizblog.it/wp-content/uploads/2017/08/youtube-logo-nuovo-banner.jpg")
+        return await ctx.reply(embed=embed)
+
+    @youtube.command(name="enable", help="Enable YouTube notifications in your server!")
+    @commands.has_permissions(manage_guild=True)
+    @coming_soon()
+    async def yt_enable(self, ctx: commands.Context):
+        pass
+
+    @youtube.command(name="disable", help="Disable YouTube notifications in your server.")
+    @commands.has_permissions(manage_guild=True)
+    @coming_soon()
+    async def yt_disable(self, ctx: commands.Context):
+        pass
+
+    @youtube.command(name="edit", help="Edit your YouTube configuration.")
+    @commands.has_permissions(manage_guild=True)
+    @coming_soon()
+    async def yt_edit(self, ctx: commands.Context):
+        pass
 
 
 def setup(client: EpicBot):

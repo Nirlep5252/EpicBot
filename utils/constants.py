@@ -22,3 +22,22 @@ brain_images = {
         "https://www.pngitem.com/pimgs/m/523-5238503_pepe-the-frog-big-brain-hd-png-download.png"
     ]
 }
+
+YOUTUBE_TAGS = {
+    "channel_name": "The name of the channel that uploaded a video!",
+    "channel_id": "The ID of the channel that uploaded a video.",
+    "channel_subs": "The number of subscribers to the channel.",
+    "video_url": "The link to the video that was uploaded.",
+    "video_id": "The ID of the video that was uploaded.",
+    "video_likes": "The number of likes the video has.",
+    "video_dislikes": "The number of dislikes the video has.",
+    "video_views": "The number of views the video has.",
+    "video_description": "The description of the video.",
+    "video_title": "The title of the video.",
+    "video_duration": "The duration of the video.",
+}
+
+DEFAULT_YOUTUBE_MSG = """
+Yooo! **{channel_name}** just uploaded a new video! {video_url}
+Go check it out!
+"""

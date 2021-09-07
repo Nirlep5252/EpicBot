@@ -22,14 +22,14 @@ from discord.ext import commands
 from utils.embed import (
     replace_things_in_string_fancy_lemao,
     process_embeds_from_json,
-    error_embed
+    error_embed, success_embed
 )
 from config import (
     OWNERS, EMOJIS, MAIN_COLOR, SUPPORT_SERVER_LINK,
     VOTE_LINK, RED_COLOR
 )
 from utils.random import gen_random_string
-from utils.custom_checks import NotVoted, NotBotMod, OptedOut, PrivateCommand
+from utils.custom_checks import NotVoted, NotBotMod, OptedOut, PrivateCommand, ComingSoon
 from utils.converters import ImportantCategory, InvalidTimeZone, InvalidCategory
 from humanfriendly import format_timespan
 from utils.bot import EpicBot
@@ -205,6 +205,17 @@ class ErrorHandling(commands.Cog):
                 f"{EMOJIS['tick_no']} Private Command!",
                 "This command is private and you cannot use it."
             ))
+        elif isinstance(error, ComingSoon):
+            await ctx.reply(embed=success_embed(
+                f"👀 Coming soon!",
+                f"""
+👋 Hey there, EpicBot from the future here.
+This feature is really really epik, but it's not finished yet!
+
+The devs are working really hard on this!
+If you would like to see the progress consider joining our [**Support Server**]({SUPPORT_SERVER_LINK})
+                """
+            ).set_footer(text="Also you look kinda cute today"))
         elif isinstance(error, commands.CheckFailure):
             ctx.command.reset_cooldown(ctx)
             if not self.client.beta:
