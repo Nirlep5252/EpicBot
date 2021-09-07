@@ -373,6 +373,28 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             else:
                 await ctx.send("**After:**", embed=after[0])
 
+    async def get_editsniped_msg_embed(self, channel_id: int, amount: int = 1) -> Tuple[discord.Embed, List[discord.File]]:
+        if amount > len(self.edited_msgs[channel_id]):
+            raise KeyError
+        thing = self.edited_msgs[channel_id][len(self.edited_msgs[channel_id]) - amount]
+
+        embed = discord.Embed(
+            color=MAIN_COLOR,
+            timestamp=thing['time']
+        ).set_author(name=thing['author'].name, icon_url=thing['author'].display_avatar.url)
+
+        embed.add_field(name="Before:", value=thing['before'] if len(thing['before']) <= 1024 else thing['before'][0: 1023], inline=False)
+        embed.add_field(name="After:", value=thing['after'] if len(thing['after']) <= 1024 else thing['after'][0: 1023], inline=False)
+        for sticker in thing['stickers']:
+            embed.add_field(
+                name=f"Sticker: `{sticker.name}`",
+                value=f"ID: [`{sticker.id}`]({sticker.url})"
+            )
+        if len(thing['stickers']) == 1:
+            embed.set_thumbnail(url=thing['stickers'][0].url)
+
+        return embed, thing['attachments']
+
     async def get_sniped_msg_embed(self, channel_id: int, amount: int = 1) -> Tuple[discord.Embed, List[discord.File]]:
         if amount > len(self.sniped_msgs[channel_id]):
             raise KeyError
@@ -444,6 +466,27 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         view = Paginator(ctx, embeds)
         await msg.edit(content="", embed=embeds[0].set_footer(text=f"Page: 1/{len(embeds)}"), view=view)
 
+    @commands.cooldown(1, 60, commands.BucketType.user)
+    @not_opted_out()
+    @commands.command(aliases=['mes', 'mse'], help="Get the last 5 editsnipe messages.")
+    async def multieditsnipe(self, ctx: commands.Context, channel: Optional[discord.TextChannel] = None):
+        channel = channel or ctx.channel
+        embeds = []
+        msg = await ctx.reply(f"{EMOJIS['loading']}Fetching editsniped messages...")
+        for i in range(1, 6):
+            try:
+                embed, useless = await self.get_editsniped_msg_embed(channel.id, i)
+                embeds.append(embed)
+            except Exception:
+                pass
+        if len(embeds) == 0:
+            ctx.command.reset_cooldown(ctx)
+            return await msg.edit(content=f"{EMOJIS['tick_no']}There are no editsniped messages in this channel.")
+        if len(embeds) == 1:
+            return await msg.edit(content="", embed=embeds[0])
+        view = Paginator(ctx, embeds)
+        await msg.edit(content="", embed=embeds[0].set_footer(text=f"Page: 1/{len(embeds)}"), view=view)
+
     @commands.cooldown(3, 15, commands.BucketType.user)
     @not_opted_out()
     # @voter_only()
@@ -473,22 +516,20 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
 
         thing = self.edited_msgs[channel.id][len(self.edited_msgs[channel.id]) - amount]
 
-        embed = discord.Embed(
-            color=MAIN_COLOR,
-            timestamp=thing['time']
-        ).set_author(name=thing['author'].name, icon_url=thing['author'].display_avatar.url
-        ).add_field(name="Before:", value=thing['before'] if len(thing['before']) <= 1024 else thing['before'][0: 1023], inline=False
-        ).add_field(name="After:", value=thing['after'] if len(thing['after']) <= 1024 else thing['after'][0: 1023], inline=False)
+        embed1 = discord.Embed(color=MAIN_COLOR, timestamp=thing['time']
+        ).set_author(name=thing['author'].name, icon_url=thing['author'].display_avatar.url)
+        embed2 = discord.Embed(color=MAIN_COLOR, title="Before:", description=thing['before'])
+        embed3 = discord.Embed(color=MAIN_COLOR, title="After:", description=thing['after'])
+        embeds = [embed1, embed2, embed3]
 
         for sticker in thing['stickers']:
-            embed.add_field(
-                name=f"Sticker: `{sticker.name}`",
-                value=f"ID: [`{sticker.id}`]({sticker.url})"
-            )
-        if len(thing['stickers']) == 1:
-            embed.set_thumbnail(url=thing['stickers'][0].url)
+            embeds.append(discord.Embed(
+                title=f"Sticker: `{sticker.name}`",
+                description=f"ID: [`{sticker.id}`]({sticker.url})",
+                color=MAIN_COLOR
+            ).set_image(url=sticker.url))
 
-        await ctx.send(embed=embed, files=thing['attachments'])
+        await ctx.send(embeds=embeds, files=thing['attachments'])
 
     @commands.cooldown(1, 15, commands.BucketType.user)
     @commands.command(aliases=['cute'], help="Shows how cute you are, I know you are a cutie!")
