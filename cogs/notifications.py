@@ -236,7 +236,7 @@ class notifications(commands.Cog, description="All the commands related to notif
             ).set_image(url="https://cdn.discordapp.com/attachments/859335247547990026/884661479717105674/unknown.png"))
         view = Confirm(ctx)
         confirm_embed = success_embed(
-            "Is this your requested YouTube channel?",
+            f"{EMOJIS['youtube']} Is this your requested YouTube channel?",
             f"""
 **Channel:** [{yt_channel.snippet.title}](https://youtube.com/channel/{yt_channel.id})
 **Description:** {yt_channel.snippet.description}
@@ -244,6 +244,10 @@ class notifications(commands.Cog, description="All the commands related to notif
 **Views:** {yt_channel.statistics.viewCount}
             """
         )
+        try:
+            confirm_embed.set_thumbnail(url=yt_channel.snippet.thumbnails.default.url)
+        except Exception:
+            pass
         await main_msg.edit(embed=confirm_embed, view=view)
         await view.wait()
         if not view.value:

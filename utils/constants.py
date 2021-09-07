@@ -32,9 +32,7 @@ YOUTUBE_TAGS = {
     "video_likes": "The number of likes the video has.",
     "video_dislikes": "The number of dislikes the video has.",
     "video_views": "The number of views the video has.",
-    "video_description": "The description of the video.",
     "video_title": "The title of the video.",
-    "video_duration": "The duration of the video.",
 }
 
 DEFAULT_YOUTUBE_MSG = """
