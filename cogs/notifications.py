@@ -4,8 +4,10 @@ from utils.bot import EpicBot
 from utils.constants import DEFAULT_YOUTUBE_MSG
 from utils.custom_checks import coming_soon
 from utils.embed import success_embed, error_embed
-from config import EMOJIS, DEFAULT_TWITCH_MSG
 from utils.message import wait_for_msg
+from utils.ui import Confirm
+from config import EMOJIS, DEFAULT_TWITCH_MSG
+from cogs_hidden.youtube import get_yt_channel
 
 
 class TwitchEditView(discord.ui.View):
@@ -39,14 +41,11 @@ class TwitchEditView(discord.ui.View):
         return await interaction.response.send_message("This isn't your command!", ephemeral=True)
 
 
-class notifications(commands.Cog):
+class notifications(commands.Cog, description="All the commands related to notifications! 👀"):
     def __init__(self, client: EpicBot):
         self.client = client
 
-    @commands.group(
-        aliases=['twitchnotification', 'twitch-notification', 'twitchnotif'],
-        help="Configure Twitch notifications for your server."
-    )
+    @commands.group(aliases=['twitchnotification', 'twitch-notification', 'twitchnotif'], help="Configure Twitch notifications for your server.")
     @commands.cooldown(3, 30, commands.BucketType.user)
     async def twitch(self, ctx: commands.Context):
         if ctx.invoked_subcommand is None:
@@ -178,10 +177,7 @@ class notifications(commands.Cog):
             f"You can use `{ctx.clean_prefix}twitch show` to see your current configuration."
         ))
 
-    @commands.group(
-        aliases=['yt', 'ytnotif', 'youtub', 'youtubee'],
-        help="Commands related to YouTube."
-    )
+    @commands.group(aliases=['yt', 'ytnotif', 'youtub', 'youtubee'], help="Commands related to YouTube.")
     @commands.cooldown(3, 30, commands.BucketType.user)
     async def youtube(self, ctx: commands.Context):
         if ctx.invoked_subcommand is None:
@@ -198,7 +194,7 @@ class notifications(commands.Cog):
         )
         embed.add_field(
             name="YouTube Channel:",
-            value=f"[{yt_config['youtube_id']}](https://youtube.com/c/{yt_config['youtube_id']})" if yt_config['youtube_id'] is not None else notset,
+            value=f"[{yt_config['youtube_id']}](https://youtube.com/channel/{yt_config['youtube_id']})" if yt_config['youtube_id'] is not None else notset,
             inline=True
         )
         embed.add_field(
@@ -206,7 +202,7 @@ class notifications(commands.Cog):
             value=notset if yt_config['channel_id'] is None else '<#'+str(yt_config['channel_id'])+'>',
             inline=True
         )
-        embed.add_field(name="Message:", value=f"```{yt_config['message'] or DEFAULT_YOUTUBE_MSG}```", inline=False)
+        embed.add_field(name="Message:", value=f"```{yt_config.get('message') or DEFAULT_YOUTUBE_MSG}```", inline=False)
         embed.set_thumbnail(url="https://gizblog.it/wp-content/uploads/2017/08/youtube-logo-nuovo-banner.jpg")
         return await ctx.reply(embed=embed)
 
@@ -214,7 +210,62 @@ class notifications(commands.Cog):
     @commands.has_permissions(manage_guild=True)
     @coming_soon()
     async def yt_enable(self, ctx: commands.Context):
-        pass
+        guild_config = await self.client.get_guild_config(ctx.guild.id)
+        yt_config = guild_config['youtube']
+        enabled = False if yt_config['channel_id'] is None else True
+        if enabled:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Already enabled!",
+                f"Looks like YouTube notifications are already enabled!\nPlease use `{ctx.clean_prefix}youtube show` to get the current configuration."
+            ))
+        main_msg = await ctx.reply(embed=success_embed(
+            f"{EMOJIS['youtube']} YouTube configuration: 1/2",
+            "Please enter the YouTuber channel ID to continue..."
+        ).set_image(url="https://cdn.discordapp.com/attachments/859335247547990026/884661479717105674/unknown.png"))
+        msg_ytber = await wait_for_msg(ctx, 60, main_msg)
+        if msg_ytber == 'pain':
+            return
+        yt_channel = await get_yt_channel(self.client, msg_ytber.content)
+        if yt_channel is None:
+            ctx.command.reset_cooldown(ctx)
+            return await main_msg.edit(embed=error_embed(
+                f"{EMOJIS['tick_no']} YouTube channel not found!",
+                "Make sure you entered the correct YouTube channel ID"
+            ).set_image(url="https://cdn.discordapp.com/attachments/859335247547990026/884661479717105674/unknown.png"))
+        view = Confirm(ctx)
+        confirm_embed = success_embed(
+            "Is this your requested YouTube channel?",
+            f"""
+**Channel:** [{yt_channel.snippet.title}](https://youtube.com/channel/{yt_channel.id})
+**Description:** {yt_channel.snippet.description}
+**Subs:** {yt_channel.statistics.subscriberCount}
+**Views:** {yt_channel.statistics.viewCount}
+            """
+        )
+        await main_msg.edit(embed=confirm_embed, view=view)
+        await view.wait()
+        if not view.value:
+            ctx.command.reset_cooldown(ctx)
+            return await main_msg.edit(content="Command cancelled or timed out.", embed=None, view=None)
+        yt_config.update({"youtube_id": msg_ytber.content.lower()})
+        await main_msg.edit(embed=success_embed(
+            f"{EMOJIS['youtube']} YouTube configuration: 2/2",
+            "Enter the channel where you want the video notifications to go."
+        ), view=None)
+        msg_channel = await wait_for_msg(ctx, 60, main_msg)
+        if msg_channel == 'pain':
+            return
+        try:
+            final_channel = await commands.TextChannelConverter().convert(ctx, msg_channel.content)
+        except commands.ChannelNotFound:
+            await main_msg.delete()
+            raise commands.ChannelNotFound(msg_channel.content)
+        yt_config.update({"channel_id": final_channel.id})
+        return await main_msg.edit(embed=success_embed(
+            f"{EMOJIS['youtube']} YouTube notifications setup complete!",
+            f"The YouTube notifications have been set to channel {final_channel.mention}.\nTo edit the video message you can use `{ctx.clean_prefix}youtube edit`"
+        ))
 
     @youtube.command(name="disable", help="Disable YouTube notifications in your server.")
     @commands.has_permissions(manage_guild=True)
