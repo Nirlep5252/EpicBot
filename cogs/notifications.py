@@ -264,7 +264,7 @@ class notifications(commands.Cog, description="All the commands related to notif
                 f"{EMOJIS['tick_no']} YouTube channel not found!",
                 "Make sure you entered the correct YouTube channel ID"
             ).set_image(url="https://cdn.discordapp.com/attachments/859335247547990026/884661479717105674/unknown.png"))
-        new_video_id = await check_new_video(self.client, yt_channel.id)
+        new_video = await check_new_video(self.client, yt_channel.id)
         view = Confirm(ctx)
         confirm_embed = success_embed(
             f"{EMOJIS['youtube']} Is this your requested YouTube channel?",
@@ -284,7 +284,7 @@ class notifications(commands.Cog, description="All the commands related to notif
         if not view.value:
             ctx.command.reset_cooldown(ctx)
             return await main_msg.edit(content="Command cancelled or timed out.", embed=None, view=None)
-        yt_config.update({"youtube_id": yt_channel.id, "last_vid": new_video_id})
+        yt_config.update({"youtube_id": yt_channel.id, "last_vid": new_video.id})
         await main_msg.edit(embed=success_embed(
             f"{EMOJIS['youtube']} YouTube configuration: 2/2",
             "Enter the channel where you want the video notifications to go."
@@ -379,7 +379,7 @@ class notifications(commands.Cog, description="All the commands related to notif
                 ).set_image(url="https://cdn.discordapp.com/attachments/859335247547990026/884661479717105674/unknown.png"), view=None)
             final = temp_channel.id
             new_video = await check_new_video(self.client, final)
-            yt_config.update({"last_vid": new_video})
+            yt_config.update({"last_vid": new_video.id})
         final = final or m.content
         yt_config.update({view.value: final})
         return await main_msg.edit(embed=success_embed(
