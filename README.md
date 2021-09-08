@@ -32,7 +32,7 @@
   <li>🛠️ Custom Commands.</li>
   <li>✨ Level up system, with leveling roles.</li>
   <li>🏷️ Reaction Roles!</li>
-  <li>🏓 Twitch notifications!</li>
+  <li>🏓 YouTube and Twitch notifications!</li>
   <li>📨 Autoposting (automeme, autowaifu, etc...)</li>
   <li>🎶 Extremely high quality Music playback.</li>
   <li>🌍 Global chat.</li>
@@ -41,8 +41,6 @@
   <li>🌟 Customizable Starboard.</li>
   <li>☺️ Lots and lots of fun commands and image commands.</li>
   <li>🎀 Regularly updated and maintained.</li>
-</ul>
-
 </ul>
 
 <h2><img src="https://cdn.discordapp.com/emojis/791817532901949440.png?v=1" height="20px"> • How can I contribute?</h2>
