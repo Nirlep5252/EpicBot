@@ -1,13 +1,13 @@
 import discord.ui
 from discord.ext import commands
 from utils.bot import EpicBot
-from utils.constants import DEFAULT_YOUTUBE_MSG
+from utils.constants import DEFAULT_YOUTUBE_MSG, YOUTUBE_TAGS
 from utils.custom_checks import coming_soon
 from utils.embed import success_embed, error_embed
 from utils.message import wait_for_msg
 from utils.ui import Confirm
 from config import EMOJIS, DEFAULT_TWITCH_MSG
-from cogs_hidden.youtube import get_yt_channel
+from cogs_hidden.youtube import get_yt_channel, check_new_video
 
 
 class TwitchEditView(discord.ui.View):
@@ -22,6 +22,37 @@ class TwitchEditView(discord.ui.View):
         self.stop()
 
     @discord.ui.button(label="Discord Channel", custom_id='channel', style=discord.ButtonStyle.blurple)
+    async def channel(self, button, interaction):
+        self.value = 'channel_id'
+        self.stop()
+
+    @discord.ui.button(label="Message", custom_id='message', style=discord.ButtonStyle.blurple)
+    async def message(self, button, interaction):
+        self.value = 'message'
+        self.stop()
+
+    @discord.ui.button(label="Cancel", style=discord.ButtonStyle.danger)
+    async def cancel(self, button, interaction):
+        self.stop()
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user.id == self.ctx.author.id:
+            return True
+        return await interaction.response.send_message("This isn't your command!", ephemeral=True)
+
+
+class YouTubeEditView(discord.ui.View):
+    def __init__(self, ctx: commands.Context):
+        super().__init__(timeout=60)
+        self.ctx = ctx
+        self.value = None
+
+    @discord.ui.button(label="YouTube Channel", custom_id='youtube_id', style=discord.ButtonStyle.blurple)
+    async def streamer(self, button, interaction):
+        self.value = 'youtube_id'
+        self.stop()
+
+    @discord.ui.button(label="Discord Channel", custom_id='channel_id', style=discord.ButtonStyle.blurple)
     async def channel(self, button, interaction):
         self.value = 'channel_id'
         self.stop()
@@ -209,7 +240,6 @@ class notifications(commands.Cog, description="All the commands related to notif
 
     @youtube.command(name="enable", help="Enable YouTube notifications in your server!")
     @commands.has_permissions(manage_guild=True)
-    @coming_soon()
     async def yt_enable(self, ctx: commands.Context):
         guild_config = await self.client.get_guild_config(ctx.guild.id)
         yt_config = guild_config['youtube']
@@ -234,6 +264,7 @@ class notifications(commands.Cog, description="All the commands related to notif
                 f"{EMOJIS['tick_no']} YouTube channel not found!",
                 "Make sure you entered the correct YouTube channel ID"
             ).set_image(url="https://cdn.discordapp.com/attachments/859335247547990026/884661479717105674/unknown.png"))
+        new_video_id = await check_new_video(self.client, yt_channel.id)
         view = Confirm(ctx)
         confirm_embed = success_embed(
             f"{EMOJIS['youtube']} Is this your requested YouTube channel?",
@@ -253,7 +284,7 @@ class notifications(commands.Cog, description="All the commands related to notif
         if not view.value:
             ctx.command.reset_cooldown(ctx)
             return await main_msg.edit(content="Command cancelled or timed out.", embed=None, view=None)
-        yt_config.update({"youtube_id": yt_channel.id})
+        yt_config.update({"youtube_id": yt_channel.id, "last_vid": new_video_id})
         await main_msg.edit(embed=success_embed(
             f"{EMOJIS['youtube']} YouTube configuration: 2/2",
             "Enter the channel where you want the video notifications to go."
@@ -274,7 +305,6 @@ class notifications(commands.Cog, description="All the commands related to notif
 
     @youtube.command(name="disable", help="Disable YouTube notifications in your server.")
     @commands.has_permissions(manage_guild=True)
-    @coming_soon()
     async def yt_disable(self, ctx: commands.Context):
         guild_config = await self.client.get_guild_config(ctx.guild.id)
         yt_config = guild_config['youtube']
@@ -293,9 +323,69 @@ class notifications(commands.Cog, description="All the commands related to notif
 
     @youtube.command(name="edit", help="Edit your YouTube configuration.")
     @commands.has_permissions(manage_guild=True)
-    @coming_soon()
     async def yt_edit(self, ctx: commands.Context):
-        pass
+        guild_config = await self.client.get_guild_config(ctx.guild.id)
+        yt_config = guild_config['youtube']
+        enabled = False if yt_config['channel_id'] is None else True
+        if not enabled:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(f"{EMOJIS['tick_no']}You need to enable YouTube notifications to run this command.\nPlease use `{ctx.clean_prefix}youtube enable` to enable them.")
+        view = YouTubeEditView(ctx)
+        main_msg = await ctx.reply(embed=success_embed(
+            f"{EMOJIS['youtube']} Editing YouTube config",
+            "Please select what you want to edit, by clicking one of the buttons!"
+        ), view=view)
+        await view.wait()
+        if not view.value:
+            return await main_msg.edit(content="Command cancelled or timed out!", embed=None, view=None)
+        if view.value == 'channel_id':
+            current = f"<#{yt_config['channel_id']}>"
+        elif view.value == 'youtube_id':
+            channel = await get_yt_channel(self.client, yt_config['youtube_id'])
+            current = f"[{'404 Channel Not Found' if not channel else channel.snippet.title}](https://youtube.com/channel/{yt_config['youtube_id']})"
+        else:
+            current = f"```{yt_config[view.value] or DEFAULT_YOUTUBE_MSG}```"
+        what_edit = view.value.replace('_id', '').replace('channel', 'discord channel').replace('youtube', 'youtube channel').title()
+        embed = success_embed(
+            f"{EMOJIS['youtube']} Editing {what_edit}",
+            f"Your current value is: {current}\n\nPlease send a message to edit this within 60 seconds!\nYou can send `cancel` to cancel this."
+        )
+        if view.value == 'message':
+            embed.add_field(
+                name="Here are the tags that you can use:",
+                value="\n".join(f"`{tag}` - {desc}" for tag, desc in YOUTUBE_TAGS.items())
+            )
+        if view.value == 'youtube_id':
+            embed.set_image(url="https://cdn.discordapp.com/attachments/859335247547990026/884661479717105674/unknown.png")
+        await main_msg.edit(embed=embed, view=None)
+        m = await wait_for_msg(ctx, 60, main_msg)
+        if m == 'pain':
+            return
+        final = None
+        if view.value == 'channel_id':
+            try:
+                channel = await commands.TextChannelConverter().convert(ctx, m.content)
+                final = channel.id
+            except Exception:
+                await main_msg.delete()
+                raise commands.ChannelNotFound(m.content)
+        elif view.value == 'youtube_id':
+            temp_channel = await get_yt_channel(self.client, m.content)
+            if temp_channel is None:
+                ctx.command.reset_cooldown(ctx)
+                return await main_msg.edit(embed=error_embed(
+                    f"{EMOJIS['tick_no']} YouTube channel not found!",
+                    "Please make sure you enter the correct channel ID next time.\nPlease re-run the command to try again."
+                ).set_image(url="https://cdn.discordapp.com/attachments/859335247547990026/884661479717105674/unknown.png"), view=None)
+            final = temp_channel.id
+            new_video = await check_new_video(self.client, final)
+            yt_config.update({"last_vid": new_video})
+        final = final or m.content
+        yt_config.update({view.value: final})
+        return await main_msg.edit(embed=success_embed(
+            f"{EMOJIS['youtube']} The {what_edit} has successfully been edited!",
+            f"You can use `{ctx.clean_prefix}youtube show` to see your current configuration."
+        ))
 
 
 def setup(client: EpicBot):
