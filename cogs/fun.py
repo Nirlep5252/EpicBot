@@ -227,7 +227,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def brainsize(self, ctx, user: Union[discord.Member, str] = None):
         user = user or ctx.author
-        if user.id in [521640052195852298, 679677267164921866]:
+        if user.id in [521640052195852298, 679677267164921866, 321750582912221184]:
             iq = 69420
         elif user.id == 558861606063308822:
             iq = 0
