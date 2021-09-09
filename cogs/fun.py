@@ -468,7 +468,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
 
     @commands.cooldown(1, 60, commands.BucketType.user)
     @not_opted_out()
-    @commands.command(aliases=['mes', 'mse'], help="Get the last 5 editsnipe messages.")
+    @commands.command(aliases=['mes', 'mse', 'mesnipe'], help="Get the last 5 editsnipe messages.")
     async def multieditsnipe(self, ctx: commands.Context, channel: Optional[discord.TextChannel] = None):
         channel = channel or ctx.channel
         embeds = []
