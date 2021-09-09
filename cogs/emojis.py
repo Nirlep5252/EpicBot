@@ -189,7 +189,7 @@ class emojis(commands.Cog, description="Emoji related commands!"):
             description = f"Uploaded by {ctx.author}"
             emoji = name
         else:
-            name = emoji_flags.name if len(emoji_flags.name) > 1 else "name"
+            name = emoji.name if emoji_flags.name is None else emoji_flags.name if len(emoji_flags.name) > 1 else "name"
             description = emoji_flags.description if emoji_flags.description is not None else f"Uploaded by {ctx.author}"
             emoji = emoji_flags.emoji or name
 
