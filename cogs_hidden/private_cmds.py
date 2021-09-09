@@ -23,9 +23,9 @@ be_sure = "Be sure to check <#762550256918724640> in case of any stream cancella
 
 
 class RamTimeView(discord.ui.View):
-    def __init__(self, ctx: commands.Context, time_embed: discord.Embed, current_time: datetime.datetime):
+    def __init__(self, author_id: int, time_embed: discord.Embed, current_time: datetime.datetime):
         super().__init__(timeout=None)
-        self.ctx = ctx
+        self.author_id = author_id
         self.time_embed = time_embed
         self.current_time = current_time
 
@@ -61,7 +61,7 @@ class RamTimeView(discord.ui.View):
         await interaction.message.delete()
 
     async def interaction_check(self, interaction: discord.Interaction):
-        if interaction.user.id == self.ctx.author.id:
+        if interaction.user.id == self.author_id:
             return True
         else:
             return await interaction.response.send_message("Not your command o_o", ephemeral=True)
@@ -84,9 +84,34 @@ class PrivateCmds(commands.Cog):
         time_embed.add_field(name="Time", value=f"{dt_nzt.strftime('%I : %M : %S %p')}", inline=False)
         time_embed.add_field(name="Date", value=f"{convert_int_to_weekday(dt_nzt.weekday())} | {dt_nzt.day} / {dt_nzt.month} / {dt_nzt.year}", inline=False)
 
-        view = RamTimeView(ctx, time_embed, dt_nzt)
+        view = RamTimeView(ctx.author.id, time_embed, dt_nzt)
 
         await ctx.reply(embed=time_embed, view=view)
+
+    @commands.Cog.listener("on_interaction")
+    async def slash_ramtime(self, interaction: discord.Interaction):
+        if interaction.guild_id not in [719157704467152977, 749996055369875456]:
+            return
+
+        data = interaction.data
+        inter_type = data.get('type')
+        # interaction types: 1 - slash, 2 - usercmd, 3 - messagecmd; docs: https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-types
+        if inter_type is None:
+            return
+
+        if data.get('name') != 'ramtime':
+            return
+
+        dt_utc = datetime.datetime.now(tz=pytz.UTC)
+        dt_nzt = dt_utc.astimezone(pytz.timezone("NZ"))
+
+        time_embed = discord.Embed(title="⏰  Ram Time", color=MAIN_COLOR)
+        time_embed.add_field(name="Time", value=f"{dt_nzt.strftime('%I : %M : %S %p')}", inline=False)
+        time_embed.add_field(name="Date", value=f"{convert_int_to_weekday(dt_nzt.weekday())} | {dt_nzt.day} / {dt_nzt.month} / {dt_nzt.year}", inline=False)
+
+        view = RamTimeView(interaction.user.id, time_embed, dt_nzt)
+
+        await interaction.response.send_message(embed=time_embed, view=view)
 
 
 def setup(client: EpicBot):
