@@ -1,4 +1,3 @@
-from utils.custom_checks import mutual_guild
 import discord
 import datetime
 import pytz
@@ -6,6 +5,8 @@ from discord.ext import commands
 from utils.bot import EpicBot
 from config import MAIN_COLOR
 from utils.time import convert_int_to_weekday
+from utils.custom_checks import mutual_guild
+from typing import List, Optional, Union
 
 
 stream_schedule = {
@@ -20,6 +21,20 @@ stream_schedule = {
 live_text = "Ramaziz will be live today!"
 not_live_text = "Ramaziz will not be live today!"
 be_sure = "Be sure to check <#762550256918724640> in case of any stream cancellations!"
+
+
+SexContext = Union[commands.Context, discord.Interaction]
+
+
+slash_cmds = {}
+
+
+def slash_cmd(*, name: Optional[str] = None, guild_ids: List[int]):
+    def inner_deco(func):
+        cmd_name = name or func.__name__
+        slash_cmds.update({cmd_name: {'func': func, 'guild_ids': guild_ids}})
+        return func
+    return inner_deco
 
 
 class RamTimeView(discord.ui.View):
@@ -76,7 +91,8 @@ class PrivateCmds(commands.Cog):
         help="Ever wonder what time is it for Ramaziz?"
     )
     @mutual_guild(719157704467152977)
-    async def ram_time(self, ctx: commands.Context):
+    @slash_cmd(name='ramtime', guild_ids=[719157704467152977, 749996055369875456])
+    async def ram_time(self, ctx: SexContext):
         dt_utc = datetime.datetime.now(tz=pytz.UTC)
         dt_nzt = dt_utc.astimezone(pytz.timezone("NZ"))
 
@@ -84,34 +100,30 @@ class PrivateCmds(commands.Cog):
         time_embed.add_field(name="Time", value=f"{dt_nzt.strftime('%I : %M : %S %p')}", inline=False)
         time_embed.add_field(name="Date", value=f"{convert_int_to_weekday(dt_nzt.weekday())} | {dt_nzt.day} / {dt_nzt.month} / {dt_nzt.year}", inline=False)
 
-        view = RamTimeView(ctx.author.id, time_embed, dt_nzt)
-
-        await ctx.reply(embed=time_embed, view=view)
+        if isinstance(ctx, commands.Context):
+            view = RamTimeView(ctx.author.id, time_embed, dt_nzt)
+            await ctx.reply(embed=time_embed, view=view)
+        else:
+            view = RamTimeView(ctx.user.id, time_embed, dt_nzt)
+            await ctx.response.send_message(embed=time_embed, view=view)
 
     @commands.Cog.listener("on_interaction")
-    async def slash_ramtime(self, interaction: discord.Interaction):
-        if interaction.guild_id not in [719157704467152977, 749996055369875456]:
-            return
-
+    async def private_slash_cmds(self, interaction: discord.Interaction):
         data = interaction.data
         inter_type = data.get('type')
-        # interaction types: 1 - slash, 2 - usercmd, 3 - messagecmd; docs: https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-types
+        # checking if it's a slash cmd or not
+        # https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-types
         if inter_type is None:
             return
-
-        if data.get('name') != 'ramtime':
+        if int(inter_type) != 1:
             return
-
-        dt_utc = datetime.datetime.now(tz=pytz.UTC)
-        dt_nzt = dt_utc.astimezone(pytz.timezone("NZ"))
-
-        time_embed = discord.Embed(title="⏰  Ram Time", color=MAIN_COLOR)
-        time_embed.add_field(name="Time", value=f"{dt_nzt.strftime('%I : %M : %S %p')}", inline=False)
-        time_embed.add_field(name="Date", value=f"{convert_int_to_weekday(dt_nzt.weekday())} | {dt_nzt.day} / {dt_nzt.month} / {dt_nzt.year}", inline=False)
-
-        view = RamTimeView(interaction.user.id, time_embed, dt_nzt)
-
-        await interaction.response.send_message(embed=time_embed, view=view)
+        # checking if the slash cmd is in the slash cmds dict
+        if data.get('name') not in slash_cmds:
+            return
+        slash_cmd = slash_cmds[data.get('name')]
+        if interaction.guild_id not in slash_cmd['guild_ids']:
+            return
+        await slash_cmd['func'](self, interaction)
 
 
 def setup(client: EpicBot):
