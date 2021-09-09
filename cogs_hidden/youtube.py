@@ -90,7 +90,7 @@ class YouTube(commands.Cog):
         self.client = client
         self.youtube_notifs.start()
 
-    @tasks.loop(seconds=60)
+    @tasks.loop(seconds=600)
     async def youtube_notifs(self):
         for config in self.client.serverconfig_cache:
             try:
@@ -103,7 +103,7 @@ class YouTube(commands.Cog):
                         if new_video is not None:
                             await channel.send(format_yt_msg((yt_config.get('message') or DEFAULT_YOUTUBE_MSG), new_video, yt_channel), allowed_mentions=discord.AllowedMentions.all())
                             yt_config.update({"last_vid": new_video.id})
-                            await asyncio.sleep(0.5)
+                            await asyncio.sleep(2)
             except Exception as e:
                 error_text = "".join(traceback.format_exception(etype=type(e), value=e, tb=e.__traceback__))
                 try:
