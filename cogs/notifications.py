@@ -2,7 +2,6 @@ import discord.ui
 from discord.ext import commands
 from utils.bot import EpicBot
 from utils.constants import DEFAULT_YOUTUBE_MSG, YOUTUBE_TAGS
-from utils.custom_checks import coming_soon
 from utils.embed import success_embed, error_embed
 from utils.message import wait_for_msg
 from utils.ui import Confirm
@@ -98,7 +97,7 @@ class notifications(commands.Cog, description="All the commands related to notif
             value=f"[{twitch_config['username']}](https://twitch.tv/{twitch_config['username']})" if twitch_config['username'] is not None else notset,
             inline=True
         )
-        embed.add_field(name="Channel:", value=notset if twitch_config['channel_id'] is None else '<#'+str(twitch_config['channel_id'])+'>', inline=True)
+        embed.add_field(name="Channel:", value=notset if twitch_config['channel_id'] is None else '<#' + str(twitch_config['channel_id']) + '>', inline=True)
         embed.add_field(name="Message:", value=f"```{DEFAULT_TWITCH_MSG if twitch_config['message'] is None else twitch_config['message']}```", inline=False)
         embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/775735414362734622/852899330464415754/twitch_logo.png")
         return await ctx.reply(embed=embed)
@@ -231,7 +230,7 @@ class notifications(commands.Cog, description="All the commands related to notif
         )
         embed.add_field(
             name="Notification Channel:",
-            value=notset if yt_config['channel_id'] is None else '<#'+str(yt_config['channel_id'])+'>',
+            value=notset if yt_config['channel_id'] is None else '<#' + str(yt_config['channel_id']) + '>',
             inline=True
         )
         embed.add_field(name="Message:", value=f"```{yt_config.get('message') or DEFAULT_YOUTUBE_MSG}```", inline=False)
@@ -344,7 +343,7 @@ class notifications(commands.Cog, description="All the commands related to notif
             channel = await get_yt_channel(self.client, yt_config['youtube_id'])
             current = f"[{'404 Channel Not Found' if not channel else channel.snippet.title}](https://youtube.com/channel/{yt_config['youtube_id']})"
         else:
-            current = f"```{yt_config[view.value] or DEFAULT_YOUTUBE_MSG}```"
+            current = f"```{yt_config.get(view.value) or DEFAULT_YOUTUBE_MSG}```"
         what_edit = view.value.replace('_id', '').replace('channel', 'discord channel').replace('youtube', 'youtube channel').title()
         embed = success_embed(
             f"{EMOJIS['youtube']} Editing {what_edit}",
