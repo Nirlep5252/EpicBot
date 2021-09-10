@@ -107,6 +107,10 @@ class PrivateCmds(commands.Cog):
             view = RamTimeView(ctx.user.id, time_embed, dt_nzt)
             await ctx.response.send_message(embed=time_embed, view=view)
 
+    @slash_cmd(guild_ids=[746202728031584358])
+    async def kitten(self, ctx: SexContext):
+        await ctx.response.send_message("Don't tell kitten 👀 but dogs are kinda cute uwu", ephemeral=True)
+
     @commands.Cog.listener("on_interaction")
     async def private_slash_cmds(self, interaction: discord.Interaction):
         data = interaction.data
