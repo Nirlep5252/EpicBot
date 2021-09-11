@@ -39,10 +39,12 @@ async def get_playlist_last_vid_id(bot: EpicBot, query: str) -> Optional[str]:
     return playlist_by_id.items[0].snippet.resourceId.videoId
 
 
-async def get_yt_channel(bot: EpicBot, query: str) -> Optional[Channel]:
+async def get_yt_channel(bot: EpicBot, query: str = None) -> Optional[Channel]:
     """
     Returns the channel if found or None
     """
+    if query is None:
+        return None
     thing = functools.partial(api.get_channel_info, channel_id=query)
     channel_by_id = await bot.loop.run_in_executor(None, thing)
     channel_dict = channel_by_id.to_dict()
