@@ -57,20 +57,22 @@ class Logs(commands.Cog):
     async def on_message(self, message: discord.Message):
         if message.author.bot:
             return
-        if str(message.channel.type) == 'private':
-            files = []
-            for e in message.attachments:
-                uwu = await e.to_file()
-                files.append(uwu)
-            embed = success_embed(
-                "New DM!",
-                message.content
-            ).add_field(
-                name="Kid:",
-                value=f"{message.author.mention}```{message.author}\n{message.author.id}```",
-                inline=False
+        if str(message.channel.type) != 'private':
+            return
+        files = [await e.to_file() for e in message.attachments]
+        embed = success_embed("New DM!", message.system_content).add_field(
+            name="Kid:",
+            value=f"{message.author.mention}```{message.author}\n{message.author.id}```",
+            inline=False
+        ).set_footer(text=f"Message ID: {message.id}").set_author(name=message.author, icon_url=message.author.display_avatar.url)
+        for sticker in message.stickers:
+            embed.add_field(
+                name="Sticker:",
+                value=f"[{sticker.name} (ID: {sticker.id})]({sticker.url})"
             )
-            await self.client.get_channel(793482521076695070).send(embed=embed, files=files)
+        if len(message.stickers) == 1:
+            embed.set_image(url=message.stickers[0].url)
+        await self.client.get_channel(793482521076695070).send(embed=embed, files=files)
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
