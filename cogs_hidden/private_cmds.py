@@ -100,16 +100,12 @@ class PrivateCmds(commands.Cog):
         time_embed.add_field(name="Time", value=f"{dt_nzt.strftime('%I : %M : %S %p')}", inline=False)
         time_embed.add_field(name="Date", value=f"{convert_int_to_weekday(dt_nzt.weekday())} | {dt_nzt.day} / {dt_nzt.month} / {dt_nzt.year}", inline=False)
 
-        if isinstance(ctx, commands.Context):
-            view = RamTimeView(ctx.author.id, time_embed, dt_nzt)
-            await ctx.reply(embed=time_embed, view=view)
-        else:
-            view = RamTimeView(ctx.user.id, time_embed, dt_nzt)
-            await ctx.response.send_message(embed=time_embed, view=view)
+        view = RamTimeView(ctx.author.id, time_embed, dt_nzt)
+        await ctx.reply(embed=time_embed, view=view)
 
     @slash_cmd(guild_ids=[746202728031584358])
     async def kitten(self, ctx: SexContext):
-        await ctx.response.send_message("Don't tell kitten 👀 but dogs are kinda cute uwu", ephemeral=True)
+        await ctx.reply("Don't tell kitten 👀 but dogs are kinda cute uwu")
 
     @commands.Cog.listener("on_interaction")
     async def private_slash_cmds(self, interaction: discord.Interaction):

@@ -103,6 +103,8 @@ class EpicBot(commands.AutoShardedBot):
             print("Loaded jsk!")
             self.loaded, self.not_loaded = self.loop.run_until_complete(self.load_extensions('./cogs'))
             self.loaded_hidden, self.not_loaded_hidden = self.loop.run_until_complete(self.load_extensions('./cogs_hidden'))
+            if self.beta:
+                self.loop.run_until_complete(self.load_extensions('./cogs_testing'))
             self.cogs_loaded = True
 
     async def set_default_guild_config(self, guild_id):

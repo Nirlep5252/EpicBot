@@ -18,10 +18,17 @@ from logging import basicConfig, INFO
 from config import BOT_TOKEN, BOT_TOKEN_BETA, OWNERS
 from utils.bot import EpicBot
 from os import environ
+from discord import Interaction, Member
+from handlers.slash import slash_handler, update_global_commands, slash_command
 
 basicConfig(level=INFO)
 
-client = EpicBot()
+client = EpicBot(beta=True)
+# If you have beta token and beta mongodb link setup
+# what you can is just pass the kwarg beta as true eg: "client = EpicBot(beta=True)"
+# and it'll use that token and mongo link
+# so when testing locally it wont use the main bots token
+# :)
 environ.setdefault("JISHAKU_HIDE", "1")
 environ.setdefault("JISHAKU_NO_UNDERSCORE", "1")
 
@@ -42,5 +49,16 @@ async def check_commands(ctx):
     return (ctx.command.name not in dc) and (ctx.channel.id not in dch) and (ctx.command.cog not in dcc_cogs)
 
 
+async def interaction_event(interaction: Interaction):
+    await slash_handler(interaction, client)
+
+
+@slash_command(guild_ids=[746202728031584358])
+async def slash(ctx: Interaction, arg: Member):
+    await ctx.reply(arg, ephemeral=True)
+
+
 if __name__ == '__main__':
+    client.add_listener(interaction_event, 'on_interaction')
+    client.loop.run_until_complete(update_global_commands(client))
     client.run(BOT_TOKEN if not client.beta else BOT_TOKEN_BETA)
