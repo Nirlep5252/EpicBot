@@ -114,7 +114,7 @@ class utility(commands.Cog, description="Commands that make your Discord experie
             ctx.command.reset_cooldown(ctx)
             return await ctx.reply(embed=error_embed(
                 f"{EMOJIS['tick_no']} Too long!",
-                "Reminders can't be longer than **5 year**."
+                "Reminders can't be longer than **5 years**."
             ))
 
         random_id = gen_random_string(10)
