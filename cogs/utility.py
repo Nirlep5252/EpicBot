@@ -102,7 +102,7 @@ class utility(commands.Cog, description="Commands that make your Discord experie
                 f"{EMOJIS['tick_no']} Positive values only!",
                 "The value of time should be positive values only."
             ))
-        reminder_limit = 250
+        reminder_limit = 500
         if len(reminder) >= reminder_limit:
             ctx.command.reset_cooldown(ctx)
             return await ctx.reply(embed=error_embed(
@@ -110,11 +110,11 @@ class utility(commands.Cog, description="Commands that make your Discord experie
                 f"The reminder can't be longer than **{reminder_limit}** characters."
             ))
         time_in_seconds = time_[0]
-        if time_in_seconds > 43200 * 60 * 12:
+        if time_in_seconds > 43200 * 60 * 12 * 5:
             ctx.command.reset_cooldown(ctx)
             return await ctx.reply(embed=error_embed(
                 f"{EMOJIS['tick_no']} Too long!",
-                "Reminders can't be longer than **1 year**."
+                "Reminders can't be longer than **5 year**."
             ))
 
         random_id = gen_random_string(10)
