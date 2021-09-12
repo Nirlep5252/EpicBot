@@ -43,14 +43,14 @@ slash_cmd_option_converters = {
     6: commands.MemberConverter().convert,
     7: commands.GuildChannelConverter().convert,
     8: commands.RoleConverter().convert,
-    # TODO: 9 is mentionable converters????!?!??!?!??! SLASH COMMANDS GAY
+    # TODO: 9 is mentionable converters????!?!??!?!??! SLASH COMMANDS ARE CANCER
     10: float,
 }
 
 
 class SlashContext(discord.Interaction):
     def __init__(self, interaction: discord.Interaction, bot: Bot):
-        super().__init__(interaction, interaction._state)
+        super().__init__(data=interaction._raw_data, state=interaction._state)
         self._bot = bot
 
     @property
@@ -67,8 +67,9 @@ class SlashCommandChoice:
 class SlashCommandOption:
     def __init__(
         self, name: str, type: int, description: str,
-        required: bool = True, choices: List[SlashCommandChoice] = []
+        required: bool = True, choices: List[SlashCommandChoice] = None
     ):
+        choices = choices or []
         self.name = name
         self.type = type
         self.description = description
@@ -167,7 +168,10 @@ def get_option(name: str, options: List[SlashCommandOption]):
     raise ValueError(f'Option {name} not found')
 
 
-async def slash_handler(interaction: discord.Interaction, bot):
+async def slash_handler(interaction: discord.Interaction, bot: Bot):
+    class something(object):
+        def __init__(self, client):
+            self.client = client
     data = interaction.data
     inter_type = data.get('type')
     # checking if it's a slash cmd or not
@@ -185,18 +189,19 @@ async def slash_handler(interaction: discord.Interaction, bot):
     print(f"Slash command {slash_cmd.name} used by {interaction.author}")
 
     kwargs = {}
+    ctx = SlashContext(interaction, bot)
     for option in data.get('options', []):
         _opt = get_option(option['name'], slash_cmd.options)
         if _opt.type not in slash_cmd_option_converters:
             raise TypeError(f'Unknown option type {_opt.type}')
         converter = slash_cmd_option_converters[_opt.type]
-        kwargs.update({_opt.name: await converter(interaction, option['value']) if inspect.iscoroutinefunction(converter) else converter(option['value'])})
-    ctx = SlashContext(interaction, bot)
+        kwargs.update({_opt.name: await converter(ctx, option['value']) if inspect.iscoroutinefunction(converter) else converter(option['value'])})
     if slash_cmd._cog:
-        await slash_cmd.callback(object(client=bot), ctx, **kwargs)
+        await slash_cmd.callback(something(client=bot), ctx, **kwargs)
     else:
         await slash_cmd.callback(ctx, **kwargs)
 
 
 async def update_global_commands(bot: Bot):
-    print(slash_cmds)
+    bot.slash_cmds = slash_cmds
+    # TODO: Autoupdate them using bot.http.<stuff> stuff... idk lol

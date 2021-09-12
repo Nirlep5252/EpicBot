@@ -18,8 +18,7 @@ from logging import basicConfig, INFO
 from config import BOT_TOKEN, BOT_TOKEN_BETA, OWNERS
 from utils.bot import EpicBot
 from os import environ
-from discord import Interaction, Member
-from handlers.slash import slash_handler, update_global_commands, slash_command
+from handlers.slash import slash_handler, update_global_commands
 
 basicConfig(level=INFO)
 
@@ -49,13 +48,8 @@ async def check_commands(ctx):
     return (ctx.command.name not in dc) and (ctx.channel.id not in dch) and (ctx.command.cog not in dcc_cogs)
 
 
-async def interaction_event(interaction: Interaction):
+async def interaction_event(interaction):
     await slash_handler(interaction, client)
-
-
-@slash_command(guild_ids=[746202728031584358])
-async def slash(ctx: Interaction, arg: Member):
-    await ctx.reply(arg, ephemeral=True)
 
 
 if __name__ == '__main__':
