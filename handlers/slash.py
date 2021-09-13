@@ -70,6 +70,9 @@ class SlashCommandChoice:
             "value": self.value
         }
 
+    def __repr__(self) -> str:
+        return f"SlashCommandChoice(name={self.name} value={self.value})"
+
 
 class SlashCommandOption:
     def __init__(
@@ -91,8 +94,11 @@ class SlashCommandOption:
             "required": self.required
         }
         if self.choices:
-            final.update({"choices": self.choices})
+            final.update({"choices": [choice.to_dict() for choice in self.choices]})
         return final
+
+    def __repr__(self) -> str:
+        return f"SlashCommandOption(name={self.name} type={self.type} description={self.description} required={self.required} choices={self.choices})"
 
 
 class SlashCommand:
@@ -126,7 +132,7 @@ class SlashCommand:
     def _parse_options(self, options: List[Union[dict, SlashCommandOption]]) -> List[SlashCommandOption]:
         final = []
         for option in options:
-            if isinstance(option, dict):
+            if not isinstance(option, SlashCommandOption):
                 if option.get('type', str) not in slash_cmd_option_types:
                     raise TypeError(f'Unknown option type {option.get("type")}')
                 if 'name' not in option:
@@ -152,9 +158,8 @@ class SlashCommand:
         final = []
         i = 0
         args_copy = list(raw_args)[-(len(defaults) - 1):]
-        print(f"PRINTING ARGS COPY: {args_copy}")
         for arg, type_ in raw_args.items():
-            if type_ == SlashCommandOption:
+            if isinstance(type_, SlashCommandOption):
                 final.append(raw_args[arg])
             else:
                 final.append({
@@ -173,7 +178,6 @@ def slash_command(**kwargs):
     def decorator(func):
         slash_cmd = SlashCommand(func, **kwargs)
         slash_cmds[slash_cmd.name] = slash_cmd
-        print(f"Added slash command: {slash_cmd}")
         return func
 
     return decorator
@@ -205,14 +209,13 @@ async def slash_handler(interaction: discord.Interaction, bot: EpicBot):
     slash_cmd = all_slash_commands[data.get('name')]
     if interaction.guild_id not in slash_cmd.guild_ids:
         return
-    print(f"Slash command {slash_cmd.name} used by {interaction.author}")
 
     kwargs = {}
     ctx = SlashContext(interaction, bot)
     for option in data.get('options', []):
         _opt = get_option(option['name'], slash_cmd.options)
         if _opt.type not in slash_cmd_option_converters:
-            raise TypeError(f'Unknown option type {_opt.type}')
+            raise TypeError(f'Not known option type {_opt.type}')
         converter = slash_cmd_option_converters[_opt.type]
         kwargs.update({_opt.name: await converter(ctx, option['value']) if inspect.iscoroutinefunction(converter) else converter(option['value'])})
     if slash_cmd._cog:
