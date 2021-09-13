@@ -221,17 +221,6 @@ async def slash_handler(interaction: discord.Interaction, bot: EpicBot):
         await slash_cmd.callback(ctx, **kwargs)
 
 
-def check_registered(command: SlashCommand, all_commands: list):
-    """
-    Checks if the given slash command is already registered in the bot or not
-    returns False if not registered else returns the cmd
-    """
-    for cmd in all_commands:
-        if cmd['name'] == command.name:
-            return cmd
-    return False
-
-
 async def update_app_commands(bot: EpicBot):
     bot.slash_cmds = slash_cmds
     global_slash_cmds = []
