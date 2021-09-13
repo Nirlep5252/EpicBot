@@ -7,9 +7,9 @@ class SlashCogTesting(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command(guild_ids=[746202728031584358])
-    async def slash(self, ctx: SlashContext, arg: discord.Member):
-        await ctx.reply(arg, ephemeral=True)
+    @slash_command(guild_ids=[746202728031584358], help="Slap some annoying kid.")
+    async def slap(self, ctx: SlashContext, user: discord.Member = None):
+        await ctx.reply(f"You slapped {(user or ctx.author).mention}", ephemeral=True)
 
 
 def setup(bot):

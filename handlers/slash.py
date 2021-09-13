@@ -64,6 +64,12 @@ class SlashCommandChoice:
         self.name = name
         self.value = value
 
+    def to_dict(self) -> dict:
+        return {
+            "name": self.name,
+            "value": self.value
+        }
+
 
 class SlashCommandOption:
     def __init__(
@@ -77,6 +83,17 @@ class SlashCommandOption:
         self.required = required
         self.choices = choices
 
+    def to_dict(self) -> dict:
+        final = {
+            "name": self.name,
+            "type": self.type,
+            "description": self.description,
+            "required": self.required
+        }
+        if self.choices:
+            final.update({"choices": self.choices})
+        return final
+
 
 class SlashCommand:
     def __init__(self, func, **kwargs) -> None:
@@ -88,7 +105,7 @@ class SlashCommand:
         self._is_global = True if self.guild_ids == [] else False
         _spec = getfullargspec(func)
         _raw_args = _spec.annotations
-        _defaults = _spec.defaults
+        _defaults = _spec.defaults or []
         _cog = False
         if 'self' in _spec.args:
             _cog = True
@@ -132,10 +149,10 @@ class SlashCommand:
         return final
 
     def _parse_raw_args(self, raw_args: Dict[str, Any], defaults: tuple) -> List[Union[dict, SlashCommandOption]]:
-        defaults = defaults or ()
         final = []
         i = 0
-        args_copy = list(raw_args)[::-1][:-len(defaults)][::-1]
+        args_copy = list(raw_args)[-(len(defaults) - 1):]
+        print(f"PRINTING ARGS COPY: {args_copy}")
         for arg, type_ in raw_args.items():
             if type_ == SlashCommandOption:
                 final.append(raw_args[arg])
@@ -173,6 +190,7 @@ async def slash_handler(interaction: discord.Interaction, bot: EpicBot):
     class something(object):
         def __init__(self, client):
             self.client = client
+    all_slash_commands = bot.slash_cmds
     data = interaction.data
     inter_type = data.get('type')
     # checking if it's a slash cmd or not
@@ -182,9 +200,9 @@ async def slash_handler(interaction: discord.Interaction, bot: EpicBot):
     if int(inter_type) != 1:
         return
     # checking if the slash cmd is in the slash cmds dict
-    if data.get('name') not in slash_cmds:
+    if data.get('name') not in all_slash_commands:
         return
-    slash_cmd = slash_cmds[data.get('name')]
+    slash_cmd = all_slash_commands[data.get('name')]
     if interaction.guild_id not in slash_cmd.guild_ids:
         return
     print(f"Slash command {slash_cmd.name} used by {interaction.author}")
@@ -203,5 +221,39 @@ async def slash_handler(interaction: discord.Interaction, bot: EpicBot):
         await slash_cmd.callback(ctx, **kwargs)
 
 
-async def update_global_commands(bot: EpicBot):
+def check_registered(command: SlashCommand, all_commands: list):
+    """
+    Checks if the given slash command is already registered in the bot or not
+    returns False if not registered else returns the cmd
+    """
+    for cmd in all_commands:
+        if cmd['name'] == command.name:
+            return cmd
+    return False
+
+
+async def update_app_commands(bot: EpicBot):
     bot.slash_cmds = slash_cmds
+    global_slash_cmds = []
+    guild_slash_cmds: Dict[int, list] = {}
+    for cmd_name, cmd in slash_cmds.items():
+        cmd_payload = {
+            "name": cmd_name,
+            "type": 1,
+            "description": cmd.desc,
+            "options": [option.to_dict() for option in cmd.options]
+        }
+        if not cmd.guild_ids:
+            global_slash_cmds.append(cmd_payload)
+        else:
+            for guild_id in cmd.guild_ids:
+                current_guild_cmds = guild_slash_cmds.get(guild_id, [])
+                current_guild_cmds.append(cmd_payload)
+                guild_slash_cmds.update({guild_id: current_guild_cmds})
+
+    await bot.http.bulk_upsert_global_commands(bot.user.id, global_slash_cmds)
+    print(f"Updated {len(global_slash_cmds)} global commands")
+    for guild_id, guild_commands in guild_slash_cmds.items():
+        await bot.http.bulk_upsert_guild_commands(bot.user.id, guild_id, guild_commands)
+        print(f"Updated {len(guild_commands)} for guild ID: {guild_id}")
+    print(f"Updated guild commands for {len(guild_slash_cmds)} guilds")

@@ -18,7 +18,7 @@ from logging import basicConfig, INFO
 from config import BOT_TOKEN, BOT_TOKEN_BETA, OWNERS
 from utils.bot import EpicBot
 from os import environ
-from handlers.slash import slash_handler, update_global_commands
+from handlers.slash import slash_handler, update_app_commands
 
 basicConfig(level=INFO)
 
@@ -52,7 +52,11 @@ async def interaction_event(interaction):
     await slash_handler(interaction, client)
 
 
+async def connect_event():
+    await update_app_commands(client)
+
+
 if __name__ == '__main__':
     client.add_listener(interaction_event, 'on_interaction')
-    client.loop.run_until_complete(update_global_commands(client))
+    client.add_listener(connect_event, 'on_connect')
     client.run(BOT_TOKEN if not client.beta else BOT_TOKEN_BETA)

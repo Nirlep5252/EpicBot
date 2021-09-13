@@ -36,6 +36,7 @@ from utils.help import EpicBotHelp
 
 class EpicBot(commands.AutoShardedBot):
     def __init__(self, beta: bool = False):
+        self.slash_cmds: dict = {}
         self.beta = beta
         intents = discord.Intents.default()
         intents.members = True
