@@ -120,7 +120,7 @@ class SlashCommand:
             del _raw_args[_key]
             break
         _raw_options = self._parse_raw_args(_raw_args, _defaults)
-        self.options = self._parse_options(_raw_options)
+        self.options = kwargs.get('options') or self._parse_options(_raw_options)
 
     def __repr__(self) -> str:
         return f"SlashCommand(name={self.name} callback={self.callback} desc={self.desc} guild_ids={self.guild_ids} options={self.options})"
@@ -156,7 +156,10 @@ class SlashCommand:
     def _parse_raw_args(self, raw_args: Dict[str, Any], defaults: tuple) -> List[Union[dict, SlashCommandOption]]:
         final = []
         i = 0
-        args_copy = list(raw_args)[-(len(defaults) - 1):]
+        if len(defaults) > 0:
+            args_copy = list(raw_args)[-(len(defaults) - 1):]
+        else:
+            args_copy = []
         for arg, type_ in raw_args.items():
             if isinstance(type_, SlashCommandOption):
                 final.append(raw_args[arg])
