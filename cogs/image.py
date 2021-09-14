@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from handlers.slash import SlashCommandOption, SlashContext, slash_command
 import discord
 import functools
 
@@ -103,31 +104,44 @@ class image(commands.Cog, description="Cool image commands!"):
     @commands.cooldown(1, 60, commands.BucketType.user)
     @commands.max_concurrency(1, commands.BucketType.guild)
     @commands.bot_has_permissions(attach_files=True)
-    async def wiggle(self, ctx: commands.Context, *, thing: Optional[Union[discord.Member, discord.PartialEmoji]] = None):
+    @slash_command(
+        help="Wiggle your friends...",
+        options=[SlashCommandOption(name='person', type=6, description="Pick someone to wiggle!", required=True)]
+    )
+    async def wiggle(self, ctx: Union[commands.Context, SlashContext], *, person: Optional[Union[discord.Member, discord.PartialEmoji]] = None):
         thingy_bytes = None
 
-        if not thing and len(ctx.message.attachments) == 0:
-            thingy_bytes = await ctx.author.display_avatar.replace(format='png', size=128).read()
-        elif not thing and len(ctx.message.attachments) != 0:
-            for attachment in ctx.message.attachments:
-                if attachment.content_type == "image/png":
-                    thingy_bytes = await attachment.read()
-                    break
-            thingy_bytes = thingy_bytes or await ctx.author.display_avatar.replace(format='png', size=128).read()
+        if not person:
+            if not person and len(ctx.message.attachments) == 0:
+                thingy_bytes = await ctx.author.display_avatar.replace(format='png', size=128).read()
+            elif not person and len(ctx.message.attachments) != 0:
+                for attachment in ctx.message.attachments:
+                    if attachment.content_type == "image/png":
+                        thingy_bytes = await attachment.read()
+                        break
+                thingy_bytes = thingy_bytes or await ctx.author.display_avatar.replace(format='png', size=128).read()
         else:
-            if isinstance(thing, discord.Member):
-                thingy_bytes = await thing.display_avatar.replace(format='png', size=128).read()
+            if isinstance(person, discord.Member):
+                thingy_bytes = await person.display_avatar.replace(format='png', size=128).read()
             else:
-                thingy_bytes = await thing.read()
+                thingy_bytes = await person.read()
 
-        async with ctx.channel.typing():
-            await ctx.reply(
-                file=discord.File(
+        if isinstance(ctx, SlashContext):
+            await ctx.response.defer()
+            file = discord.File(
+                await self.client.loop.run_in_executor(
+                    None, functools.partial(gif_effects.wiggle, img=thingy_bytes)
+                )
+            )
+            await ctx.followup.send(file=file)
+        else:
+            async with ctx.typing():
+                file = discord.File(
                     await self.client.loop.run_in_executor(
                         None, functools.partial(gif_effects.wiggle, img=thingy_bytes)
                     )
                 )
-            )
+                await ctx.send(file=file)
 
     @commands.command(help="Why...", aliases=['why'])
     @commands.bot_has_permissions(attach_files=True)

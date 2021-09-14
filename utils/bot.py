@@ -53,10 +53,12 @@ class EpicBot(commands.AutoShardedBot):
         )
         cluster = motor.AsyncIOMotorClient(MONGO_DB_URL if not beta else MONGO_DB_URL_BETA)
         self.session = aiohttp.ClientSession()
+
         self.cache_loaded = False
         self.cogs_loaded = False
         self.views_loaded = False
         self.rolemenus_loaded = False
+        self.app_commands_updated = False
 
         self.last_updated_serverconfig_db = 0
         self.last_updated_prefixes_db = 0

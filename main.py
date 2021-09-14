@@ -53,7 +53,9 @@ async def interaction_event(interaction):
 
 
 async def connect_event():
-    await update_app_commands(client)
+    if not client.app_commands_updated:
+        await update_app_commands(client)
+        client.app_commands_updated = True
 
 
 if __name__ == '__main__':
