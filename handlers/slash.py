@@ -158,7 +158,7 @@ class SlashCommand:
         final = []
         i = 0
         if len(defaults) > 0:
-            args_copy = list(raw_args)[-(len(defaults) - 1):]
+            args_copy = list(raw_args)[-(len(defaults)):]
         else:
             args_copy = []
         for arg, type_ in raw_args.items():
