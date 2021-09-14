@@ -33,7 +33,7 @@ music_ = DiscordUtils.Music()
 # dont ask
 
 
-class music(commands.Cog, description="Jam to some awesome tunes! 🎶"):
+class Music(commands.Cog, description="Jam to some awesome tunes! 🎶"):
     def __init__(self, client: EpicBot):
         self.client = client
         self.skip_votes = {}
@@ -415,4 +415,4 @@ class music(commands.Cog, description="Jam to some awesome tunes! 🎶"):
 
 
 def setup(client):
-    client.add_cog(music(client))
+    client.add_cog(Music(client))
