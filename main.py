@@ -22,7 +22,7 @@ from handlers.slash import slash_handler, update_app_commands
 
 basicConfig(level=INFO)
 
-client = EpicBot()
+client = EpicBot(beta=True)
 # If you have beta token and beta mongodb link setup
 # what you can is just pass the kwarg beta as true eg: "client = EpicBot(beta=True)"
 # and it'll use that token and mongo link

@@ -36,6 +36,7 @@ from utils.help import EpicBotHelp
 
 class EpicBot(commands.AutoShardedBot):
     def __init__(self, beta: bool = False):
+        self.slash_cmds: dict = {}
         self.beta = beta
         intents = discord.Intents.default()
         intents.members = True
@@ -48,7 +49,7 @@ class EpicBot(commands.AutoShardedBot):
             help_command=EpicBotHelp(),
             cached_messages=10000,
             activity=discord.Activity(type=discord.ActivityType.playing, name="e!help | epic-bot.com" if not beta else "nirlep is doing some weird shit rn"),
-            shard_count=2  # remove this if your bot is under 1000 servers
+            shard_count=2 if not self.beta else 1  # remove this if your bot is under 1000 servers
         )
         cluster = motor.AsyncIOMotorClient(MONGO_DB_URL if not beta else MONGO_DB_URL_BETA)
         self.session = aiohttp.ClientSession()
@@ -103,6 +104,8 @@ class EpicBot(commands.AutoShardedBot):
             print("Loaded jsk!")
             self.loaded, self.not_loaded = self.loop.run_until_complete(self.load_extensions('./cogs'))
             self.loaded_hidden, self.not_loaded_hidden = self.loop.run_until_complete(self.load_extensions('./cogs_hidden'))
+            if self.beta:
+                self.loop.run_until_complete(self.load_extensions('./cogs_testing'))
             self.cogs_loaded = True
 
     async def set_default_guild_config(self, guild_id):

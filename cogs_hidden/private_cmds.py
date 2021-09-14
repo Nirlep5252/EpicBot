@@ -86,12 +86,8 @@ class PrivateCmds(commands.Cog):
         time_embed.add_field(name="Time", value=f"{dt_nzt.strftime('%I : %M : %S %p')}", inline=False)
         time_embed.add_field(name="Date", value=f"{convert_int_to_weekday(dt_nzt.weekday())} | {dt_nzt.day} / {dt_nzt.month} / {dt_nzt.year}", inline=False)
 
-        if isinstance(ctx, commands.Context):
-            view = RamTimeView(ctx.author.id, time_embed, dt_nzt)
-            await ctx.reply(embed=time_embed, view=view)
-        else:
-            view = RamTimeView(ctx.user.id, time_embed, dt_nzt)
-            await ctx.response.send_message(embed=time_embed, view=view)
+        view = RamTimeView(ctx.author.id, time_embed, dt_nzt)
+        await ctx.reply(embed=time_embed, view=view)
 
     @slash_command(guild_ids=[746202728031584358], help="Very very secret command, don't tell Kitten btw! 👀")
     async def kitten(self, ctx: SlashContext):
