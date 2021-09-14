@@ -337,7 +337,8 @@ DEFAULT_AUTOMOD_CONFIG = {
     },
 
     "ignored_channels": [],
-    "allowed_roles": []
+    "allowed_roles": [],
+    "removed_words": []
 }
 
 DEFAULT_BANNED_WORDS = [
