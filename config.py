@@ -167,7 +167,8 @@ EMOJIS = {
     'arrow': '<:Arrow:869101378822373417> ',
     'reaction': '<:add_reaction:873891867610210304> ',
     'cmd_arrow': '<:join_arrow:876313929402417172> ',
-    'youtube': '<:YoutubeLogo:884650525117792316> '
+    'youtube': '<:YoutubeLogo:884650525117792316> ',
+    'cry_': '<a:cry_:887173073630015508> '
 }
 EMOJIS_FOR_COGS = {
     'actions': '<a:hugs:839739273083224104>',

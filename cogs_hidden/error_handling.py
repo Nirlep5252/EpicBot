@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from utils.exceptions import MusicGone
 import discord
 import traceback
 import json
@@ -207,7 +208,7 @@ class ErrorHandling(commands.Cog):
             ))
         elif isinstance(error, ComingSoon):
             await ctx.reply(embed=success_embed(
-                f"👀 Coming soon!",
+                "👀 Coming soon!",
                 f"""
 👋 Hey there, EpicBot from the future here.
 This feature is really really epik, but it's not finished yet!
@@ -216,6 +217,17 @@ The devs are working really hard on this!
 If you would like to see the progress consider joining our [**Support Server**]({SUPPORT_SERVER_LINK})
                 """
             ).set_footer(text="Also you look kinda cute today"))
+        elif isinstance(error, MusicGone):
+            await ctx.reply(embed=error_embed(
+                f"{EMOJIS['cry_']} Music unavailable! :(",
+                f"""
+The music system is currently unavailable.
+The devs are working hard on remaking it!
+It will be back soon!
+
+For more info you can join our [**support server**]({SUPPORT_SERVER_LINK})
+                """
+            ))
         elif isinstance(error, commands.CheckFailure):
             ctx.command.reset_cooldown(ctx)
             if not self.client.beta:

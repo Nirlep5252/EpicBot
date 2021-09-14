@@ -6,7 +6,7 @@ from utils.bot import EpicBot
 from config import MAIN_COLOR
 from utils.time import convert_int_to_weekday
 from utils.custom_checks import mutual_guild
-from typing import List, Optional, Union
+from handlers.slash import slash_command, SlashContext
 
 
 stream_schedule = {
@@ -21,20 +21,6 @@ stream_schedule = {
 live_text = "Ramaziz will be live today!"
 not_live_text = "Ramaziz will not be live today!"
 be_sure = "Be sure to check <#762550256918724640> in case of any stream cancellations!"
-
-
-SexContext = Union[commands.Context, discord.Interaction]
-
-
-slash_cmds = {}
-
-
-def slash_cmd(*, name: Optional[str] = None, guild_ids: List[int]):
-    def inner_deco(func):
-        cmd_name = name or func.__name__
-        slash_cmds.update({cmd_name: {'func': func, 'guild_ids': guild_ids}})
-        return func
-    return inner_deco
 
 
 class RamTimeView(discord.ui.View):
@@ -91,8 +77,8 @@ class PrivateCmds(commands.Cog):
         help="Ever wonder what time is it for Ramaziz?"
     )
     @mutual_guild(719157704467152977)
-    @slash_cmd(name='ramtime', guild_ids=[719157704467152977, 749996055369875456])
-    async def ram_time(self, ctx: SexContext):
+    @slash_command(name='ramtime', guild_ids=[719157704467152977, 749996055369875456], help="Check what time it is for Ramaziz!")
+    async def ram_time(self, ctx: SlashContext):
         dt_utc = datetime.datetime.now(tz=pytz.UTC)
         dt_nzt = dt_utc.astimezone(pytz.timezone("NZ"))
 
@@ -107,27 +93,9 @@ class PrivateCmds(commands.Cog):
             view = RamTimeView(ctx.user.id, time_embed, dt_nzt)
             await ctx.response.send_message(embed=time_embed, view=view)
 
-    @slash_cmd(guild_ids=[746202728031584358])
-    async def kitten(self, ctx: SexContext):
-        await ctx.response.send_message("Don't tell kitten 👀 but dogs are kinda cute uwu", ephemeral=True)
-
-    @commands.Cog.listener("on_interaction")
-    async def private_slash_cmds(self, interaction: discord.Interaction):
-        data = interaction.data
-        inter_type = data.get('type')
-        # checking if it's a slash cmd or not
-        # https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-types
-        if inter_type is None:
-            return
-        if int(inter_type) != 1:
-            return
-        # checking if the slash cmd is in the slash cmds dict
-        if data.get('name') not in slash_cmds:
-            return
-        slash_cmd = slash_cmds[data.get('name')]
-        if interaction.guild_id not in slash_cmd['guild_ids']:
-            return
-        await slash_cmd['func'](self, interaction)
+    @slash_command(guild_ids=[746202728031584358], help="Very very secret command, don't tell Kitten btw! 👀")
+    async def kitten(self, ctx: SlashContext):
+        await ctx.reply("Don't tell kitten 👀 but dogs are kinda cute uwu", ephemeral=True)
 
 
 def setup(client: EpicBot):
