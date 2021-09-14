@@ -28,6 +28,8 @@ from utils.flags import EnhanceCmdFlags
 from typing import Optional, Union
 from epicbot_images import memes, effects, gif_effects
 
+wiggle_concurrency = []
+
 
 class image(commands.Cog, description="Cool image commands!"):
     def __init__(self, client: EpicBot):
@@ -109,8 +111,13 @@ class image(commands.Cog, description="Cool image commands!"):
         options=[SlashCommandOption(name='person', type=6, description="Pick someone to wiggle!", required=True)]
     )
     async def wiggle(self, ctx: Union[commands.Context, SlashContext], *, person: Optional[Union[discord.Member, discord.PartialEmoji]] = None):
+        if ctx.guild.id in wiggle_concurrency:
+            text = f"{EMOJIS['tick_no']}Wiggling is already running in this guild!\nDue to this command being resource intensive, it can only be run one at a time per guild."
+            if isinstance(ctx, SlashContext):
+                return await ctx.reply(text, ephemeral=True)
+            else:
+                return await ctx.reply(text)
         thingy_bytes = None
-
         if not person:
             if not person and len(ctx.message.attachments) == 0:
                 thingy_bytes = await ctx.author.display_avatar.replace(format='png', size=128).read()
@@ -121,26 +128,17 @@ class image(commands.Cog, description="Cool image commands!"):
                         break
                 thingy_bytes = thingy_bytes or await ctx.author.display_avatar.replace(format='png', size=128).read()
         else:
-            if isinstance(person, discord.Member):
-                thingy_bytes = await person.display_avatar.replace(format='png', size=128).read()
-            else:
-                thingy_bytes = await person.read()
+            thingy_bytes = await person.display_avatar.replace(format='png', size=128).read() if isinstance(person, discord.Member) else await person.read()
 
         if isinstance(ctx, SlashContext):
             await ctx.response.defer()
-            file = discord.File(
-                await self.client.loop.run_in_executor(
-                    None, functools.partial(gif_effects.wiggle, img=thingy_bytes)
-                )
-            )
+            wiggle_concurrency.append(ctx.guild.id)
+            file = discord.File(await self.client.loop.run_in_executor(None, functools.partial(gif_effects.wiggle, img=thingy_bytes)))
+            wiggle_concurrency.remove(ctx.guild.id)
             await ctx.followup.send(file=file)
         else:
             async with ctx.typing():
-                file = discord.File(
-                    await self.client.loop.run_in_executor(
-                        None, functools.partial(gif_effects.wiggle, img=thingy_bytes)
-                    )
-                )
+                file = discord.File(await self.client.loop.run_in_executor(None, functools.partial(gif_effects.wiggle, img=thingy_bytes)))
                 await ctx.send(file=file)
 
     @commands.command(help="Why...", aliases=['why'])
