@@ -14,17 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from utils.exceptions import MusicGone
 import discord
 import traceback
 import json
 
 from discord.ext import commands
-from utils.embed import (
-    replace_things_in_string_fancy_lemao,
-    process_embeds_from_json,
-    error_embed, success_embed
-)
+from humanfriendly import format_timespan
 from config import (
     OWNERS, EMOJIS, MAIN_COLOR, SUPPORT_SERVER_LINK,
     VOTE_LINK, RED_COLOR
@@ -32,8 +27,13 @@ from config import (
 from utils.random import gen_random_string
 from utils.custom_checks import NotVoted, NotBotMod, OptedOut, PrivateCommand, ComingSoon
 from utils.converters import ImportantCategory, InvalidTimeZone, InvalidCategory
-from humanfriendly import format_timespan
+from utils.exceptions import MusicGone, InvalidUrl
 from utils.bot import EpicBot
+from utils.embed import (
+    replace_things_in_string_fancy_lemao,
+    process_embeds_from_json,
+    error_embed, success_embed
+)
 
 
 class ErrorHandling(commands.Cog):
@@ -227,6 +227,11 @@ It will be back soon!
 
 For more info you can join our [**support server**]({SUPPORT_SERVER_LINK})
                 """
+            ))
+        elif isinstance(error, InvalidUrl):
+            await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Invalid URL!",
+                f"The URL `{error.url}` is not a valid URL!"
             ))
         elif isinstance(error, commands.CheckFailure):
             ctx.command.reset_cooldown(ctx)

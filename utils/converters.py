@@ -15,7 +15,9 @@ limitations under the License.
 """
 
 from discord.ext.commands import Converter, Context, BadArgument
+from utils.exceptions import InvalidUrl
 import pytz
+import validators
 
 
 class InvalidAddRemoveArgument(BadArgument):
@@ -70,3 +72,11 @@ class Category(Converter):
             return ctx.bot.get_cog(argument.lower())
         else:
             raise InvalidCategory(argument)
+
+
+class Url(Converter):
+    async def convert(self, ctx: Context, argument: str):
+        if validators.url(argument):
+            return argument
+        else:
+            raise InvalidUrl(argument)
