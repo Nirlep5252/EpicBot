@@ -28,7 +28,7 @@
   <li>📌 Over 200+ commands!</li>
   <li>🔼 99%+ uptime.</li>
   <li>🟢 Low latency, super fast response time.</li>
-  <li>💻 Web dashboard!</li>
+  <li>💻 Web dashboard! (work in progress)</li>
   <li>🛠️ Custom Commands.</li>
   <li>✨ Level up system, with leveling roles.</li>
   <li>🏷️ Reaction Roles!</li>
