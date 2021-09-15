@@ -24,7 +24,7 @@ basicConfig(level=INFO)
 
 client = EpicBot()
 # If you have beta token and beta mongodb link setup
-# what you can is just pass the kwarg beta as true eg: "client = EpicBot(beta=True)"
+# what you can do is just pass the kwarg beta as true eg: "client = EpicBot(beta=True)"
 # and it'll use that token and mongo link
 # so when testing locally it wont use the main bots token
 # :)

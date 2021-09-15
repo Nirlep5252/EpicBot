@@ -16,8 +16,8 @@ limitations under the License.
 
 import time
 import os
-from dotenv import load_dotenv
-load_dotenv()
+# from dotenv import load_dotenv
+# load_dotenv()
 
 # LOL TOKEN GO BRR
 BOT_TOKEN = os.environ.get("TOKEN")  # your discord bot token
@@ -188,7 +188,8 @@ EMOJIS_FOR_COGS = {
     'starboard': '⭐',
     'utility': '🔧',
     'user': '<:EpicMembers:794075799422238720>',
-    'notifications': '<:notif:883324701181620304>'
+    'notifications': '🔔',
+    'custom': EMOJIS['settings_color'][:-1],
 }
 CUTE_EMOJIS = [
     "<:shy:844039614032904222>",

@@ -102,6 +102,36 @@ class image(commands.Cog, description="Cool image commands!"):
         async with ctx.channel.typing():
             await ctx.reply(file=discord.File(await self.client.loop.run_in_executor(None, functools.partial(effects.enhance, avatar_bytes, **amogus))))
 
+    @slash_command(name="enhance", help="Enhance or deepfry someone 😏")
+    async def _enhance(
+        self, ctx: SlashContext, member: discord.Member = None,
+        contrast: int = 15, color: int = 15, brightness: int = 15, sharpness: int = 15
+    ):
+        member = member or ctx.author
+        avatar = await member.display_avatar.replace(format='png', size=512).read()
+        limit = 30
+        conditions = [
+            contrast > limit,
+            color > limit,
+            brightness > limit,
+            sharpness > limit,
+            -1 * limit > contrast,
+            -1 * limit > color,
+            -1 * limit > brightness,
+            -1 * limit > sharpness,
+        ]
+        if any(conditions):
+            return await ctx.reply(f"{EMOJIS['tick_no']}The max limit for enhancements is `{limit}`", ephemeral=True)
+        await ctx.response.defer()
+        amogus = {
+            "contrast": contrast,
+            "color": color,
+            "brightness": brightness,
+            "sharpness": sharpness
+        }
+        path = await self.client.loop.run_in_executor(None, functools.partial(effects.enhance, avatar, **amogus))
+        await ctx.followup.send(file=discord.File(path))
+
     @commands.command(help="Wiggle your friends...")
     @commands.cooldown(1, 60, commands.BucketType.user)
     @commands.max_concurrency(1, commands.BucketType.guild)
