@@ -53,6 +53,55 @@ class automod(commands.Cog):
     def __init__(self, client: EpicBot):
         self.client = client
 
+    @commands.group(name='automod', aliases=['am'], help = "Configure automod for your server!")
+    @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(administrator=True)
+    @commands.cooldown(3, 10, commands.BucketType.user)
+    async def _automod(self, ctx: commands.Context):
+        if ctx.invoked_subcommand is None:
+            return await ctx.send_help(ctx.command)
+        
+    @_automod.command(name='show', help = 'Get the current automod configuration.')
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def _show(self, ctx: commands.Context):
+        g = await self.client.get_guild_config(ctx.guild.id)
+        prefix = ctx.clean_prefix
+        am = g['automod']
+        tick_yes = EMOJIS['tick_yes']
+        tick_no = EMOJIS['tick_no']
+
+        available_modules = []
+        am_modules_text = ""
+        cancer = ['ignored_channels', 'allowed_roles']
+
+        embed1 = success_embed(
+            "Automod Filters Configuration",
+            "**Here are all the automod filters status:**"
+        )
+        embed2 = success_embed(
+            "Automod Whitelist Configuration",
+            "**Here are all the automod whitelist configuration:**"
+        )
+
+        for e in am:
+            if e not in cancer:
+                embed1.add_field(
+                    name = f"**{e.replace('_', ' ').title()}**",
+                    value = tick_yes+ ' Enabled' if am[e]['enabled'] else tick_no+ ' Disabled'
+                )
+        
+        good_roles_msg = ""
+        good_channels_msg = ""
+
+        for r in am['allowed_roles']:
+            good_roles_msg += f"<@&{r}> "
+        for c in am['ignored_channels']:
+            good_channels_msg += f"<#{c}> "
+
+        embed2.add_field(name = "Whitelisted Roles:", value=good_roles_msg or 'None', inline=False)
+        embed2.add_field(name="Whitelisted Channels:", value=good_channels_msg or 'None', inline=False)
+        await ctx.reply(embed=embed1, view=AutomodConfigView(ctx=ctx, embeds=[embed1, embed2]))
+
     @commands.command(help="Configure automod for your server!", aliases=['am'])
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(administrator=True)
