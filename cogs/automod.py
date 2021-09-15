@@ -22,6 +22,7 @@ from utils.bot import EpicBot
 from config import BADGE_EMOJIS, EMOJIS, DEFAULT_AUTOMOD_CONFIG, DEFAULT_BANNED_WORDS
 from utils.embed import success_embed, error_embed
 from utils.converters import Lower
+from utils.ui import Paginator
 
 
 async def show_automod_config(client: EpicBot, ctx: commands.Context):
@@ -145,6 +146,49 @@ async def am_add_badword(client: EpicBot, ctx: commands.Context, word: Lower = N
             f"The `{word}` word has been added into the bad word list!"
         ))
 
+async def am_remove_badword(client: EpicBot, ctx: commands.Context, word: Lower = None):
+    g = await client.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    enabled = True if am['banned_words']['enabled'] else False
+
+    if not enabled:
+        return await ctx.reply(embed=error_embed(
+            f"{EMOJIS['tick_no']} Not Enabled!",
+            f"Please enable the automod `badword` module before using this command!\nEnable it by using `{ctx.clean_prefix}automod badword enable`"
+        ))
+    
+    if word is None:
+        return await ctx.reply(embed=error_embed(
+            f"{EMOJIS['tick_no']} No Word!",
+            "Please provide a word for me to add!"
+        ))
+    
+    if word in DEFAULT_BANNED_WORDS:
+        if word not in am['banned_words']['removed_words']:
+            am['banned_words']['removed_words'].add(word)
+            return await ctx.reply(embed=success_embed(
+                f"{EMOJIS['tick_yes']} Bad Word Removed!",
+                f"The `{word}` word has been removed from the bad word list!"
+            ))
+        else:
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Bad Word Not Exist!",
+                f"The `{word}` word is not in the bad word list!!"
+            ))
+
+        
+    if word not in am['banned_words']['words']:
+        return await ctx.reply(embed=error_embed(
+            f"{EMOJIS['tick_no']} Bad Word Not Found!",
+            f"The `{word}` word is not a bad word!"
+        ))
+    else:
+        am['banned_words']['words'].remove(word)
+        return await ctx.reply(embed=success_embed(
+            f"{EMOJIS['tick_yes']} Bad Word Removed!",
+            f"The `{word}` word has been removed from the bad word list!"
+        ))
+
 class AutomodConfigView(discord.ui.View):
     def __init__(self, ctx: commands.Context, embeds: list):
         super().__init__(timeout=None)
@@ -199,6 +243,12 @@ class automod(commands.Cog):
     @commands.cooldown(2, 20, commands.BucketType.user)
     async def am_badword_add(self, ctx: commands.Context, *,word: Lower = None):
         await am_add_badword(self.client, ctx, word)
+
+    @automod_badword.command(name='remove', help = "Remove a bad word from the list!")
+    @commands.has_permissions(administrator=True)
+    @commands.cooldown(2, 20, commands.BucketType.user)
+    async def am_badword_remove(self, ctx: commands.Context, *,word: Lower = None):
+        await am_remove_badword(self.client, ctx, word)
 
 
     @commands.command(help="Configure automod for your server!", aliases=['am'])
