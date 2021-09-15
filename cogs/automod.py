@@ -226,6 +226,92 @@ async def view_badword_list(client: EpicBot, ctx: commands.Context):
     view = Paginator(ctx, all_embeds)
     await ctx.author.send(embed=all_embeds[0], view=view)
 
+async def am_whitelist_func(client: EpicBot, ctx: commands.Context, choice: Lower = None, setting: t.Optional[t.Union[discord.Role, discord.TextChannel]] = None):
+    prefix = ctx.clean_prefix
+    g = await client.get_guild_config(ctx.guild.id)
+    am = g['automod']
+
+    good_role = ""
+    good_channels = ""
+    for r_id in am['allowed_roles']:
+        good_role += f"<@&{r_id}> "
+    for c_id in am['ignored_channels']:
+        good_channels += f"<#{c_id}> "
+    
+    info_embed = success_embed(
+        "Whitelist Configuration",
+        f"""
+**Whitelisted Roles:** {good_role}
+**Ignored Channels:** {good_channels}
+
+**Here are all the commands you can use to configure whitelisted channels/roles:**
+
+-`{prefix}automod whitelist add @role/#channel` - To add a role/channel to whitelist!
+-`{prefix}automod whitelist remove @role/#channel` - To remove a role/channel from whitelist!
+        """
+    )
+    if not choice or choice not in ['add', 'remove']:
+        return await ctx.reply(embed=info_embed)
+    if choice == 'add':
+        if not setting:
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} No Role/Channel!",
+                f"Please provide a role/channel for me to whitelist!\nUsage: `{prefix}automod whitelist add @role/#channel`"
+            ))
+        if isinstance(setting, discord.TextChannel):
+            if setting.id in am['ignored_channels']:
+                return await ctx.reply(embed=error_embed(
+                    f"{EMOJIS['tick_no']} Already There!",
+                    "The channel you provided is already whitelisted!"
+                ))
+            am['ignored_channels'].append(setting.id)
+            return await ctx.reply(embed=success_embed(
+                f"{EMOJIS['tick_yes']} Channel Added!",
+                f"Users in channel {setting.mention} will no longer trigger automod."
+            ))
+        else:
+            if setting.id in am['allowed_roles']:
+                return await ctx.reply(embed=error_embed(
+                    f"{EMOJIS['tick_no']} Already There!",
+                    "The role you provided is already whitelisted!"
+                ))
+            am['allowed_roles'].append(setting.id)
+            return await ctx.reply(embed=success_embed(
+                f"{EMOJIS['tick_yes']} Role Added!",
+                f"Users with role {setting.mention} will no longer trigger automod."
+            ))
+    if choice == 'remove':
+        if not setting:
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} No Role/Channel!",
+                f"Please provide a role/channel for me to unwhitelist!\nUsage: `{prefix}automod whitelist remove @role/#channel`"
+            ))
+        if isinstance(setting, discord.TextChannel):
+            if setting.id not in am['ignored_channels']:
+                return await ctx.reply(embed=error_embed(
+                    f"{EMOJIS['tick_no']} Not There!",
+                    "The channel you provided is not whitelisted!"
+                ))
+            am['ignored_channels'].remove(setting.id)
+            return await ctx.reply(embed=success_embed(
+                f"{EMOJIS['tick_yes']} Channel Removed!",
+                f"Users in channel {setting.mention} will trigger automod."
+            ))
+        else:
+            if setting.id not in am['allowed_roles']:
+                return await ctx.reply(embed=error_embed(
+                    f"{EMOJIS['tick_no']} Not There!",
+                    "The role you provided is not whitelisted!"
+                ))
+            am['allowed_roles'].append(setting.id)
+            return await ctx.reply(embed=success_embed(
+                f"{EMOJIS['tick_yes']} Role Removed!",
+                f"Users with role {setting.mention} will trigger automod."
+            ))
+    else:
+        return await ctx.reply(embed=info_embed)
+
+
 class AutomodConfigView(discord.ui.View):
     def __init__(self, ctx: commands.Context, embeds: list):
         super().__init__(timeout=None)
@@ -294,11 +380,11 @@ class automod(commands.Cog):
         await view_badword_list(self.client, ctx)
 
     
-    @_automod.command(name='roles', aliases=['role'], help = "Add/Remove a role from whitelist")
+    @_automod.command(name='whitelist', help = "Whitelist roles/channels!")
     @commands.has_permissions(administrator=True)
     @commands.cooldown(2, 20, commands.BucketType.user)
-    async def am_role_whitelist(self, ctx: commands.Context, choice: Lower = None):
-        pass #best thing existed in python
+    async def am_whitelist_stuff(self, ctx: commands.Context, choice: Lower = None, setting: t.Optional[t.Union[discord.TextChannel, discord.Role]] = None):
+        await am_whitelist_func(self.client, ctx, choice, setting)
 
 
     @commands.command(help="Configure automod for your server!", aliases=['am'])
