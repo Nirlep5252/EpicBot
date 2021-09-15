@@ -21,6 +21,27 @@ from discord.ext import commands
 from discord import SelectOption
 
 
+class SelectWithMultipleOptions(discord.ui.Select):
+    def __init__(self, placeholder: str, options: List[str]):
+        super().__init__(
+            placeholder=placeholder,
+            min_values=1,
+            max_values=len(options),
+            options=[SelectOption(label=option.replace("_", " ").title(), value=option) for option in options],
+        )
+
+
+class BasicView(discord.ui.View):
+    def __init__(self, ctx: commands.Context, timeout: Optional[int] = None):
+        super().__init__(timeout=timeout)
+        self.ctx = ctx
+
+    async def interaction_check(self, interaction: discord.Interaction):
+        if interaction.user.id != self.ctx.author.id:
+            return await interaction.response.send_message(f"This is {self.ctx.author.mention}'s command, not yours.", ephemeral=True)
+        return True
+
+
 class Confirm(discord.ui.View):
     def __init__(self, context: commands.Context, timeout: Optional[int] = 300, user: Optional[Union[discord.Member, discord.User]] = None):
         super().__init__(timeout=timeout)

@@ -15,7 +15,8 @@ limitations under the License.
 """
 
 from discord.ext.commands import Converter, Context, BadArgument
-from utils.exceptions import InvalidUrl
+from utils.exceptions import InvalidAutomodModule, InvalidUrl
+from config import DEFAULT_AUTOMOD_CONFIG
 import pytz
 import validators
 
@@ -80,3 +81,11 @@ class Url(Converter):
             return argument
         else:
             raise InvalidUrl(argument)
+
+
+class AutomodModule(Converter):
+    async def convert(self, ctx: Context, argument: str):
+        if argument.lower() in DEFAULT_AUTOMOD_CONFIG:
+            return argument.lower()
+        else:
+            raise InvalidAutomodModule(argument)

@@ -8,3 +8,8 @@ class MusicGone(commands.CheckFailure):
 class InvalidUrl(commands.BadArgument):
     def __init__(self, argument: str):
         self.argument = argument
+
+
+class InvalidAutomodModule(commands.BadArgument):
+    def __init__(self, module: str):
+        self.module = module

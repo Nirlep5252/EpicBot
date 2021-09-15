@@ -19,10 +19,10 @@ import typing as t
 
 from discord.ext import commands
 from utils.bot import EpicBot
-from config import BADGE_EMOJIS, EMOJIS, DEFAULT_AUTOMOD_CONFIG, DEFAULT_BANNED_WORDS
+from config import EMOJIS, DEFAULT_AUTOMOD_CONFIG, DEFAULT_BANNED_WORDS
 from utils.embed import success_embed, error_embed
-from utils.converters import Lower, Url
-from utils.ui import Paginator
+from utils.converters import AutomodModule, Lower, Url
+from utils.ui import BasicView, Paginator, SelectWithMultipleOptions
 
 
 async def show_automod_config(client: EpicBot, ctx: commands.Context):
@@ -474,8 +474,55 @@ async def view_whitelisted_links_list(client: EpicBot, ctx: commands.Context):
         return await ctx.reply("Please have your DMs open before using this command!")
 
 
-async def am_enable_a_module(self, ctx: commands.Context, module: Lower = None):
-    pass
+async def am_enable_a_module(ctx: commands.Context, module: str = None):
+    g = await ctx.bot.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    m_conf = am[module]
+    m_conf['enabled'] = True
+    am.update({module: m_conf})
+
+
+async def am_enable_module_dropdown(ctx: commands.Context):
+    g = await ctx.bot.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    view = BasicView(ctx, None)
+    select = SelectWithMultipleOptions("Please select an automod module.", [module for module in DEFAULT_AUTOMOD_CONFIG])
+    button = discord.ui.Button(style=discord.ButtonStyle.blurple, label="Continue")
+    cancel_btn = discord.ui.Button(style=discord.ButtonStyle.danger, label="Cancel")
+
+    async def button_callback(interaction: discord.Interaction):
+        if not select.values:
+            return await interaction.response.send_message("Please select some automod modules first.", ephemeral=True)
+        for value in select.values:
+            current_module = am[value]
+            current_module['enabled'] = True
+            am.update({value: current_module})
+        return await interaction.message.edit(embed=success_embed(
+            f"{EMOJIS['tick_yes']} Modules enabled!",
+            f"The following automod modules have been enabled: {', '.join([f'`{v_}`' for v_ in select.values])}"
+        ), view=None)
+
+    async def cancel_callback(interaction):
+        await interaction.message.delete()
+
+    button.callback = button_callback
+    cancel_btn.callback = cancel_callback
+
+    view.add_item(select)
+    view.add_item(button)
+    view.add_item(cancel_btn)
+    await ctx.reply(embed=success_embed(
+        f"{EMOJIS['loading']} Enabling automod modules...",
+        "Please select a few modules to enable and then click `Continue`"
+    ), view=view)
+
+
+async def am_disable_a_module(ctx: commands.Context, module: str):
+    g = await ctx.bot.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    m_conf = am[module]
+    m_conf['enabled'] = False
+    am.update({module: m_conf})
 
 
 class AutomodConfigView(discord.ui.View):
@@ -484,7 +531,7 @@ class AutomodConfigView(discord.ui.View):
         self.ctx = ctx
         self.embeds = embeds
 
-    @discord.ui.button(label="Filters Config", style=discord.ButtonStyle.blurple)
+    @discord.ui.button(label="Filters Config", style=discord.ButtonStyle.blurple, disabled=True)
     async def filter_show(self, b: discord.Button, i: discord.Interaction):
         for item in self.children:
             item.disabled = False
@@ -578,184 +625,31 @@ class automod(commands.Cog):
     @_automod.command(name='enable', help="Enable a module for your automod!")
     @commands.has_permissions(administrator=True)
     @commands.cooldown(2, 20, commands.BucketType.user)
-    async def automod_enable_module(self, ctx: commands.Context, module: Lower = None):
-        pass
+    async def automod_enable_module(self, ctx: commands.Context, module: t.Optional[AutomodModule] = None):
+        if module is not None:
+            await am_enable_a_module(ctx, module)
+            return await ctx.reply(embed=success_embed(
+                f"{EMOJIS['tick_yes']} Enabled!",
+                f"The automod module `{module}` has been enabled!"
+            ))
+        else:
+            await am_enable_module_dropdown(ctx)
 
-#     @commands.command(help="Configure automod for your server!", aliases=['am'])
-#     @commands.has_permissions(administrator=True)
-#     @commands.bot_has_permissions(administrator=True)
-#     @commands.cooldown(3, 10, commands.BucketType.user)
-#     async def automod(self, ctx, module=None, setting=None, other: t.Union[discord.Role, discord.TextChannel, str] = None):
-
-#         g = await self.client.get_guild_config(ctx.guild.id)
-#         prefix = ctx.clean_prefix
-#         am = g['automod']
-#         tick_yes = EMOJIS['tick_yes']
-#         tick_no = EMOJIS['tick_no']
-
-#         available_modules = []
-#         am_modules_text = ""
-#         cancer = ['ignored_channels', 'allowed_roles']
-
-#         for e in DEFAULT_AUTOMOD_CONFIG:
-#             if e not in cancer:
-#                 available_modules.append(e)
-#         for e in available_modules:
-#             am_modules_text += f"{e}, "
-
-#         am_modules_text = am_modules_text[:-2]
-
-#         am_settings = ""
-
-#         for e in am:
-#             if e not in cancer:
-#                 am_settings += f"**{e.replace('_', ' ').title()}:** {tick_yes+'  Enabled' if am[e]['enabled'] else tick_no+'  Disabled'}\n"
-
-#         good_roles = ""
-#         good_channels = ""
-
-#         for r in am['allowed_roles']:
-#             good_roles += f"<@&{r}> "
-#         for c in am['ignored_channels']:
-#             good_channels += f"<#{c}> "
-
-#         embed = success_embed(
-#             f"{BADGE_EMOJIS['bot_mod']}  Automod Configuration",
-#             f"""
-# **Here are you automod settings:**\n\n{am_settings}
-# **Here are the available modules:**```{am_modules_text}```
-# **Allowed Roles:** {good_roles if good_roles != "" else "None"}
-# **Ignored Channels:** {good_channels if good_channels != "" else "None"}
-
-# **In order to configure a module you can use:**
-
-# - `{prefix}automod <module> enable/disable` - Enable or disable a specific module.
-# - `{prefix}automod all enable/disable` - Enable or disable all modules.
-
-# - `{prefix}automod roles add/remove <role>` - To add/remove a role from whitelist.
-# - `{prefix}automod channel add/remove <channel>` - To add/remove a channel from whitelist.
-# - `{prefix}automod links add/remove <link>` - To add/remove links from whitelist.
-# - `{prefix}automod badwords add/remove <word>` - To add/remove bad words.
-# - `{prefix}automod badwords show` - To get a list of all badwords.
-#             """
-#         )
-
-#         reeeee = ["all", 'roles', 'channel', 'links', 'badwords']
-
-#         if module is None:
-#             return await ctx.reply(embed=embed)
-#         if module.lower() not in available_modules and module.lower() not in reeeee:
-#             return await ctx.reply(embed=error_embed(
-#                 f"{EMOJIS['tick_no']} Unknown Module!",
-#                 f"Here are the available modules:```{am_modules_text}```\nPlease enter a valid module."
-#             ))
-
-#         if module.lower() == 'roles':
-#             em = success_embed(
-#                 f"{BADGE_EMOJIS['bot_mod']}  Automod allowed roles",
-#                 f"The current allowed roles are:\n{good_roles if good_roles != '' else 'None'}\n\nUse `{prefix}automod roles add/remove <role>`"
-#             )
-#             if setting is None or setting.lower() not in ['add', 'remove'] or other is None:
-#                 return await ctx.reply(embed=em)
-#             if not isinstance(other, discord.Role):
-#                 return await ctx.reply(embed=error_embed(
-#                     f"{EMOJIS['tick_no']} Not found!",
-#                     "I wasn't able to find that role, please try again!"
-#                 ))
-#             if other.id in am['allowed_roles'] and setting.lower() == 'add':
-#                 return await ctx.reply(embed=error_embed(
-#                     f"{EMOJIS['tick_no']} Already there!",
-#                     "This role is already a allowed role!"
-#                 ))
-#             if other.id not in am['allowed_roles'] and setting.lower() == 'remove':
-#                 return await ctx.reply(embed=error_embed(
-#                     f"{EMOJIS['tick_no']} Not there!",
-#                     "This role is not a allowed role!"
-#                 ))
-#             if setting.lower() == 'add':
-#                 old_roles_list = am['allowed_roles']
-#                 old_roles_list.append(other.id)
-#                 am.update({"allowed_roles": old_roles_list})
-#                 return await ctx.reply(embed=success_embed(
-#                     f"{EMOJIS['tick_yes']} Role added!",
-#                     f"Users with role {other.mention} will no longer trigger automod."
-#                 ))
-#             if setting.lower() == 'remove':
-#                 old_roles_list = am['allowed_roles']
-#                 old_roles_list.remove(other.id)
-#                 am.update({"allowed_roles": old_roles_list})
-#                 return await ctx.reply(embed=success_embed(
-#                     f"{EMOJIS['tick_yes']} Role removed!",
-#                     f"Users with role {other.mention} will now trigger automod."
-#                 ))
-#         if module.lower() == 'channel':
-#             em = success_embed(
-#                 f"{BADGE_EMOJIS['bot_mod']}  Automod ignored channels",
-#                 f"The current ignored channels are:\n{good_channels if good_channels != '' else 'None'}\n\nUse `{prefix}automod channel add/remove <channel>`"
-#             )
-#             if setting is None or setting.lower() not in ['add', 'remove'] or other is None:
-#                 return await ctx.reply(embed=em)
-#             if not isinstance(other, discord.TextChannel):
-#                 return await ctx.reply(embed=error_embed(
-#                     f"{EMOJIS['tick_no']} Not found!",
-#                     "I wasn't able to find that channel, please try again!"
-#                 ))
-#             if other.id in am['ignored_channels'] and setting.lower() == 'add':
-#                 return await ctx.reply(embed=error_embed(
-#                     f"{EMOJIS['tick_no']} Already there!",
-#                     "This channel is already a ignored channel!"
-#                 ))
-#             if other.id not in am['ignored_channels'] and setting.lower() == 'remove':
-#                 return await ctx.reply(embed=error_embed(
-#                     f"{EMOJIS['tick_no']} Not there!",
-#                     "This role is not a ignored channel!"
-#                 ))
-#             if setting.lower() == 'add':
-#                 old_roles_list = am['ignored_channels']
-#                 old_roles_list.append(other.id)
-#                 am.update({"ignored_channels": old_roles_list})
-#                 return await ctx.reply(embed=success_embed(
-#                     f"{EMOJIS['tick_yes']} Channel added!",
-#                     f"Users in channel {other.mention} will no longer trigger automod."
-#                 ))
-#             if setting.lower() == 'remove':
-#                 old_roles_list = am['ignored_channels']
-#                 old_roles_list.remove(other.id)
-#                 am.update({"ignored_channels": old_roles_list})
-#                 return await ctx.reply(embed=success_embed(
-#                     f"{EMOJIS['tick_yes']} Role removed!",
-#                     f"Users in channel {other.mention} will now trigger automod."
-#                 ))
-#         if module.lower() == 'links':
-#             return await ctx.reply("This is work in progress!")
-#         if module.lower() == 'badwords':
-#             return await ctx.reply("This is work in progress!")
-#         if setting is None:
-#             return await ctx.reply(embed=error_embed(
-#                 f"{EMOJIS['tick_no']} Incorrect Usage!",
-#                 f"Correct Usage: `{prefix}automod {module.lower()} enable/disable`"
-#             ))
-#         if setting.lower() not in ['enable', 'disable']:
-#             return await ctx.reply(embed=error_embed(
-#                 f"{EMOJIS['tick_no']} Incorrect Usage!",
-#                 f"Correct Usage: `{prefix}automod {module.lower()} enable/disable`"
-#             ))
-#         if module.lower() != "all":
-#             module_dict = am[module.lower()]
-#             module_dict.update({"enabled": True if setting.lower() == 'enable' else False})
-#             am.update({module.lower(): module_dict})
-#             return await ctx.reply(embed=success_embed(
-#                 f"{EMOJIS['tick_yes']} Module {'Enabled' if setting.lower() == 'enable' else 'Disabled'}",
-#                 f"The automod module `{module.lower()}` has been **{tick_yes+'  Enabled' if setting.lower() == 'enable' else tick_no+'  Disabled'}**"
-#             ))
-#         for module in available_modules:
-#             module_dict = am[module.lower()]
-#             module_dict.update({"enabled": True if setting.lower() == 'enable' else False})
-#             am.update({module.lower(): module_dict})
-#         return await ctx.reply(embed=success_embed(
-#             f"{EMOJIS['tick_yes']} All modules {'Enabled' if setting.lower() == 'enable' else 'Disabled'}",
-#             f"All automod modules have been **{tick_yes+'  Enabled' if setting.lower() == 'enable' else tick_no+'  Disabled'}**"
-#         ))
+    @_automod.command(name='disable', help="Disable a module for your automod!")
+    @commands.has_permissions(administrator=True)
+    @commands.cooldown(2, 20, commands.BucketType.user)
+    async def automod_disable_module(self, ctx: commands.Context, module: t.Optional[AutomodModule] = None):
+        if not module:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Invalid Usage!",
+                f"Please specify a module to disable!\nCorrect Usage: `{ctx.clean_prefix}automod disable <module>`",
+            ))
+        await am_disable_a_module(ctx, module)
+        await ctx.reply(embed=success_embed(
+            f"{EMOJIS['tick_yes']} Module Disabled!",
+            f"Module: `{module.name}` has now been disable.",
+        ))
 
 
 def setup(client: EpicBot):
