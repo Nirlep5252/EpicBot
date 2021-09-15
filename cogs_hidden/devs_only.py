@@ -32,6 +32,15 @@ class Devsonly(commands.Cog):
         self.client = client
 
     @commands.is_owner()
+    @commands.command(help="Change the bot's status")
+    async def changestatus(self, ctx: commands.Context, *, status: str):
+        await self.client.change_presence(
+            activity=discord.Game(name=status),
+            status=discord.Status.online
+        )
+        await ctx.message.add_reaction('👌')
+
+    @commands.is_owner()
     @commands.command(help="Load jsk!")
     async def loadjsk(self, ctx):
         msg = await ctx.reply(f"{EMOJIS['loading']} Working on it...")
