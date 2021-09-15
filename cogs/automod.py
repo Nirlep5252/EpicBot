@@ -75,6 +75,7 @@ Automod bad words is currently **{EMOJIS['tick_yes']+ ' Enabled' if enabled else
 
 **You can use these commands to add/remove bad words:**
 
+-`{prefix}automod badword enable/disable` - To enable/disable automod bad word module!
 -`{prefix}automod badword add/remove <word>` - To add/remove bad words.
 -`{prefix}automod badword list` - To see a list of bad words.
         """
@@ -336,6 +337,7 @@ Automod links is currently **{EMOJIS['tick_yes']+ ' Enabled' if enabled else EMO
 
 **You can use these commands to add/remove links:**
 
+-`{prefix}automod links enable/disable` - To enable/disable automod links module!
 -`{prefix}automod links add/remove <link>` - To add/remove links.
 -`{prefix}automod links list` - To see a list of whitelisted links.
         """
