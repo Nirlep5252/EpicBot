@@ -18,6 +18,33 @@ import discord
 from discord.ext import commands
 from utils.bot import EpicBot
 
+class AutomodConfigView(discord.ui.View):
+    def __init__(self, ctx: commands.Context, embeds: list):
+        super().__init__(timeout=None)
+        self.ctx = ctx
+        self.embeds = embeds
+
+
+    @discord.ui.button(label = "Filters Config", style=discord.ButtonStyle.blurple)
+    async def filter_show(self, b: discord.Button, i: discord.Interaction):
+        for item in self.children:
+            item.disabled = False
+        b.disabled = True
+        await i.message.edit(embed=self.embeds[0], view=self)
+
+    @discord.ui.button(label="Whitelist Config", style=discord.ButtonStyle.green)
+    async def whitelist_show(self, b: discord.Button, i: discord.Interaction):
+        for item in self.children:
+            item.disabled = False
+        b.disabled = True
+        await i.message.edit(embed=self.embeds[1], view=self)
+
+    async def interaction_check(self, i: discord.Interaction):
+        if i.user != self.ctx.author:
+            return await i.response.send_message("You cannot interaction in other's command!", ephemeral=True)
+        return True
+
+
 
 class automod(commands.Cog):
     def __init__(self, client: EpicBot):
