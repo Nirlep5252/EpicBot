@@ -125,7 +125,7 @@ async def am_add_badword(client: EpicBot, ctx: commands.Context, word: Lower = N
         ))
 
     if word in DEFAULT_BANNED_WORDS:
-        if word in am['banned_words']['removed_words']:
+        if word in am['banned_words'].get('removed_words', []):
             am['banned_words']['removed_words'].remove(word)
             return await ctx.reply(embed=success_embed(
                 f"{EMOJIS['tick_yes']} Bad Word Added!",
@@ -168,6 +168,8 @@ async def am_remove_badword(client: EpicBot, ctx: commands.Context, word: Lower 
         ))
 
     if word in DEFAULT_BANNED_WORDS:
+        if 'removed_words' not in am['banned_words']:
+            am['banned_words'].update({"removed_words": []})
         if word not in am['banned_words']['removed_words']:
             am['banned_words']['removed_words'].add(word)
             return await ctx.reply(embed=success_embed(
@@ -208,7 +210,7 @@ async def view_badword_list(client: EpicBot, ctx: commands.Context):
     all_embeds = []
 
     for wrd in DEFAULT_BANNED_WORDS:
-        if wrd.lower() not in am['banned_words']['removed_words']:
+        if wrd.lower() not in am['banned_words'].get('removed_words', []):
             banned_list.append(wrd.lower())
 
     for word in am['banned_words']['words']:
@@ -648,7 +650,7 @@ class automod(commands.Cog):
         await am_disable_a_module(ctx, module)
         await ctx.reply(embed=success_embed(
             f"{EMOJIS['tick_yes']} Module Disabled!",
-            f"Module: `{module.name}` has now been disable.",
+            f"Module: `{module}` has now been disabled.",
         ))
 
 
