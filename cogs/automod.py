@@ -66,13 +66,10 @@ class automod(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _show(self, ctx: commands.Context):
         g = await self.client.get_guild_config(ctx.guild.id)
-        prefix = ctx.clean_prefix
         am = g['automod']
         tick_yes = EMOJIS['tick_yes']
         tick_no = EMOJIS['tick_no']
 
-        available_modules = []
-        am_modules_text = ""
         cancer = ['ignored_channels', 'allowed_roles']
 
         embed1 = success_embed(
@@ -107,6 +104,7 @@ class automod(commands.Cog):
     @commands.has_permissions(administrator=True)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def automod_badword(self, ctx: commands.Context, choice: Lower = None):
+        g = await self.client.get_guild_config(ctx.guild.id)
         pass
 
     @commands.command(help="Configure automod for your server!", aliases=['am'])
