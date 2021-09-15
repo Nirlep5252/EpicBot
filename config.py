@@ -308,7 +308,8 @@ Pog! {user_mention} just leveled up to level {level}!
 DEFAULT_AUTOMOD_CONFIG = {
     "banned_words": {  # done
         "enabled": False,
-        "words": []
+        "words": [],
+        "removed_words": []
     },
     "all_caps": {  # done
         "enabled": False
@@ -337,8 +338,7 @@ DEFAULT_AUTOMOD_CONFIG = {
     },
 
     "ignored_channels": [],
-    "allowed_roles": [],
-    "removed_words": []
+    "allowed_roles": []
 }
 
 DEFAULT_BANNED_WORDS = [

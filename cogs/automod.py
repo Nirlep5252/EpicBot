@@ -14,12 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from logging import error
 import discord
 import typing as t
 
 from discord.ext import commands
 from utils.bot import EpicBot
-from config import BADGE_EMOJIS, EMOJIS, DEFAULT_AUTOMOD_CONFIG
+from config import BADGE_EMOJIS, EMOJIS, DEFAULT_AUTOMOD_CONFIG, DEFAULT_BANNED_WORDS
 from utils.embed import success_embed, error_embed
 from utils.converters import Lower
 
@@ -100,12 +101,71 @@ class automod(commands.Cog):
         embed2.add_field(name="Whitelisted Channels:", value=good_channels_msg or 'None', inline=False)
         await ctx.reply(embed=embed1, view=AutomodConfigView(ctx=ctx, embeds=[embed1, embed2]))
 
-    @_automod.command(name='badwords', aliases=['badword'], help = "Enable/Disable badwords automod for your server!")
+    @_automod.group(name='badwords', aliases=['badword'], help = "Enable/Disable badwords automod for your server!", invoke_without_command=True)
     @commands.has_permissions(administrator=True)
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def automod_badword(self, ctx: commands.Context, choice: Lower = None):
         g = await self.client.get_guild_config(ctx.guild.id)
-        pass
+        am = g['automod']
+        enabled = True if am['banned_words']['enabled'] else False
+
+        show_emb = success_embed(
+            "Automod Bad Word Status",
+            f"Automod bad words is currently {EMOJIS['tick_yes']+ ' Enabled' if enabled else EMOJIS['tick_no']+ ' Disabled'}"
+        )
+        if not choice or choice not in ['enable', 'on', 'off', 'disable']:
+            return await ctx.reply(embed=show_emb)
+
+        if choice in ['on', 'enable']:
+            if enabled:
+                return await ctx.reply(embed=error_embed(
+                    f"{EMOJIS['tick_no']} Already Enabled!",
+                    "The automod bad word module is already enabled!"
+                ))
+            am['banned_words'].update({"enabled": True})
+            return await ctx.reply(embed=success_embed(
+                f"{EMOJIS['tick_yes']} Module Enabled!",
+                f"The automod module `{choice}` has been **{EMOJIS['tick_yes']} Enabled!**\nYou can add bad word usign"
+            ))
+        else:
+            if not enabled:
+                return await ctx.reply(embed=error_embed(
+                    f"{EMOJIS['tick_no']} Already Disabled!",
+                    "The automod bad word module is already disabled!"
+                ))
+            am['banned_words'].update({"enabled": False})
+            return await ctx.reply(embed=success_embed(
+                f"{EMOJIS['tick_yes']} Module Disabled!",
+                f"The automod module `{choice}` has been **{EMOJIS['tick_no']} Disabled!**"
+            ))
+
+    @automod_badword.command(name='add', help = "Add a bad word to the list!")
+    @commands.has_permissions(administrator=True)
+    @commands.cooldown(2, 20, commands.BucketType.user)
+    async def am_badword_add(self, ctx: commands.Context, *,word: Lower = None):
+        g = await self.client.get_guild_config(ctx.guild.id)
+        am = g['automod']
+        enabled = True if am['banned_words']['enabled'] else False
+
+        if not enabled:
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Not Enabled!",
+                f"Please enable the automod `badword` module before using this command!\nEnable it by using `{ctx.clean_prefix}automod badword enable`"
+            ))
+        if word in DEFAULT_BANNED_WORDS:
+            if word in am['banned_words']['removed_words']:
+                am['banned_words']['removed_words'].remove(word)
+                return await ctx.reply(embed=success_embed(
+                    f"{EMOJIS['tick_yes']} Bad Word Added!",
+                    f"The `{word}` word has been added into the bad word list!"
+                ))
+            else:
+                return await ctx.reply(embed=error_embed(
+                    f"{EMOJIS['tick_no']} Bad Word Already Exist!",
+                    f"The `{word}` bad word is already added in the bad word list!"
+                ))
+        
+
 
     @commands.command(help="Configure automod for your server!", aliases=['am'])
     @commands.has_permissions(administrator=True)
