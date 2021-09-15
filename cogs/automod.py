@@ -293,6 +293,13 @@ class automod(commands.Cog):
     async def am_badword_list(self, ctx: commands.Context):
         await view_badword_list(self.client, ctx)
 
+    
+    @_automod.command(name='roles', aliases=['role'], help = "Add/Remove a role from whitelist")
+    @commands.has_permissions(administrator=True)
+    @commands.cooldown(2, 20, commands.BucketType.user)
+    async def am_role_whitelist(self, ctx: commands.Context, choice: Lower = None):
+        pass #best thing existed in python
+
 
     @commands.command(help="Configure automod for your server!", aliases=['am'])
     @commands.has_permissions(administrator=True)
