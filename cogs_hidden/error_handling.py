@@ -231,7 +231,7 @@ For more info you can join our [**support server**]({SUPPORT_SERVER_LINK})
         elif isinstance(error, InvalidUrl):
             await ctx.reply(embed=error_embed(
                 f"{EMOJIS['tick_no']} Invalid URL!",
-                f"The URL `{error.url}` is not a valid URL!"
+                f"The URL `{error.argument}` is not a valid URL!"
             ))
         elif isinstance(error, commands.CheckFailure):
             ctx.command.reset_cooldown(ctx)
