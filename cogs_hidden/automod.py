@@ -78,7 +78,12 @@ class Automod(commands.Cog):
             if r.id in g['automod']['allowed_roles']:
                 return
 
-        for w in DEFAULT_BANNED_WORDS:
+        guild_banned_words = DEFAULT_BANNED_WORDS.copy()
+        removed_words = m['removed_words']
+        for word in removed_words:
+            guild_banned_words.remove(word)
+        
+        for w in guild_banned_words:
             if w in msg.content.lower():
                 await msg.delete()
                 return await msg.channel.send(
@@ -233,6 +238,8 @@ class Automod(commands.Cog):
         m_ = await self.is_enabled(msg.guild.id, "links")
         if not m_:
             return
+        
+        m = m_[0]
         g = m_[1]
         if self.mod_perms(msg):
             return
@@ -242,7 +249,12 @@ class Automod(commands.Cog):
             if r.id in g['automod']['allowed_roles']:
                 return
 
-        if search(self.url_regex, msg.content):
+        whitelisted_links = m['whitelist']
+        kek = msg.content
+        for link in whitelisted_links:
+            kek = kek.replace(f"{link}", "")
+        
+        if search(self.url_regex, kek):
             await msg.delete()
             return await msg.channel.send(
                 f"{msg.author.mention}, No links allowed.",

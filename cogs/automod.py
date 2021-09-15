@@ -21,7 +21,7 @@ from discord.ext import commands
 from utils.bot import EpicBot
 from config import BADGE_EMOJIS, EMOJIS, DEFAULT_AUTOMOD_CONFIG, DEFAULT_BANNED_WORDS
 from utils.embed import success_embed, error_embed
-from utils.converters import Lower
+from utils.converters import Lower, Url
 from utils.ui import Paginator
 
 
@@ -68,13 +68,13 @@ async def am_badword_toggle(client: EpicBot, ctx: commands.Context, choice: Lowe
     enabled = True if am['banned_words']['enabled'] else False
 
     show_emb = success_embed(
-        "Automod Bad Word Status",
+        "Automod Bad Word Configuration",
         f"""
-Automod bad words is currently {EMOJIS['tick_yes']+ ' Enabled' if enabled else EMOJIS['tick_no']+ ' Disabled'}
+Automod bad words is currently **{EMOJIS['tick_yes']+ ' Enabled' if enabled else EMOJIS['tick_no']+ ' Disabled'}**
 
 **You can use these commands to add/remove bad words:**
 
--`{prefix}automod badword add/remove` - To add/remove bad words.
+-`{prefix}automod badword add/remove <word>` - To add/remove bad words.
 -`{prefix}automod badword list` - To see a list of bad words.
         """
     )
@@ -211,9 +211,12 @@ async def view_badword_list(client: EpicBot, ctx: commands.Context):
         banned_list.append(word.lower())
     
     i = 1
-    for badword in banned_list:
-        paginator.add_line(f"{i} - `{badword}`")
-        i += 1
+    if len(banned_list) != 0:
+        for badword in banned_list:
+            paginator.add_line(f"{i} - `{badword}`")
+            i += 1
+    else:
+        paginator.add_line("There are no bad words added for this server!")
     
     for page in paginator.pages:
         all_embeds.append(success_embed(
@@ -221,10 +224,14 @@ async def view_badword_list(client: EpicBot, ctx: commands.Context):
             page
         ))
     
-    if len(all_embeds) == 1:
-        return await ctx.author.send(embed=all_embeds[0])
-    view = Paginator(ctx, all_embeds)
-    await ctx.author.send(embed=all_embeds[0], view=view)
+    await ctx.reply("Please check your DMs!")
+    try:
+        if len(all_embeds) == 1:
+            return await ctx.author.send(embed=all_embeds[0])
+        view = Paginator(ctx, all_embeds)
+        await ctx.author.send(embed=all_embeds[0], view=view)
+    except:
+        return await ctx.reply(f"Please have your DMs open before using this command!")
 
 async def am_whitelist_func(client: EpicBot, ctx: commands.Context, choice: Lower = None, setting: t.Optional[t.Union[discord.Role, discord.TextChannel]] = None):
     prefix = ctx.clean_prefix
@@ -312,6 +319,153 @@ async def am_whitelist_func(client: EpicBot, ctx: commands.Context, choice: Lowe
         return await ctx.reply(embed=info_embed)
 
 
+async def link_whitelist_toggle(client: EpicBot, ctx: commands.Context, choice: Lower = None):
+    prefix = ctx.clean_prefix
+    g = await client.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    enabled = True if am['links']['enabled'] else False
+
+    info_emb = success_embed(
+        "Whitelisted Links Configuration",
+        f"""
+Automod links is currently **{EMOJIS['tick_yes']+ ' Enabled' if enabled else EMOJIS['tick_no']+ ' Disabled'}**
+
+**You can use these commands to add/remove links:**
+
+-`{prefix}automod links add/remove <link>` - To add/remove links.
+-`{prefix}automod links list` - To see a list of whitelisted links.
+        """
+    )
+    if not choice or choice not in ['enable', 'on', 'off', 'disable']:
+        return await ctx.reply(embed=info_emb)
+    if choice in ['on', 'enable']:
+        if enabled:
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Already Enabled!",
+                "The automod `link` module is already enabled!"
+            ))
+        am['links'].update({"enabled": True})
+        return await ctx.reply(embed=success_embed(
+            f"{EMOJIS['tick_yes']} Module Enabled!",
+            "The automod `link` module has been enabled!"
+        ))
+    if choice in ['off', 'disable']:
+        if not enabled:
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Already Disabled!",
+                "The automod `link` module is already disabled!"
+            ))
+        am['links'].update({"enabled": False})
+        return await ctx.reply(embed=success_embed(
+            f"{EMOJIS['tick_yes']} Module Disabled!",
+            "The automod `link` module has been disabled!"
+        ))
+    else:
+        return await ctx.reply(embed=info_emb)
+
+
+async def link_add_to_whitelist(client: EpicBot, ctx: commands.Context, url: Url = None):
+    prefix = ctx.clean_prefix
+    g = await client.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    enabled = True if am['links']['enabled'] else False
+
+    if not enabled:
+        return await ctx.reply(embed=error_embed(
+            f"{EMOJIS['tick_no']} Not Enabled!",
+            f"The automod `link` module is not enabled!\nPlease enable it using: `{prefix}automod links enable/disable`"
+        ))      
+        
+    if url is None:
+       return await ctx.reply(embed=error_embed(
+           f"{EMOJIS['tick_no']} No Link!",
+           f"Please provide a link for me to add!\nCorrect Usage: `{prefix}automod links add <link>`"
+       ))
+    
+    if url in am['links']['whitelist']:
+        return await ctx.reply(embed=error_embed(
+            f"{EMOJIS['tick_no']} Already There!",
+            "The link you provided is already in the whitelisted links!"
+        ))
+    else:
+        am['links']['whitelist'].append(url)
+        return await ctx.reply(embed=success_embed(
+            f"{EMOJIS['tick_yes']} Link Added!",
+            "The link you provided has been added to the whitelisted links!"
+        ))
+
+
+async def link_remove_from_whitelist(client: EpicBot, ctx: commands.Context, url: Url = None):
+    prefix = ctx.clean_prefix
+    g = await client.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    enabled = True if am['links']['enabled'] else False
+
+    if not enabled:
+        return await ctx.reply(embed=error_embed(
+            f"{EMOJIS['tick_no']} Not Enabled!",
+            f"The automod `link` module is not enabled!\nPlease enable it using: `{prefix}automod links enable/disable`"
+        ))      
+        
+    if url is None:
+       return await ctx.reply(embed=error_embed(
+           f"{EMOJIS['tick_no']} No Link!",
+           f"Please provide a link for me to remove!\nCorrect Usage: `{prefix}automod links remove <link>`"
+       ))
+    
+    if url not in am['links']['whitelist']:
+        return await ctx.reply(embed=error_embed(
+            f"{EMOJIS['tick_no']} Not There!",
+            "The link you provided is not in the whitelisted links!"
+        ))
+    else:
+        am['links']['whitelist'].remove(url)
+        return await ctx.reply(embed=success_embed(
+            f"{EMOJIS['tick_yes']} Link Removed!",
+            "The link you provided has been removed from being whitelisted!"
+        ))
+
+async def view_whitelisted_links_list(client: EpicBot, ctx: commands.Context):
+    g = await client.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    enabled = True if am['links']['enabled'] else False
+
+    if not enabled:
+        return await ctx.reply(embed=error_embed(
+            f"{EMOJIS['tick_no']} Not Enabled!",
+            f"Please enable the automod `links` module before using this command!\nEnable it by using `{ctx.clean_prefix}automod links enable`"
+        ))
+    paginator = commands.Paginator(prefix="", suffix="", max_size=500)
+    whitelisted_list = []
+    all_embeds = []
+
+    for url in am['links']['whitelist']:
+        whitelisted_list.append(url)
+    
+    i = 1
+    if len(whitelisted_list) != 0:
+        for url in whitelisted_list:
+            paginator.add_line(f"{i} - `{url}`")
+            i += 1
+
+    else:
+        paginator.add_line("There are no whitelisted links added for this server!")
+    
+    for page in paginator.pages:
+        all_embeds.append(success_embed(
+            "All Whitelisted Links",
+            page
+        ))
+    
+    await ctx.reply("Please check your DMs!")
+    try:
+        if len(all_embeds) == 1:
+            return await ctx.author.send(embed=all_embeds[0])
+        view = Paginator(ctx, all_embeds)
+        await ctx.author.send(embed=all_embeds[0], view=view)
+    except:
+        return await ctx.reply(f"Please have your DMs open before using this command!")
+
 class AutomodConfigView(discord.ui.View):
     def __init__(self, ctx: commands.Context, embeds: list):
         super().__init__(timeout=None)
@@ -379,6 +533,29 @@ class automod(commands.Cog):
     async def am_badword_list(self, ctx: commands.Context):
         await view_badword_list(self.client, ctx)
 
+    @_automod.group(name='links', aliases=['link'], help = "Enable/Disable links automod for your server!", invoke_without_command=True)
+    @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def automod_links(self, ctx: commands.Context, choice: Lower = None):
+        await link_whitelist_toggle(self.client, ctx, choice)
+    
+    @automod_links.command(name='add', help = "Add a link to the whitelist links!")
+    @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def add_whitelist_link(self, ctx: commands.Context, url: Url = None):
+        await link_add_to_whitelist(self.client, ctx, url)
+    
+    @automod_links.command(name='remove', help = "Remove a link from the whitelisted links!")
+    @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def remove_whitelist_links(self, ctx: commands.Context, url: Url = None):
+        await link_remove_from_whitelist(self.client, ctx, url)
+
+    @automod_links.command(name='list', aliases=['show'], help = "See a list of whitelisted links!")
+    @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def view_whitelist_links(self, ctx: commands.Context):
+        await view_whitelisted_links_list(self.client, ctx)
     
     @_automod.command(name='whitelist', help = "Whitelist roles/channels!")
     @commands.has_permissions(administrator=True)
