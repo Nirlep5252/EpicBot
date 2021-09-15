@@ -189,6 +189,43 @@ async def am_remove_badword(client: EpicBot, ctx: commands.Context, word: Lower 
             f"The `{word}` word has been removed from the bad word list!"
         ))
 
+async def view_badword_list(client: EpicBot, ctx: commands.Context):
+    g = await client.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    enabled = True if am['banned_words']['enabled'] else False
+
+    if not enabled:
+        return await ctx.reply(embed=error_embed(
+            f"{EMOJIS['tick_no']} Not Enabled!",
+            f"Please enable the automod `badword` module before using this command!\nEnable it by using `{ctx.clean_prefix}automod badword enable`"
+        ))
+    paginator = commands.Paginator(prefix="", suffix="", max_size=500)
+    banned_list = []
+    all_embeds = []
+
+    for wrd in DEFAULT_BANNED_WORDS:
+        if wrd.lower() not in am['banned_words']['removed_words']:
+            banned_list.append(wrd.lower())
+
+    for word in am['banned_words']['words']:
+        banned_list.append(word.lower())
+    
+    i = 1
+    for badword in banned_list:
+        paginator.add_line(f"{i} - `{badword}`")
+        i += 1
+    
+    for page in paginator.pages:
+        all_embeds.append(success_embed(
+            "All Bad Words",
+            page
+        ))
+    
+    if len(all_embeds) == 1:
+        return await ctx.author.send(embed=all_embeds[0])
+    view = Paginator(ctx, all_embeds)
+    await ctx.author.send(embed=all_embeds[0], view=view)
+
 class AutomodConfigView(discord.ui.View):
     def __init__(self, ctx: commands.Context, embeds: list):
         super().__init__(timeout=None)
@@ -249,6 +286,12 @@ class automod(commands.Cog):
     @commands.cooldown(2, 20, commands.BucketType.user)
     async def am_badword_remove(self, ctx: commands.Context, *,word: Lower = None):
         await am_remove_badword(self.client, ctx, word)
+
+    @automod_badword.command(name='list', aliases=['show', 'l'], help = "View the list of bad words!")
+    @commands.has_permissions(administrator=True)
+    @commands.cooldown(2, 20, commands.BucketType.user)
+    async def am_badword_list(self, ctx: commands.Context):
+        await view_badword_list(self.client, ctx)
 
 
     @commands.command(help="Configure automod for your server!", aliases=['am'])
