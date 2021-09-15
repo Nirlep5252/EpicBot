@@ -25,8 +25,7 @@ from config import (
     MAIN_COLOR, DISABLE, PREMIUM_GUILDS,
     RED_COLOR, ENABLE, custom_cmds_tags_lemao,
     DEFAULT_WELCOME_MSG, DEFAULT_LEAVE_MSG,
-    DEFAULT_AUTOMOD_CONFIG, GLOBAL_CHAT_RULES,
-    DEFAULT_LEVEL_UP_MSG, BADGE_EMOJIS, ANTIHOIST_CHARS,
+    GLOBAL_CHAT_RULES, DEFAULT_LEVEL_UP_MSG, ANTIHOIST_CHARS,
     EMOJIS_FOR_COGS
 )
 from utils.embed import error_embed, success_embed, process_embeds_from_json
@@ -2568,7 +2567,6 @@ Counting is currently **{'Disabled' if not enabled else 'set in <#'+str(g['count
     # @commands.cooldown(3, 30, commands.BucketType.guild)
     # async def counters(self, ctx: commands.Context):
     #     pass
-
 
     @commands.command(aliases=['ghostpings', 'whoping', 'whopinged'], help="Configure ghost pings for your server!")
     @commands.cooldown(3, 15, commands.BucketType.user)

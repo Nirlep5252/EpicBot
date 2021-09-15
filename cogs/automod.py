@@ -22,14 +22,14 @@ from utils.bot import EpicBot
 from config import BADGE_EMOJIS, EMOJIS, DEFAULT_AUTOMOD_CONFIG
 from utils.embed import success_embed, error_embed
 
+
 class AutomodConfigView(discord.ui.View):
     def __init__(self, ctx: commands.Context, embeds: list):
         super().__init__(timeout=None)
         self.ctx = ctx
         self.embeds = embeds
 
-
-    @discord.ui.button(label = "Filters Config", style=discord.ButtonStyle.blurple)
+    @discord.ui.button(label="Filters Config", style=discord.ButtonStyle.blurple)
     async def filter_show(self, b: discord.Button, i: discord.Interaction):
         for item in self.children:
             item.disabled = False
