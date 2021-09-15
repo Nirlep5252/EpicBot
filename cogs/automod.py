@@ -165,6 +165,17 @@ class automod(commands.Cog):
                     f"The `{word}` bad word is already added in the bad word list!"
                 ))
         
+        if word in am['banned_words']['words']:
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Bad Word Already Exist!",
+                f"The `{word}` bad word is already added in the bad word list!"
+            ))
+        else:
+            am['banned_words']['words'].append(word)
+            return await ctx.reply(embed=success_embed(
+                f"{EMOJIS['tick_yes']} Bad Word Added!",
+                f"The `{word}` word has been added into the bad word list!"
+            ))
 
 
     @commands.command(help="Configure automod for your server!", aliases=['am'])
