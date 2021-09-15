@@ -466,6 +466,10 @@ async def view_whitelisted_links_list(client: EpicBot, ctx: commands.Context):
     except:
         return await ctx.reply(f"Please have your DMs open before using this command!")
 
+    
+async def am_enable_a_module(self, ctx: commands.Context, module: Lower = None):
+    pass
+
 class AutomodConfigView(discord.ui.View):
     def __init__(self, ctx: commands.Context, embeds: list):
         super().__init__(timeout=None)
@@ -563,6 +567,11 @@ class automod(commands.Cog):
     async def am_whitelist_stuff(self, ctx: commands.Context, choice: Lower = None, setting: t.Optional[t.Union[discord.TextChannel, discord.Role]] = None):
         await am_whitelist_func(self.client, ctx, choice, setting)
 
+    @_automod.command(name='enable', help = "Enable a module for your automod!")
+    @commands.has_permissions(administrator=True)
+    @commands.cooldown(2, 20, commands.BucketType.user)
+    async def automod_enable_module(self, ctx: commands.Context, module: Lower = None):
+        pass
 
     @commands.command(help="Configure automod for your server!", aliases=['am'])
     @commands.has_permissions(administrator=True)
