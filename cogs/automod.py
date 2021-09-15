@@ -21,6 +21,7 @@ from discord.ext import commands
 from utils.bot import EpicBot
 from config import BADGE_EMOJIS, EMOJIS, DEFAULT_AUTOMOD_CONFIG
 from utils.embed import success_embed, error_embed
+from utils.converters import Lower
 
 
 class AutomodConfigView(discord.ui.View):
@@ -101,6 +102,12 @@ class automod(commands.Cog):
         embed2.add_field(name = "Whitelisted Roles:", value=good_roles_msg or 'None', inline=False)
         embed2.add_field(name="Whitelisted Channels:", value=good_channels_msg or 'None', inline=False)
         await ctx.reply(embed=embed1, view=AutomodConfigView(ctx=ctx, embeds=[embed1, embed2]))
+
+    @_automod.command(name='badwords', aliases=['badword'], help = "Enable/Disable badwords automod for your server!")
+    @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def automod_badword(self, ctx: commands.Context, choice: Lower = None):
+        pass
 
     @commands.command(help="Configure automod for your server!", aliases=['am'])
     @commands.has_permissions(administrator=True)
