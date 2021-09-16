@@ -137,6 +137,35 @@ class mod(commands.Cog, description="Keep your server safe! 🛠️"):
             f"Module{'' if len(modules) == 1 else 's'}: {', '.join(['`' + module + '`' for module in modules])} {'has' if len(modules) == 1 else 'have'} now been disabled.",
         ))
 
+    @_automod.command(name="logchannel", help="Set the automod log channel.", aliases=['logs', 'log'])
+    @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(administrator=True)
+    @commands.cooldown(2, 20, commands.BucketType.user)
+    async def automod_set_log_channel(self, ctx: commands.Context, channel: Union[discord.TextChannel, Lower] = None):
+        p = ctx.clean_prefix
+        if channel is None:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Invalid Usage!",
+                f"Please mention a channel.\nCorrect Usage: `{p}automod logchannel #channel`\nTo remove it: `{p}automod logchannel disable`"
+            ))
+        g = await self.client.get_guild_config(ctx.guild.id)
+        am = g['automod']
+        if isinstance(channel, discord.TextChannel):
+            am['log_channel'] = channel.id
+            return await ctx.reply(embed=success_embed(
+                f"{EMOJIS['tick_yes']} Log Channel Set!",
+                f"The automod log channel has been set to {channel.mention}",
+            ))
+        elif channel in ['disable', 'remove']:
+            am['log_channel'] = None
+            return await ctx.reply(embed=success_embed(
+                f"{EMOJIS['tick_yes']} Log Channel Removed!",
+                "Automod logs have now been turned off."
+            ))
+        else:
+            raise commands.ChannelNotFound(channel)
+
     @_automod.group(name='badwords', aliases=['badword'], help="Configure the `banned_words` automod module.", invoke_without_command=True)
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(administrator=True)

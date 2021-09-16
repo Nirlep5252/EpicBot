@@ -26,7 +26,7 @@ from datetime import datetime
 from re import search
 from collections import Counter
 from utils.bot import EpicBot
-from utils.embed import success_embed
+from utils.embed import error_embed, success_embed
 from utils.ui import BasicView, Paginator, SelectWithMultipleOptions
 from utils.exceptions import AutomodModuleNotEnabled
 
@@ -47,6 +47,22 @@ class Automod(commands.Cog):
     def mod_perms(self, m: discord.Message) -> bool:
         p = m.author.guild_permissions
         return True if (p.kick_members or p.administrator or p.ban_members or p.manage_guild or m.author == m.guild.owner) else False
+
+    @commands.Cog.listener("on_automod_trigger")
+    async def on_automod_trigger(self, am_config: dict, message: discord.Message, module: str):
+        lc_id = am_config.get('log_channel')
+        if not lc_id:
+            return
+        log_channel = self.client.get_channel(lc_id)
+        if not log_channel:
+            return
+        embed = error_embed(
+            "⚠️ Automod triggered!",
+            message.content
+        ).add_field(name="Module:", value=module
+        ).set_author(name=message.author, icon_url=message.author.display_avatar.url
+        ).set_footer(text=f"Message ID: {message.id} | User ID: {message.author.id}")
+        await log_channel.send(embed=embed)
 
     @commands.Cog.listener("on_message")
     async def efficient_automod(self, msg: discord.Message):
@@ -78,6 +94,7 @@ class Automod(commands.Cog):
             if am[module]['enabled']:
                 final = await check(msg, am[module])
                 if final:
+                    self.client.dispatch('automod_trigger', am_config=am, message=msg, module=module)
                     return
 
     async def banned_words(self, msg: discord.Message, m: dict) -> bool:
@@ -344,8 +361,13 @@ async def show_automod_config(ctx: commands.Context) -> t.Tuple[discord.Embed, d
     am = g['automod']
     tick_yes = EMOJIS['tick_yes']
     tick_no = EMOJIS['tick_no']
-    cancer = ['ignored_channels', 'allowed_roles']
-    embed1 = success_embed("Automod Filters Configuration", "**Here are all the automod filters status:**")
+    cancer = ['ignored_channels', 'allowed_roles', 'log_channel']
+    lc_id = am.get('log_channel')
+    log_channel = f"<#{lc_id}>" if lc_id is not None else "No log channel set."
+    embed1 = success_embed(
+        "Automod Filters Configuration",
+        f"**Here are all the automod filters status:**\n\nLog channel: {log_channel}"
+    )
     embed2 = success_embed(
         "Automod Whitelist Configuration",
         "**Here are all the automod whitelist configuration:**"
