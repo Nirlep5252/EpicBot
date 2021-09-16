@@ -14,19 +14,26 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from utils.ui import Confirm
 import discord
 import asyncio
 
 from discord.ext import commands
 from discord.utils import escape_markdown
 from humanfriendly import format_timespan
-from typing import Union
+from typing import Optional, Union
+from cogs_hidden.automod import (
+    am_add_badwords, am_disable_modules, am_enable_a_module,
+    am_enable_module_dropdown, am_remove_badwords, am_whitelist_func, link_add_to_whitelist,
+    link_remove_from_whitelist, show_automod_config, view_badword_list,
+    view_whitelisted_links_list
+)
 from utils.bot import EpicBot
 from utils.message import wait_for_msg
 from utils.time import convert
 from utils.random import gen_random_string
 from utils.embed import success_embed, error_embed
+from utils.converters import AddRemoveConverter, AutomodModule, Lower, Url
+from utils.ui import Confirm
 from config import (
     BADGE_EMOJIS, EMOJIS, RED_COLOR
 )
@@ -47,20 +54,17 @@ class AntiAltsSelectionView(discord.ui.View):
         discord.SelectOption(
             label="Level 01",
             description="Restrict the suspect from sending messages.",
-            value='1',
-            emoji='🔹'
+            value='1', emoji='🔹'
         ),
         discord.SelectOption(
             label="Level 02",
             description="Kick the suspect from the server.",
-            value='2',
-            emoji='💎'
+            value='2', emoji='💎'
         ),
         discord.SelectOption(
             label="Level 03",
             description="Ban the suspect from the server.",
-            value='3',
-            emoji='<a:diamond:862594390256910367>'
+            value='3', emoji='<a:diamond:862594390256910367>'
         ),
     ])
     async def callback(self, select: discord.ui.Select, interaction: discord.Interaction):
@@ -88,6 +92,215 @@ class AntiAltsSelectionView(discord.ui.View):
 class mod(commands.Cog, description="Keep your server safe! 🛠️"):
     def __init__(self, client: EpicBot):
         self.client = client
+
+    @commands.group(name='automod', aliases=['am'], help="Configure automod for your server!")
+    @commands.cooldown(3, 10, commands.BucketType.user)
+    async def _automod(self, ctx: commands.Context):
+        if ctx.invoked_subcommand is None:
+            return await ctx.send_help(ctx.command)
+
+    @_automod.command(name='show', help='Get the current automod configuration.')
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def am_show(self, ctx: commands.Context):
+        embed, view = await show_automod_config(ctx)
+        await ctx.reply(embed=embed, view=view)
+
+    @_automod.command(name='enable', help="Enable a module for your automod!")
+    @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(administrator=True)
+    @commands.cooldown(2, 20, commands.BucketType.user)
+    async def automod_enable_module(self, ctx: commands.Context, module: Optional[AutomodModule] = None):
+        if module is not None:
+            await am_enable_a_module(ctx, module)
+            return await ctx.reply(embed=success_embed(
+                f"{EMOJIS['tick_yes']} Enabled!",
+                f"The automod module `{module}` has been enabled!"
+            ))
+        else:
+            embed, view = await am_enable_module_dropdown(ctx)
+            await ctx.reply(embed=embed, view=view)
+
+    @_automod.command(name='disable', help="Disable a module for your automod!")
+    @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(administrator=True)
+    @commands.cooldown(2, 20, commands.BucketType.user)
+    async def automod_disable_module(self, ctx: commands.Context, modules: commands.Greedy[AutomodModule] = None):
+        if not modules:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Invalid Usage!",
+                f"Please specify a module to disable!\nCorrect Usage: `{ctx.clean_prefix}automod disable <module>`",
+            ))
+        await am_disable_modules(ctx, *modules)
+        await ctx.reply(embed=success_embed(
+            f"{EMOJIS['tick_yes']} Module Disabled!",
+            f"Module{'' if len(modules) == 1 else 's'}: {', '.join(['`' + module + '`' for module in modules])} {'has' if len(modules) == 1 else 'have'} now been disabled.",
+        ))
+
+    @_automod.group(name='badwords', aliases=['badword'], help="Configure the `banned_words` automod module.", invoke_without_command=True)
+    @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(administrator=True)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def automod_badword(self, ctx: commands.Context):
+        if ctx.invoked_subcommand is None:
+            return await ctx.send_help(ctx.command)
+
+    @automod_badword.command(name='add', help="Add a bad word to the list!")
+    @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(administrator=True)
+    @commands.cooldown(2, 20, commands.BucketType.user)
+    async def am_badword_add(self, ctx: commands.Context, words: commands.Greedy[Lower] = None):
+        if words is None:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Invalid Usage!",
+                f"Please provide a word to add.\nCorrect Usage: `{ctx.clean_prefix}automod badword add <word> ...`\n\nNote: You can type multiple words seperated with a space to add more than one words."
+            ))
+        added, already_exist = await am_add_badwords(ctx, *words)
+        if len(added) == 0:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Already exists!",
+                f"The word{'' if len(already_exist) == 1 else 's'} {', '.join(already_exist)} are already added."
+            ))
+        await ctx.reply(embed=success_embed(
+            f"{EMOJIS['tick_yes']} Word{'' if len(added) == 1 else 's'} added!",
+            f"The word{'' if len(added) == 1 else 's'}: {', '.join(['`' + word + '`' for word in added])} {'has' if len(added) == 1 else 'have'} been added.\nYou can use `{ctx.clean_prefix}automod badwords show` to get the list."
+        ))
+
+    @automod_badword.command(name='remove', help="Remove a bad word from the list!")
+    @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(administrator=True)
+    @commands.cooldown(2, 20, commands.BucketType.user)
+    async def am_badword_remove(self, ctx: commands.Context, words: commands.Greedy[Lower] = None):
+        if words is None:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Invalid Usage!",
+                f"Please provide a word to remove.\nCorrect Usage: `{ctx.clean_prefix}automod badword remove <word> ...`\n\nNote: You can type multiple words seperated with a space to remove more than one words."
+            ))
+        removed, not_exist = await am_remove_badwords(ctx, *words)
+        if len(removed) == 0:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Not found!",
+                f"The word{'' if len(not_exist) == 1 else 's'} {', '.join(not_exist)} {'was' if len(not_exist) == 1 else 'were'} not found.\nPlease use `{ctx.clean_prefix}automod badword show` to get the whole list."
+            ))
+        await ctx.reply(embed=success_embed(
+            f"{EMOJIS['tick_yes']} Word{'' if len(removed) == 1 else 's'} removed!",
+            f"The word{'' if len(removed) == 1 else 's'}: {', '.join(['`' + word + '`' for word in removed])} {'has' if len(removed) == 1 else 'have'} been removed.\nYou can use `{ctx.clean_prefix}automod badwords show` to get the list."
+        ))
+
+    @automod_badword.command(name='list', aliases=['show', 'l'], help="View the list of bad words!")
+    @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(administrator=True)
+    @commands.cooldown(2, 20, commands.BucketType.user)
+    async def am_badword_list(self, ctx: commands.Context):
+        embed, view = await view_badword_list(ctx)
+        try:
+            await ctx.author.send(embed=embed, view=view)
+            await ctx.message.add_reaction('👌')
+        except discord.Forbidden:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(f"{EMOJIS['tick_no']}I was unable to DM you the list, please enable your DMs.")
+
+    @_automod.group(name='links', aliases=['link'], help="Configure the `links` automod module for your server.", invoke_without_command=True)
+    @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(administrator=True)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def automod_links(self, ctx: commands.Context):
+        if ctx.invoked_subcommand is None:
+            return await ctx.send_help(ctx.command)
+
+    @automod_links.command(name='add', help="Add a link to the whitelist links!")
+    @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(administrator=True)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def add_whitelist_link(self, ctx: commands.Context, url: Url = None):
+        prefix = ctx.clean_prefix
+        if url is None:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Invalid Usage!",
+                f"Please provide a link to whitelist.\nCorrect Usage: `{prefix}automod links add <link>`\nExample: `{prefix}automod links add https://example.com`"
+            ))
+        final = await link_add_to_whitelist(ctx, url)
+        if final:
+            await ctx.reply(embed=success_embed(
+                f"{EMOJIS['tick_yes']} Link added!",
+                f"The link: `{url}` has been added to the whitelist."
+            ))
+        else:
+            ctx.command.reset_cooldown(ctx)
+            await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Link already there!",
+                f"This link: `{url}` is already there in the whitelist.\nPlease use `{prefix}automod links show` to view all the whitelisted links."
+            ))
+
+    @automod_links.command(name='remove', help="Remove a link from the whitelisted links!")
+    @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(administrator=True)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def remove_whitelist_links(self, ctx: commands.Context, url: Url = None):
+        prefix = ctx.clean_prefix
+        if url is None:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Invalid Usage!",
+                f"Please provide a link to unwhitelist.\nCorrect Usage: `{prefix}automod links remove <link>`\nExample: `{prefix}automod links remove https://example.com`"
+            ))
+        final = await link_remove_from_whitelist(ctx, url)
+        if final:
+            await ctx.reply(embed=success_embed(
+                f"{EMOJIS['tick_yes']} Link removed!",
+                f"The link: `{url}` has been removed from the whitelist."
+            ))
+        else:
+            ctx.command.reset_cooldown(ctx)
+            await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Link not found!",
+                f"This link: `{url}` is not in the whitelist.\nPlease use `{prefix}automod links show` to view all the whitelisted links."
+            ))
+
+    @automod_links.command(name='list', aliases=['show'], help="See a list of whitelisted links!")
+    @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(administrator=True)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def view_whitelist_links(self, ctx: commands.Context):
+        embed, view = await view_whitelisted_links_list(ctx)
+        try:
+            await ctx.author.send(embed=embed, view=view)
+            await ctx.message.add_reaction('👌')
+        except discord.Forbidden:
+            await ctx.reply(f"{EMOJIS['tick_no']}I was unable to DM you the list, please enable your DMs.")
+
+    @_automod.command(name='whitelist', help="Whitelist roles/channels!")
+    @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(administrator=True)
+    @commands.cooldown(2, 20, commands.BucketType.user)
+    async def am_whitelist_stuff(self, ctx: commands.Context, choice: Optional[AddRemoveConverter] = None, setting: Optional[Union[discord.TextChannel, discord.Role]] = None):
+        p = ctx.clean_prefix
+        correct_usage = f"{p}automod whitelist add/remove @role/#channel"
+        example = f"{p}automod whitelist add @boosters"
+        you_idiot = error_embed(
+            f"{EMOJIS['tick_no']} Invalid Usage!",
+            f"Correct Usage: `{correct_usage}`\nExample: `{example}`"
+        )
+        if choice is None or setting is None:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=you_idiot)
+        final = await am_whitelist_func(ctx, choice, setting)
+        if final:
+            return await ctx.reply(embed=success_embed(
+                f"{EMOJIS['tick_yes']} Success!",
+                f"Users {'with' if isinstance(setting, discord.Role) else 'in'} {setting.mention} will {'no longer' if choice else 'now'} trigger automod."
+            ))
+        else:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Failure!",
+                f"{setting.mention} is {'already' if choice else 'not'} a whitelisted {'role' if isinstance(setting, discord.Role) else 'channel'}."
+            ))
 
     @commands.command(help="Configure EpicBot antialts system.", aliases=['antiraid', 'antialt'])
     @commands.cooldown(3, 30, commands.BucketType.user)

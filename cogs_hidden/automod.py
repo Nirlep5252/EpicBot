@@ -17,13 +17,17 @@ limitations under the License.
 import discord
 import re
 import urllib
+import typing as t
 
 from discord.ext import commands
-from config import DEFAULT_BANNED_WORDS, EMOJIS, RED_COLOR
+from config import DEFAULT_BANNED_WORDS, EMOJIS, RED_COLOR, DEFAULT_AUTOMOD_CONFIG
 from datetime import datetime
 from re import search
 from collections import Counter
 from utils.bot import EpicBot
+from utils.embed import success_embed
+from utils.ui import BasicView, Paginator, SelectWithMultipleOptions
+from utils.exceptions import AutomodModuleNotEnabled
 
 
 class Automod(commands.Cog):
@@ -82,7 +86,7 @@ class Automod(commands.Cog):
         removed_words = m['removed_words']
         for word in removed_words:
             guild_banned_words.remove(word)
-        
+
         for w in guild_banned_words:
             if w in msg.content.lower():
                 await msg.delete()
@@ -238,7 +242,7 @@ class Automod(commands.Cog):
         m_ = await self.is_enabled(msg.guild.id, "links")
         if not m_:
             return
-        
+
         m = m_[0]
         g = m_[1]
         if self.mod_perms(msg):
@@ -253,7 +257,7 @@ class Automod(commands.Cog):
         kek = msg.content
         for link in whitelisted_links:
             kek = kek.replace(f"{link}", "")
-        
+
         if search(self.url_regex, kek):
             await msg.delete()
             return await msg.channel.send(
@@ -426,3 +430,255 @@ class Automod(commands.Cog):
 
 def setup(client):
     client.add_cog(Automod(client))
+
+
+async def show_automod_config(ctx: commands.Context) -> t.Tuple[discord.Embed, discord.ui.View]:
+    g = await ctx.bot.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    tick_yes = EMOJIS['tick_yes']
+    tick_no = EMOJIS['tick_no']
+    cancer = ['ignored_channels', 'allowed_roles']
+    embed1 = success_embed("Automod Filters Configuration", "**Here are all the automod filters status:**")
+    embed2 = success_embed(
+        "Automod Whitelist Configuration",
+        "**Here are all the automod whitelist configuration:**"
+    ).add_field(name="Whitelisted Roles:", value=" ".join([f"<@&{r}>" for r in am['allowed_roles']]) or "No roles.", inline=False
+    ).add_field(name="Whitelisted Channels:", value=" ".join([f"<#{c}>" for c in am['ignored_channels']]) or "No channels.", inline=False)
+    for e in am:
+        if e not in cancer:
+            embed1.add_field(
+                name=f"**{e.replace('_', ' ').title()}**",
+                value=tick_yes + ' Enabled' if am[e]['enabled'] else tick_no + ' Disabled'
+            )
+    view = AutomodConfigView(ctx=ctx, embeds=[embed1, embed2])
+    return embed1, view
+
+
+async def am_add_badwords(ctx: commands.Context, *words: str) -> t.Tuple[t.List[str], t.List[str]]:
+    g = await ctx.bot.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    enabled = True if am['banned_words']['enabled'] else False
+    if not enabled:
+        raise AutomodModuleNotEnabled('banned_words')
+
+    already_exist = []
+    added = []
+
+    for word in words:
+        if word in DEFAULT_BANNED_WORDS:
+            if word in am['banned_words'].get('removed_words', []):
+                am['banned_words']['removed_words'].remove(word)
+                added.append(word)
+            else:
+                already_exist.append(word)
+        elif word in am['banned_words']['words']:
+            already_exist.append(word)
+        else:
+            am['banned_words']['words'].append(word)
+            added.append(word)
+
+    return added, already_exist
+
+
+async def am_remove_badwords(ctx: commands.Context, *words: str) -> t.Tuple[t.List[str], t.List[str]]:
+    g = await ctx.bot.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    enabled = True if am['banned_words']['enabled'] else False
+    if not enabled:
+        raise AutomodModuleNotEnabled('banned_words')
+
+    not_exist = []
+    removed = []
+
+    for word in words:
+        if word in DEFAULT_BANNED_WORDS:
+            if 'removed_words' not in am['banned_words']:
+                am['banned_words'].update({"removed_words": []})
+            if word not in am['banned_words']['removed_words']:
+                am['banned_words']['removed_words'].append(word)
+                removed.append(word)
+            else:
+                not_exist.append(word)
+        elif word not in am['banned_words']['words']:
+            not_exist.append(word)
+        else:
+            am['banned_words']['words'].remove(word)
+            removed.append(word)
+
+    return removed, not_exist
+
+
+async def view_badword_list(ctx: commands.Context) -> t.Tuple[discord.Embed, t.Optional[discord.ui.View]]:
+    g = await ctx.bot.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    enabled = True if am['banned_words']['enabled'] else False
+    if not enabled:
+        raise AutomodModuleNotEnabled('banned_words')
+    paginator = commands.Paginator(prefix="", suffix="", max_size=500)
+    banned_list = [word for word in am['banned_words']['words']]
+    for wrd in DEFAULT_BANNED_WORDS:
+        if wrd.lower() not in am['banned_words'].get('removed_words', []):
+            banned_list.append(wrd.lower())
+    i = 1
+    if len(banned_list) != 0:
+        for badword in banned_list:
+            paginator.add_line(f"{i} - `{badword}`")
+            i += 1
+    else:
+        paginator.add_line("There are no bad words added for this server!")
+    all_embeds = [success_embed("All Bad Words", page) for page in paginator.pages]
+    view = Paginator(ctx, all_embeds) if len(all_embeds) != 1 else None
+    return all_embeds[0], view
+
+
+async def am_whitelist_func(ctx: commands.Context, choice: bool, setting: t.Optional[t.Union[discord.Role, discord.TextChannel]]) -> bool:
+    g = await ctx.bot.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    if choice:
+        if isinstance(setting, discord.TextChannel):
+            if setting.id in am['ignored_channels']:
+                return False
+            am['ignored_channels'].append(setting.id)
+            return True
+        else:
+            if setting.id in am['allowed_roles']:
+                return False
+            am['allowed_roles'].append(setting.id)
+            return True
+    else:
+        if isinstance(setting, discord.TextChannel):
+            if setting.id not in am['ignored_channels']:
+                return False
+            am['ignored_channels'].remove(setting.id)
+            return True
+        else:
+            if setting.id not in am['allowed_roles']:
+                return False
+            am['allowed_roles'].remove(setting.id)
+            return True
+
+
+async def link_add_to_whitelist(ctx: commands.Context, url: str) -> bool:
+    g = await ctx.bot.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    enabled = True if am['links']['enabled'] else False
+    if not enabled:
+        raise AutomodModuleNotEnabled('links')
+    if url in am['links']['whitelist']:
+        return True
+    else:
+        am['links']['whitelist'].append(url)
+        return False
+
+
+async def link_remove_from_whitelist(ctx: commands.Context, url: str = None) -> bool:
+    g = await ctx.bot.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    enabled = True if am['links']['enabled'] else False
+    if not enabled:
+        raise AutomodModuleNotEnabled('links')
+    if url not in am['links']['whitelist']:
+        return False
+    else:
+        am['links']['whitelist'].remove(url)
+        return True
+
+
+async def view_whitelisted_links_list(ctx: commands.Context) -> t.Tuple[discord.Embed, discord.ui.View]:
+    g = await ctx.bot.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    enabled = True if am['links']['enabled'] else False
+    if not enabled:
+        raise AutomodModuleNotEnabled('links')
+    paginator = commands.Paginator(prefix="", suffix="", max_size=500)
+    whitelisted_list = [url for url in am['links']['whitelist']]
+    i = 1
+    if len(whitelisted_list) != 0:
+        for url in whitelisted_list:
+            paginator.add_line(f"{i} - `{url}`")
+            i += 1
+    else:
+        paginator.add_line("There are no whitelisted links added for this server!")
+    all_embeds = [success_embed("All Whitelisted Links", page) for page in paginator.pages]
+
+    view = Paginator(ctx, all_embeds) if len(all_embeds) != 1 else None
+    return all_embeds[0], view
+
+
+async def am_enable_a_module(ctx: commands.Context, module: str = None) -> None:
+    g = await ctx.bot.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    m_conf = am[module]
+    m_conf['enabled'] = True
+    am.update({module: m_conf})
+
+
+async def am_enable_module_dropdown(ctx: commands.Context) -> t.Tuple[discord.Embed, discord.ui.View]:
+    g = await ctx.bot.get_guild_config(ctx.guild.id)
+    am = g['automod']
+    view = BasicView(ctx, None)
+    select = SelectWithMultipleOptions("Please select an automod module.", [module for module in DEFAULT_AUTOMOD_CONFIG if isinstance(DEFAULT_AUTOMOD_CONFIG[module], dict)])
+    button = discord.ui.Button(style=discord.ButtonStyle.blurple, label="Continue")
+    cancel_btn = discord.ui.Button(style=discord.ButtonStyle.danger, label="Cancel")
+
+    async def button_callback(interaction: discord.Interaction):
+        if not select.values:
+            return await interaction.response.send_message("Please select some automod modules first.", ephemeral=True)
+        for value in select.values:
+            current_module = am[value]
+            current_module['enabled'] = True
+            am.update({value: current_module})
+        return await interaction.message.edit(embed=success_embed(
+            f"{EMOJIS['tick_yes']} Modules enabled!",
+            f"The following automod modules have been enabled: {', '.join([f'`{v_}`' for v_ in select.values])}"
+        ), view=None)
+
+    async def cancel_callback(interaction):
+        await interaction.message.delete()
+
+    button.callback = button_callback
+    cancel_btn.callback = cancel_callback
+
+    view.add_item(select)
+    view.add_item(button)
+    view.add_item(cancel_btn)
+    embed = success_embed(
+        f"{EMOJIS['loading']} Enabling automod modules...",
+        "Please select a few modules to enable and then click `Continue`"
+    )
+    return embed, view
+
+
+async def am_disable_modules(ctx: commands.Context, *modules: str) -> None:
+    g = await ctx.bot.get_guild_config(ctx.guild.id)
+    for module in modules:
+        am = g['automod']
+        m_conf = am[module]
+        m_conf['enabled'] = False
+        am.update({module: m_conf})
+
+
+class AutomodConfigView(discord.ui.View):
+    def __init__(self, ctx: commands.Context, embeds: list):
+        super().__init__(timeout=None)
+        self.ctx = ctx
+        self.embeds = embeds
+
+    @discord.ui.button(label="Filters Config", style=discord.ButtonStyle.blurple, disabled=True)
+    async def filter_show(self, b: discord.Button, i: discord.Interaction):
+        for item in self.children:
+            item.disabled = False
+        b.disabled = True
+        await i.message.edit(embed=self.embeds[0], view=self)
+
+    @discord.ui.button(label="Whitelist Config", style=discord.ButtonStyle.green)
+    async def whitelist_show(self, b: discord.Button, i: discord.Interaction):
+        for item in self.children:
+            item.disabled = False
+        b.disabled = True
+        await i.message.edit(embed=self.embeds[1], view=self)
+
+    async def interaction_check(self, i: discord.Interaction):
+        if i.user != self.ctx.author:
+            return await i.response.send_message("You cannot interaction in other's command!", ephemeral=True)
+        return True

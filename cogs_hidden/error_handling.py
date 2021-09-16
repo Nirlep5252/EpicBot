@@ -27,7 +27,7 @@ from config import (
 from utils.random import gen_random_string
 from utils.custom_checks import NotVoted, NotBotMod, OptedOut, PrivateCommand, ComingSoon
 from utils.converters import ImportantCategory, InvalidTimeZone, InvalidCategory
-from utils.exceptions import MusicGone, InvalidUrl
+from utils.exceptions import AutomodModuleAlreadyEnabled, AutomodModuleNotEnabled, MusicGone, InvalidUrl
 from utils.bot import EpicBot
 from utils.embed import (
     replace_things_in_string_fancy_lemao,
@@ -232,6 +232,16 @@ For more info you can join our [**support server**]({SUPPORT_SERVER_LINK})
             await ctx.reply(embed=error_embed(
                 f"{EMOJIS['tick_no']} Invalid URL!",
                 f"The URL `{error.argument}` is not a valid URL!"
+            ))
+        elif isinstance(error, AutomodModuleAlreadyEnabled):
+            await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Automod Module is already enabled!",
+                f"The automod module `{error.module}` is already enabled!"
+            ))
+        elif isinstance(error, AutomodModuleNotEnabled):
+            await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Automod Module is not enabled!",
+                f"The automod module `{error.module}` is not enabled!\nPlease enable it using `{prefix}automod enable {error.module}`."
             ))
         elif isinstance(error, commands.CheckFailure):
             ctx.command.reset_cooldown(ctx)
