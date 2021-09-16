@@ -48,7 +48,7 @@ class CCEditView(discord.ui.View):
         await interaction.response.send_message(f"This is {self.ctx.author.mention}'s view, not yours.", ephemeral=True)
 
 
-class custom(commands.Cog, description=""):
+class custom(commands.Cog, description="Custom commands, custom responses and more!"):
     def __init__(self, client: EpicBot):
         self.client = client
 

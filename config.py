@@ -307,33 +307,34 @@ Pog! {user_mention} just leveled up to level {level}!
 """
 
 DEFAULT_AUTOMOD_CONFIG = {
-    "banned_words": {  # done
+    "banned_words": {
         "enabled": False,
-        "words": []
+        "words": [],
+        "removed_words": []
     },
-    "all_caps": {  # done
+    "all_caps": {
         "enabled": False
     },
-    "duplicate_text": {  # done
+    "duplicate_text": {
         "enabled": False
     },
-    "message_spam": {  # done
+    "message_spam": {
         "enabled": False
     },
-    "invites": {  # done
+    "invites": {
         "enabled": False
     },
-    "links": {  # done
+    "links": {
         "enabled": False,
         "whitelist": []
     },
-    "mass_mentions": {  # done
+    "mass_mentions": {
         "enabled": False
     },
     "emoji_spam": {
         "enabled": False
     },
-    "zalgo_text": {  # done
+    "zalgo_text": {
         "enabled": False
     },
 
