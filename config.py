@@ -190,7 +190,6 @@ EMOJIS_FOR_COGS = {
     'user': '<:EpicMembers:794075799422238720>',
     'notifications': '🔔',
     'custom': EMOJIS['settings_color'][:-1],
-    'automod': BADGE_EMOJIS['staff_member']
 }
 CUTE_EMOJIS = [
     "<:shy:844039614032904222>",
