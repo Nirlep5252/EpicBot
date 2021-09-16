@@ -32,10 +32,6 @@ from utils.ui import Confirm, Paginator
 from utils.bot import EpicBot
 from utils.message import wait_for_msg
 
-afk_users = []
-afk_reasons = {}
-afk_guilds = {}
-
 
 class utility(commands.Cog, description="Commands that make your Discord experience nicer!"):
     def __init__(self, client: EpicBot):
@@ -459,10 +455,7 @@ class utility(commands.Cog, description="Commands that make your Discord experie
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Sets you as AFK.")
-    async def afk(self, ctx, *, reason=None):
-        if ctx.author.id in afk_users:
-            return
-
+    async def afk(self, ctx: commands.Context, *, reason=None):
         await ctx.reply(
             embed=success_embed(
                 f"{EMOJIS['sleepy']}  AFK",
@@ -478,29 +471,28 @@ class utility(commands.Cog, description="Commands that make your Discord experie
             pass
 
         await asyncio.sleep(15)
-        afk_users.append(ctx.author.id)
-        afk_reasons.update({ctx.author.id: reason})
-        afk_guilds.update({ctx.author.id: ctx.guild.id})
+        current = await self.client.afk.find_one({"_id": ctx.author.id})
+        if current is None:
+            await self.client.afk.insert_one({"_id": ctx.author.id, "guild_id": ctx.guild.id, "reason": reason})
 
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.bot:
             return
-        if message.author.id in afk_users:
-            afk_users.remove(message.author.id)
-            if message.author.id in afk_guilds:
-                guild = self.client.get_guild(int(afk_guilds[message.author.id]))
-                afk_guilds.pop(message.author.id)
-                if guild:
-                    member = guild.get_member(message.author.id)
-                    if member:
-                        user_nick = member.nick
-                        if user_nick is not None and user_nick.startswith("[AFK] "):
-                            try:
-                                await member.edit(nick=user_nick[6:])
-                            except Exception:
-                                pass
-            return await message.reply(
+        afk_user = await self.client.afk.find_one({"_id": message.author.id})
+        if afk_user is not None:
+            await self.client.afk.delete_one({"_id": message.author.id})
+            guild = self.client.get_guild(afk_user['guild_id'])
+            if guild:
+                member = guild.get_member(message.author.id)
+                if member:
+                    user_nick = member.nick
+                    if user_nick is not None and user_nick.startswith("[AFK] "):
+                        try:
+                            await member.edit(nick=user_nick[6:])
+                        except Exception:
+                            pass
+            await message.reply(
                 embed=success_embed(
                     "Welcome Back!",
                     "I removed you from AFK."
@@ -508,9 +500,10 @@ class utility(commands.Cog, description="Commands that make your Discord experie
                 delete_after=5
             )
         for user in message.mentions:
-            if user.id in afk_users:
+            sleepy_user = await self.client.afk.find_one({"_id": user.id})
+            if sleepy_user is not None:
                 return await message.reply(
-                    f"**{escape_markdown(user.name)}** is AFK for: {afk_reasons[user.id]}",
+                    f"**{escape_markdown(user.name)}** is AFK for: {sleepy_user['reason']}",
                     delete_after=5
                 )
 

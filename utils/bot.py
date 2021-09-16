@@ -80,6 +80,7 @@ class EpicBot(commands.AutoShardedBot):
         self.starboard = self.db['starboard']
         self.bookmarks = self.db['bookmarks']
         self.self_roles = self.db['self_roles']
+        self.afk = self.db['afk']
 
         # i'm gonna fill these up with my cu- i mean cache!
         self.prefixes_cache = []
