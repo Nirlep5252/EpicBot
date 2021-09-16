@@ -38,7 +38,8 @@ class BasicView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction):
         if interaction.user.id != self.ctx.author.id:
-            return await interaction.response.send_message(f"This is {self.ctx.author.mention}'s command, not yours.", ephemeral=True)
+            await interaction.response.send_message(f"This is {self.ctx.author.mention}'s command, not yours.", ephemeral=True)
+            return False
         return True
 
 
