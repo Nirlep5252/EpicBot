@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import asyncio
 import discord
 import inspect
 import traceback
@@ -49,14 +50,12 @@ slash_cmd_option_converters = {
 }
 
 
-class SlashContext(discord.Interaction):
+class InteractionContext(discord.Interaction):
     def __init__(self, interaction: discord.Interaction, bot: EpicBot):
         super().__init__(data=interaction._raw_data, state=interaction._state)
-        self._bot = bot
-
-    @property
-    def bot(self):
-        return self._bot
+        self.bot = bot
+        self.command: Union[SlashCommand, ContextMenuCommand] = self.bot.app_cmds[interaction.data.get('name')]
+        self.target: Union[discord.Message, discord.Member, discord.User]
 
 
 class SlashCommandChoice:
@@ -98,7 +97,7 @@ class SlashCommandOption:
         return final
 
     def __repr__(self) -> str:
-        return f"SlashCommandOption(name={self.name} type={self.type} description={self.description} required={self.required} choices={self.choices})"
+        return f"SlashCommandOption(name='{self.name}' type={self.type} description='{self.description}' required={self.required} choices={self.choices})"
 
 
 class SlashCommand:
@@ -174,13 +173,55 @@ class SlashCommand:
         return final
 
 
-slash_cmds: Dict[str, SlashCommand] = {}
+class ContextMenuCommand:
+    def __init__(self, func, **kwargs) -> None:
+        self.callback = func
+
+        self.name: str = kwargs.get('name', func.__name__)
+        self.guild_ids: List[int] = kwargs.get('guild_ids', [])
+        self._is_global: bool = True if self.guild_ids == [] else False
+        command_type = kwargs.get('type')
+        if command_type is None:
+            raise TypeError('Missing command type')
+        self.type: int = command_type
+        _spec = getfullargspec(func)
+        _cog = False
+        if 'self' in _spec.args:
+            _cog = True
+        self._cog = _cog
+
+    def __repr__(self) -> str:
+        return f"ContextMenuCommand(name='{self.name}' callback={self.callback} type={self.type})"
+
+    def __str__(self) -> str:
+        return self.name
+
+
+app_commands: Dict[str, Union[SlashCommand, ContextMenuCommand]] = {}
 
 
 def slash_command(**kwargs):
     def decorator(func):
         slash_cmd = SlashCommand(func, **kwargs)
-        slash_cmds[slash_cmd.name] = slash_cmd
+        app_commands[slash_cmd.name] = slash_cmd
+        return func
+
+    return decorator
+
+
+def user_command(**kwargs):
+    def decorator(func):
+        user_cmd = ContextMenuCommand(func, type=2, **kwargs)
+        app_commands[user_cmd.name] = user_cmd
+        return func
+
+    return decorator
+
+
+def message_command(**kwargs):
+    def decorator(func):
+        message_cmd = ContextMenuCommand(func, type=3, **kwargs)
+        app_commands[message_cmd.name] = message_cmd
         return func
 
     return decorator
@@ -193,29 +234,105 @@ def get_option(name: str, options: List[SlashCommandOption]):
     raise ValueError(f'Option {name} not found')
 
 
-async def slash_handler(interaction: discord.Interaction, bot: EpicBot):
-    class something(object):
-        def __init__(self, client):
-            self.client = client
-    all_slash_commands: Dict[str, SlashCommand] = bot.slash_cmds
+class FakeCog:
+    def __init__(self, bot: EpicBot):
+        self.bot = bot
+        self.client = bot
+
+
+async def app_command_handler(interaction: discord.Interaction, bot: EpicBot):
     data = interaction.data
     inter_type = data.get('type')
-    # checking if it's a slash cmd or not
-    # https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-types
     if inter_type is None:
         return
-    if int(inter_type) != 1:
+    if int(inter_type) == 1:
+        return await slash_command_handler(interaction, bot)
+    elif int(inter_type) == 2:
+        return await user_command_handler(interaction, bot)
+    elif int(inter_type) == 3:
+        return await message_command_handler(interaction, bot)
+    else:
+        pass
+
+
+async def user_command_handler(interaction: discord.Interaction, bot: EpicBot):
+    data = interaction.data
+    all_app_commands: Dict[str, Union[SlashCommand, ContextMenuCommand]] = bot.app_cmds
+    command_name = data.get('name')
+    if command_name not in all_app_commands:
         return
+    command = all_app_commands[command_name]
+    if not isinstance(command, ContextMenuCommand):
+        return
+    if not command._is_global:
+        if interaction.guild_id not in command.guild_ids:
+            return
+
+    ctx = InteractionContext(interaction, bot)
+    member_data = data.get("resolved", {}).get("members", {}).get(data.get("target_id"))
+    user_data = data.get("resolved", {}).get("users", {}).get(data.get("target_id"))
+    if member_data is not None:
+        member_data.update({"user": user_data})
+        member = discord.Member(data=member_data, guild=interaction.guild, state=ctx._state)
+    else:
+        member = discord.User(data=user_data, state=ctx._state)
+    ctx.target = member
+    try:
+        bot.dispatch('app_command', ctx)
+        if command._cog:
+            await command.callback(FakeCog(bot), ctx)
+        else:
+            await command.callback(ctx)
+        bot.dispatch('app_command_completion', ctx)
+    except Exception as e:
+        bot.dispatch('app_command_error', ctx, e)
+        traceback.print_exception(type(e), e, e.__traceback__)
+
+
+async def message_command_handler(interaction: discord.Interaction, bot: EpicBot):
+    data = interaction.data
+    all_app_commands: Dict[str, Union[SlashCommand, ContextMenuCommand]] = bot.app_cmds
+    command_name = data.get('name')
+    if command_name not in all_app_commands:
+        return
+    command = all_app_commands[command_name]
+    if not isinstance(command, ContextMenuCommand):
+        return
+    if not command._is_global:
+        if interaction.guild_id not in command.guild_ids:
+            return
+
+    ctx = InteractionContext(interaction, bot)
+    message_data = data.get("resolved", {}).get("messages", {}).get(data.get("target_id"))
+    message = discord.Message(data=message_data, channel=interaction.channel, state=ctx._state)
+    ctx.target = message
+    try:
+        bot.dispatch('app_command', ctx)
+        if command._cog:
+            await command.callback(FakeCog(bot), ctx)
+        else:
+            await command.callback(ctx)
+        bot.dispatch('app_command_completion', ctx)
+    except Exception as e:
+        bot.dispatch('app_command_error', ctx, e)
+        traceback.print_exception(type(e), e, e.__traceback__)
+
+
+async def slash_command_handler(interaction: discord.Interaction, bot: EpicBot):
+    data = interaction.data
     # checking if the slash cmd is in the slash cmds dict
-    if data.get('name') not in all_slash_commands:
+    all_app_commands: Dict[str, Union[SlashCommand, ContextMenuCommand]] = bot.app_cmds
+    if data.get('name') not in all_app_commands:
         return
-    slash_cmd = all_slash_commands[data.get('name')]
+    slash_cmd = all_app_commands[data.get('name')]
+    if not isinstance(slash_cmd, SlashCommand):
+        return
     if not slash_cmd._is_global:
         if interaction.guild_id not in slash_cmd.guild_ids:
             return
 
     kwargs = {}
-    ctx = SlashContext(interaction, bot)
+    ctx = InteractionContext(interaction, bot)
     for option in data.get('options', []):
         _opt = get_option(option['name'], slash_cmd.options)
         if _opt.type not in slash_cmd_option_converters:
@@ -223,25 +340,28 @@ async def slash_handler(interaction: discord.Interaction, bot: EpicBot):
         converter = slash_cmd_option_converters[_opt.type]
         kwargs.update({_opt.name: await converter(ctx, option['value']) if inspect.iscoroutinefunction(converter) else converter(option['value'])})
     try:
+        bot.dispatch('app_command', ctx)
         if slash_cmd._cog:
-            await slash_cmd.callback(something(client=bot), ctx, **kwargs)
+            await slash_cmd.callback(FakeCog(bot), ctx, **kwargs)
         else:
             await slash_cmd.callback(ctx, **kwargs)
+        bot.dispatch('app_command_completion', ctx)
     except Exception as e:
+        bot.dispatch('app_command_error', ctx, e)
         traceback.print_exception(type(e), e, e.__traceback__)
 
 
 async def update_app_commands(bot: EpicBot):
-    bot.slash_cmds = slash_cmds
+    bot.app_cmds = app_commands
     global_slash_cmds = []
     guild_slash_cmds: Dict[int, list] = {}
-    for cmd_name, cmd in slash_cmds.items():
+    for cmd_name, cmd in app_commands.items():
         cmd_payload = {
             "name": cmd_name,
-            "type": 1,
-            "description": cmd.desc,
-            "options": [option.to_dict() for option in cmd.options]
+            "type": 1 if isinstance(cmd, SlashCommand) else cmd.type,
         }
+        if isinstance(cmd, SlashCommand):
+            cmd_payload.update({"description": cmd.desc, "options": [option.to_dict() for option in cmd.options]})
         if not cmd.guild_ids:
             global_slash_cmds.append(cmd_payload)
         else:
@@ -251,11 +371,13 @@ async def update_app_commands(bot: EpicBot):
                 guild_slash_cmds.update({guild_id: current_guild_cmds})
 
     await bot.http.bulk_upsert_global_commands(bot.user.id, global_slash_cmds)
-    print(f"Updated {len(global_slash_cmds)} global commands")
+    bot.dispatch('global_commands_update', global_slash_cmds)
     for guild_id, guild_commands in guild_slash_cmds.items():
         try:
             await bot.http.bulk_upsert_guild_commands(bot.user.id, guild_id, guild_commands)
+            bot.dispatch('guild_commands_update', guild_commands, guild_id)
+            await asyncio.sleep(0.5)
         except discord.Forbidden:
-            print(f"Unable to update guild commands for guild ID: {guild_id}\n\nPlease re-add the bot to that guild using the application.commands scope.")
-        print(f"Updated {len(guild_commands)} for guild ID: {guild_id}")
-    print(f"Updated guild commands for {len(guild_slash_cmds)} guilds")
+            print(f"Unable to update guild commands for guild ID: {guild_id}\nPlease re-add the bot to that guild using the application.commands scope.")
+        except Exception as e:
+            traceback.print_exception(type(e), e, e.__traceback__)

@@ -36,7 +36,7 @@ from utils.help import EpicBotHelp
 
 class EpicBot(commands.AutoShardedBot):
     def __init__(self, beta: bool = False):
-        self.slash_cmds: dict = {}
+        self.app_cmds: dict = {}
         self.beta = beta
         intents = discord.Intents.default()
         intents.members = True
@@ -58,7 +58,6 @@ class EpicBot(commands.AutoShardedBot):
         self.cogs_loaded = False
         self.views_loaded = False
         self.rolemenus_loaded = False
-        self.app_commands_updated = False
 
         self.last_updated_serverconfig_db = 0
         self.last_updated_prefixes_db = 0

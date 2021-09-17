@@ -6,7 +6,7 @@ from utils.bot import EpicBot
 from config import MAIN_COLOR
 from utils.time import convert_int_to_weekday
 from utils.custom_checks import mutual_guild
-from handlers.slash import slash_command, SlashContext
+from handler import slash_command, InteractionContext
 
 
 stream_schedule = {
@@ -78,7 +78,7 @@ class PrivateCmds(commands.Cog):
     )
     @mutual_guild(719157704467152977)
     @slash_command(name='ramtime', guild_ids=[719157704467152977, 749996055369875456], help="Check what time it is for Ramaziz!")
-    async def ram_time(self, ctx: SlashContext):
+    async def ram_time(self, ctx: InteractionContext):
         dt_utc = datetime.datetime.now(tz=pytz.UTC)
         dt_nzt = dt_utc.astimezone(pytz.timezone("NZ"))
 
@@ -90,7 +90,7 @@ class PrivateCmds(commands.Cog):
         await ctx.reply(embed=time_embed, view=view)
 
     @slash_command(guild_ids=[746202728031584358], help="Very very secret command, don't tell Kitten btw! 👀")
-    async def kitten(self, ctx: SlashContext):
+    async def kitten(self, ctx: InteractionContext):
         await ctx.reply("Don't tell kitten 👀 but dogs are kinda cute uwu", ephemeral=True)
 
 

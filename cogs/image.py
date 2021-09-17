@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from handlers.slash import SlashCommandOption, SlashContext, slash_command
 import discord
 import functools
 
@@ -27,6 +26,7 @@ from utils.bot import EpicBot
 from utils.flags import EnhanceCmdFlags
 from typing import Optional, Union
 from epicbot_images import memes, effects, gif_effects
+from handler import SlashCommandOption, InteractionContext, slash_command
 
 wiggle_concurrency = []
 
@@ -104,7 +104,7 @@ class image(commands.Cog, description="Cool image commands!"):
 
     @slash_command(name="enhance", help="Enhance or deepfry someone 😏")
     async def _enhance(
-        self, ctx: SlashContext, member: discord.Member = None,
+        self, ctx: InteractionContext, member: discord.Member = None,
         contrast: int = 15, color: int = 15, brightness: int = 15, sharpness: int = 15
     ):
         member = member or ctx.author
@@ -140,10 +140,10 @@ class image(commands.Cog, description="Cool image commands!"):
         help="Wiggle your friends...",
         options=[SlashCommandOption(name='person', type=6, description="Pick someone to wiggle!", required=True)]
     )
-    async def wiggle(self, ctx: Union[commands.Context, SlashContext], *, person: Optional[Union[discord.Member, discord.PartialEmoji]] = None):
+    async def wiggle(self, ctx: Union[commands.Context, InteractionContext], *, person: Optional[Union[discord.Member, discord.PartialEmoji]] = None):
         if ctx.guild.id in wiggle_concurrency:
             text = f"{EMOJIS['tick_no']}Wiggling is already running in this guild!\nDue to this command being resource intensive, it can only be run one at a time per guild."
-            if isinstance(ctx, SlashContext):
+            if isinstance(ctx, InteractionContext):
                 return await ctx.reply(text, ephemeral=True)
             else:
                 return await ctx.reply(text)
@@ -160,7 +160,7 @@ class image(commands.Cog, description="Cool image commands!"):
         else:
             thingy_bytes = await person.display_avatar.replace(format='png', size=128).read() if isinstance(person, discord.Member) else await person.read()
 
-        if isinstance(ctx, SlashContext):
+        if isinstance(ctx, InteractionContext):
             await ctx.response.defer()
             wiggle_concurrency.append(ctx.guild.id)
             file = discord.File(await self.client.loop.run_in_executor(None, functools.partial(gif_effects.wiggle, img=thingy_bytes)))
