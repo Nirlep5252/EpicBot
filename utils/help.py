@@ -101,11 +101,12 @@ async def get_commands_list(ctx: commands.Context, mapping) -> discord.Embed:
                     value = "Please go to a NSFW channel to view this commands!",
                     inline = False
                 )
-            embed.add_field(
-                name=f"{EMOJIS_FOR_COGS[cog.qualified_name]} • {cog.qualified_name.title()}",
-                value=", ".join([f"`{command.name}`" for command in commands_]),
-                inline=False
-            )
+            else:
+                embed.add_field(
+                    name=f"{EMOJIS_FOR_COGS[cog.qualified_name]} • {cog.qualified_name.title()}",
+                    value=", ".join([f"`{command.name}`" for command in commands_]),
+                    inline=False
+                )
 
     embed.add_field(name="Links:", value=f"""
 [Dashboard]({WEBSITE_LINK}) | [Support]({SUPPORT_SERVER_LINK}) | [Invite]({WEBSITE_LINK}/invite)
