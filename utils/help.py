@@ -95,12 +95,15 @@ async def get_commands_list(ctx: commands.Context, mapping) -> discord.Embed:
 
     for cog, commands_ in mapping.items():
         if cog is not None and cog.qualified_name == cog.qualified_name.lower():
+            if cog.qualified_name == 'nsfw':
+                value = "Please go to a NSFW channel to view this commands!" if not ctx.channel.is_nsfw() else ", ".join([f"`{command.name}`" for command in commands_])
+            else:
+                value = ", ".join([f"`{command.name}`" for command in commands_])
             embed.add_field(
                 name=f"{EMOJIS_FOR_COGS[cog.qualified_name]} • {cog.qualified_name.title()}",
-                value=", ".join([f"`{command.name}`" for command in commands_]),
+                value=value,
                 inline=False
             )
-
     embed.add_field(name="Links:", value=f"""
 [Dashboard]({WEBSITE_LINK}) | [Support]({SUPPORT_SERVER_LINK}) | [Invite]({WEBSITE_LINK}/invite)
     """, inline=False)
