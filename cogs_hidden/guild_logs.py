@@ -41,6 +41,8 @@ class GuildLogs(commands.Cog):
 
     async def get_log_webhook(self, e):
         channel = self.client.get_channel(e)
+        if not channel:
+            return None
         webhooks = await channel.webhooks()
         w = discord.utils.get(webhooks, name="EpicBot Logs", user=self.client.user)
         if w is None:
@@ -48,6 +50,8 @@ class GuildLogs(commands.Cog):
         return w
 
     async def send_from_webhook(self, webhook: discord.Webhook, embed: discord.Webhook, files: List[discord.File] = [], embeds: List[discord.Embed] = []):
+        if webhook is None:
+            return
         if embed is None:
             await webhook.send(
                 allowed_mentions=self.no_mentions,
