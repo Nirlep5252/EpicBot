@@ -55,7 +55,7 @@ class InteractionContext(discord.Interaction):
         super().__init__(data=interaction._raw_data, state=interaction._state)
         self.bot = bot
         self.command: Union[SlashCommand, ContextMenuCommand] = self.bot.app_cmds[interaction.data.get('name')]
-        self.target: Union[discord.Message, discord.Member, discord.User]
+        self.target: Union[discord.Message, discord.Member, discord.User] = None
 
 
 class SlashCommandChoice:
