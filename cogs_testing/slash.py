@@ -22,12 +22,14 @@ class SlashCogTesting(commands.Cog):
         await ctx.reply(f"You picked {something}", ephemeral=True)
 
     @user_command(guild_ids=[746202728031584358])
-    async def LeMaO(self, ctx: InteractionContext):
-        await ctx.reply(f"AJAJJJA {ctx.target.mention}", ephemeral=True)
+    async def sex(self, ctx: InteractionContext):
+        if ctx.target == ctx.author:
+            return await ctx.reply("Imagine having sex with yourself...", ephemeral=True)
+        await ctx.reply(f"You can't have sex with {ctx.target.mention}", ephemeral=True)
 
     @message_command(guild_ids=[746202728031584358])
-    async def WEW(self, ctx: InteractionContext):
-        await ctx.reply(f"[Message]({ctx.target.jump_url}) e", ephemeral=True)
+    async def cute(self, ctx: InteractionContext):
+        await ctx.reply(f"This [message]({ctx.target.jump_url}) is very cute, but you are cuter 👀", ephemeral=True)
 
 
 def setup(bot):
