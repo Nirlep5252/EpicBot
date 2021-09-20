@@ -30,7 +30,6 @@ from config import (
 from utils.embed import success_embed, error_embed, edit_msg_multiple_times
 from utils.custom_checks import not_opted_out
 from utils.random import email_fun, passwords, DMs, discord_servers
-from utils.reddit import pick_random_url_from_reddit
 from utils.constants import brain_images
 from utils.ui import Paginator
 from owotext import OwO
@@ -894,7 +893,12 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Funny, funny memes!")
     async def meme(self, ctx: commands.Context):
-        await ctx.reply(embed=await pick_random_url_from_reddit('dankmemes', 'Haha!'))
+        async with self.client.session.get("https://meme-api.herokuapp.com/gimme") as r:
+            data = await r.json()
+            return await ctx.reply(embed=success_embed(
+                "Haha!",
+                data['title']
+            ).set_image(url=data['url']))
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Random fun facts!")
