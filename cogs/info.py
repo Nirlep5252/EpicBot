@@ -18,6 +18,8 @@ from utils.time import datetime_to_seconds
 import discord
 import time
 import datetime
+import pygit2
+import itertools
 from discord.utils import escape_markdown
 from discord.ext import commands
 
@@ -29,6 +31,27 @@ from config import (
 from utils.embed import error_embed
 from utils.bot import EpicBot
 from typing import Optional, Union
+
+
+def format_commit(commit: pygit2.Commit) -> str:
+    # CREDITS: https://github.com/Rapptz/RoboDanny
+    short, _, _ = commit.message.partition('\n')
+    short_sha2 = commit.hex[0:6]
+    commit_tz = datetime.timezone(
+        datetime.timedelta(minutes=commit.commit_time_offset))
+    commit_time = datetime.datetime.fromtimestamp(
+        commit.commit_time).astimezone(commit_tz)
+
+    offset = f'<t:{int(commit_time.astimezone(datetime.timezone.utc).timestamp())}:R>'
+    return f'[`{short_sha2}`](https://github.com/DeveloperJosh/MailHook/commit/{commit.hex}) {short} ({offset})'
+
+
+def get_commits(count: int = 3):
+    # CREDITS: https://github.com/Rapptz/RoboDanny
+    repo = pygit2.Repository('.git')
+    commits = list(itertools.islice(
+        repo.walk(repo.head.target, pygit2.GIT_SORT_TOPOLOGICAL), count))
+    return '\n'.join(format_commit(commit) for commit in commits)
 
 
 class info(commands.Cog, description="Statistic related commands"):
@@ -283,62 +306,103 @@ Joined At: {"Not in server" if isinstance(user, discord.User) else user.joined_a
         ).set_image(url=user.display_avatar.url)
         await ctx.message.reply(embed=embed)
 
-    @commands.cooldown(1, 60, commands.BucketType.user)
-    @commands.command(aliases=['stats'], help="Get info about me!")
-    async def botinfo(self, ctx):
-        msg = await ctx.message.reply(embed=discord.Embed(title=f"Loading... {EMOJIS['loading']}"))
-        embed = discord.Embed(
-            title="Information About Me!",
-            description="I am a simple, multipurpose Discord bot, built to make ur Discord life easier!",
-            color=MAIN_COLOR
-        ).set_thumbnail(url=self.client.user.display_avatar.url)
-        embed.add_field(
-            name="Stats",
-            value=f"""
-```yaml
-Servers: {len(self.client.guilds)}
-Users: {len(set(self.client.get_all_members()))}
-Total Commands: {len(self.client.commands)}
-Uptime: {str(datetime.timedelta(seconds=int(round(time.time()-start_time))))}
-Version: V2 Rewrite
-```
-            """,
-            inline=False
-        )
-#         async with self.client.session.get("https://statcord.com/logan/stats/751100444188737617") as r:
-#             ah_yes = await r.json()
+#     @commands.cooldown(1, 60, commands.BucketType.user)
+#     @commands.command(aliases=['stats'], help="Get info about me!")
+#     async def botinfo(self, ctx):
+#         msg = await ctx.message.reply(embed=discord.Embed(title=f"Loading... {EMOJIS['loading']}"))
+#         embed = discord.Embed(
+#             title="Information About Me!",
+#             description="I am a simple, multipurpose Discord bot, built to make ur Discord life easier!",
+#             color=MAIN_COLOR
+#         ).set_thumbnail(url=self.client.user.display_avatar.url)
 #         embed.add_field(
-#             name="Statcord Stats",
+#             name="Stats",
 #             value=f"""
 # ```yaml
-# Commands Ran Today: {ah_yes['data'][::-1][0]['commands']}
-# Most Used Command: {ah_yes['data'][::-1][0]['popular'][0]['name']} - {ah_yes['data'][::-1][0]['popular'][0]['count']} uses
-# Memory Usage: {'%.1f' % float(int(ah_yes['data'][::-1][0]['memactive'])/1000000000)} GB / {'%.1f' % float(int(psutil.virtual_memory().total)/1000000000)} GB
-# Memory Load: {ah_yes['data'][::-1][0]['memload']}%
-# CPU Load: {ah_yes['data'][::-1][0]['cpuload']}%
+# Servers: {len(self.client.guilds)}
+# Users: {len(set(self.client.get_all_members()))}
+# Total Commands: {len(self.client.commands)}
+# Uptime: {str(datetime.timedelta(seconds=int(round(time.time()-start_time))))}
+# Version: V2 Rewrite
 # ```
 #             """,
 #             inline=False
 #         )
-        embed.add_field(
-            name="Links",
-            value=f"""
-- [Dashboard]({WEBSITE_LINK})
-- [Support Server]({SUPPORT_SERVER_LINK})
-- [Invite EpicBot]({INVITE_BOT_LINK})
-- [Vote EpicBot]({WEBSITE_LINK}/vote)
-            """,
-            inline=True
-        )
-        embed.add_field(
-            name="Owner Info",
-            value="""
-Made by: **[Nirlep\_5252\_](https://discord.com/users/558861606063308822)**
-            """,
-            inline=True
-        )
+# #         async with self.client.session.get("https://statcord.com/logan/stats/751100444188737617") as r:
+# #             ah_yes = await r.json()
+# #         embed.add_field(
+# #             name="Statcord Stats",
+# #             value=f"""
+# # ```yaml
+# # Commands Ran Today: {ah_yes['data'][::-1][0]['commands']}
+# # Most Used Command: {ah_yes['data'][::-1][0]['popular'][0]['name']} - {ah_yes['data'][::-1][0]['popular'][0]['count']} uses
+# # Memory Usage: {'%.1f' % float(int(ah_yes['data'][::-1][0]['memactive'])/1000000000)} GB / {'%.1f' % float(int(psutil.virtual_memory().total)/1000000000)} GB
+# # Memory Load: {ah_yes['data'][::-1][0]['memload']}%
+# # CPU Load: {ah_yes['data'][::-1][0]['cpuload']}%
+# # ```
+# #             """,
+# #             inline=False
+# #         )
+#         embed.add_field(
+#             name="Links",
+#             value=f"""
+# - [Dashboard]({WEBSITE_LINK})
+# - [Support Server]({SUPPORT_SERVER_LINK})
+# - [Invite EpicBot]({INVITE_BOT_LINK})
+# - [Vote EpicBot]({WEBSITE_LINK}/vote)
+#             """,
+#             inline=True
+#         )
+#         embed.add_field(
+#             name="Owner Info",
+#             value="""
+# Made by: **[Nirlep\_5252\_](https://discord.com/users/558861606063308822)**
+#             """,
+#             inline=True
+#         )
 
-        await msg.edit(embed=embed)
+#         await msg.edit(embed=embed)
+
+    @commands.cooldown(1, 60, commands.BucketType.user)
+    @commands.command(aliases=['stats'], help="Get info about me!")
+    async def botinfo(self, ctx: commands.Context):
+        embed = discord.Embed(
+            title="Info about me!",
+            description="A simple multipurpose Discord bot.",
+            color=MAIN_COLOR,
+            timestamp=datetime.datetime.utcnow()
+        ).add_field(
+            name="Stats:",
+            value=f"""
+**Servers:** {len(self.bot.guilds)}
+**Users:** {len(self.bot.users)}
+**Commands:** {len(self.bot.commands)}
+**Uptime:** {str(datetime.timedelta(seconds=int(round(time.time()-start_time))))}
+**Version:** V2 Rewrite
+            """,
+            inline=True
+        ).add_field(
+            name="Links:",
+            value=f"""
+- [Website]({WEBSITE_LINK})
+- [Support]({SUPPORT_SERVER_LINK})
+- [Invite]({INVITE_BOT_LINK})
+- [Vote]({WEBSITE_LINK}/vote)
+- [Github](https://github.com/nirlep5252/epicbot)
+            """,
+            inline=True
+        ).set_footer(text=self.bot.user.name, icon_url=self.bot.user.display_avatar.url
+        ).set_author(name=self.bot.user.name, icon_url=self.bot.user.display_avatar.url
+        ).set_thumbnail(url=self.bot.user.display_avatar.url)
+        try:
+            embed.add_field(
+                name="Latest Commits:",
+                value=get_commits(),
+                inline=False
+            )
+        except Exception:
+            pass
+        await ctx.reply(embed=embed)
 
 
 def setup(client):

@@ -25,6 +25,7 @@ pytz
 statcord.py
 emojis
 python-youtube
+pygit2
 
 git+https://github.com/nirlep5252/epicbot-images
 git+https://github.com/nirlep5252/Discord-Games.git
