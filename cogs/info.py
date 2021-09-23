@@ -374,9 +374,9 @@ Joined At: {"Not in server" if isinstance(user, discord.User) else user.joined_a
         ).add_field(
             name="Stats:",
             value=f"""
-**Servers:** {len(self.bot.guilds)}
-**Users:** {len(self.bot.users)}
-**Commands:** {len(self.bot.commands)}
+**Servers:** {len(self.client.guilds)}
+**Users:** {len(self.client.users)}
+**Commands:** {len(self.client.commands)}
 **Uptime:** {str(datetime.timedelta(seconds=int(round(time.time()-start_time))))}
 **Version:** V2 Rewrite
             """,
@@ -391,9 +391,9 @@ Joined At: {"Not in server" if isinstance(user, discord.User) else user.joined_a
 - [Github](https://github.com/nirlep5252/epicbot)
             """,
             inline=True
-        ).set_footer(text=self.bot.user.name, icon_url=self.bot.user.display_avatar.url
-        ).set_author(name=self.bot.user.name, icon_url=self.bot.user.display_avatar.url
-        ).set_thumbnail(url=self.bot.user.display_avatar.url)
+        ).set_footer(text=self.client.user.name, icon_url=self.client.user.display_avatar.url
+        ).set_author(name=self.client.user.name, icon_url=self.client.user.display_avatar.url
+        ).set_thumbnail(url=self.client.user.display_avatar.url)
         try:
             embed.add_field(
                 name="Latest Commits:",
