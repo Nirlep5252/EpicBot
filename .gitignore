@@ -5,3 +5,5 @@ __pycache__
 .metadata
 test.py
 .env
+poetry.lock
+pyproject.toml
