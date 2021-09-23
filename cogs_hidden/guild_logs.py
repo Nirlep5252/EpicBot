@@ -231,7 +231,7 @@ class GuildLogs(commands.Cog):
             description=f"**Bulk delete in {messages[0].channel.mention}, {len(messages)} messages deleted.**",
             timestamp=datetime.datetime.utcnow(),
             color=RED_COLOR
-        ).set_author(name=messages[0].guild, icon_url=messages[0].guild.icon.url)
+        ).set_author(name=messages[0].guild, icon_url=messages[0].guild.icon.url if messages[0].guild.icon is not None else 'https://cdn.discordapp.com/embed/avatars/1.png')
         await self.send_from_webhook(w, e)
 
     @commands.Cog.listener("on_guild_channel_create")
@@ -244,7 +244,7 @@ class GuildLogs(commands.Cog):
             description=f"**Channel created: `#{channel.name}`**",
             timestamp=datetime.datetime.utcnow(),
             color=MAIN_COLOR
-        ).set_author(name=channel.guild, icon_url=channel.guild.icon.url
+        ).set_author(name=channel.guild, icon_url=channel.guild.icon.url if channel.guild.icon is not None else 'https://cdn.discordapp.com/embed/avatars/1.png'
         ).set_footer(text=f"ID: {channel.id}")
         await self.send_from_webhook(w, e)
 
@@ -258,7 +258,7 @@ class GuildLogs(commands.Cog):
             description=f"**Channel deleted: `#{channel.name}`**",
             timestamp=datetime.datetime.utcnow(),
             color=RED_COLOR
-        ).set_author(name=channel.guild, icon_url=channel.guild.icon.url
+        ).set_author(name=channel.guild, icon_url=channel.guild.icon.url if channel.guild.icon is not None else 'https://cdn.discordapp.com/embed/avatars/1.png'
         ).set_footer(text=f"ID: {channel.id}")
         await self.send_from_webhook(w, e)
 
@@ -274,7 +274,7 @@ class GuildLogs(commands.Cog):
             description=f"**Channel updated: {after.mention}**",
             timestamp=datetime.datetime.utcnow(),
             color=MAIN_COLOR
-        ).set_author(name=after.guild, icon_url=after.guild.icon.url
+        ).set_author(name=after.guild, icon_url=after.guild.icon.url if after.guild.icon is not None else 'https://cdn.discordapp.com/embed/avatars/1.png'
         ).set_footer(text=f"ID: {after.id}")
         if before.name != after.name:
             e.add_field(
@@ -336,7 +336,7 @@ class GuildLogs(commands.Cog):
             description=f"**Role created: `{role.name}`**",
             timestamp=datetime.datetime.utcnow(),
             color=MAIN_COLOR
-        ).set_author(name=role.guild, icon_url=role.guild.icon.url
+        ).set_author(name=role.guild, icon_url=role.guild.icon.url if role.guild.icon is not None else 'https://cdn.discordapp.com/embed/avatars/1.png'
         ).set_footer(text=f"ID: {role.id}")
         await self.send_from_webhook(w, e)
 
@@ -350,7 +350,7 @@ class GuildLogs(commands.Cog):
             description=f"**Role deleted: `{role.name}`**",
             timestamp=datetime.datetime.utcnow(),
             color=RED_COLOR
-        ).set_author(name=role.guild, icon_url=role.guild.icon.url
+        ).set_author(name=role.guild, icon_url=role.guild.icon.url if role.guild.icon is not None else 'https://cdn.discordapp.com/embed/avatars/1.png'
         ).set_footer(text=f"ID: {role.id}")
         await self.send_from_webhook(w, e)
 
@@ -366,7 +366,7 @@ class GuildLogs(commands.Cog):
             description=f"**Role updated: {after.mention}**",
             timestamp=datetime.datetime.utcnow(),
             color=MAIN_COLOR
-        ).set_author(name=after.guild, icon_url=after.guild.icon.url
+        ).set_author(name=after.guild, icon_url=after.guild.icon.url if after.guild.icon is not None else 'https://cdn.discordapp.com/embed/avatars/1.png'
         ).set_footer(text=f"ID: {after.id}")
         if before.color != after.color:
             e.add_field(
@@ -516,7 +516,7 @@ class GuildLogs(commands.Cog):
             title="Server emojis updated",
             timestamp=datetime.datetime.utcnow(),
             color=MAIN_COLOR
-        ).set_author(name=guild, icon_url=guild.icon.url
+        ).set_author(name=guild, icon_url=guild.icon.url if guild.icon is not None else 'https://cdn.discordapp.com/embed/avatars/1.png'
         ).set_footer(text=f"ID: {guild.id}")
         if emojis_added != "":
             e.add_field(
