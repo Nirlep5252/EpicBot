@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from handler.app_commands import InteractionContext
 from utils.time import datetime_to_seconds
 import discord
 import time
@@ -30,7 +31,9 @@ from config import (
 )
 from utils.embed import error_embed
 from utils.bot import EpicBot
-from typing import Optional, Union
+from utils.ui import BasicView
+from handler import user_command
+from typing import List, Optional, Union
 
 
 def format_commit(commit: pygit2.Commit) -> str:
@@ -52,6 +55,33 @@ def get_commits(count: int = 3):
     commits = list(itertools.islice(
         repo.walk(repo.head.target, pygit2.GIT_SORT_TOPOLOGICAL), count))
     return '\n'.join(format_commit(commit) for commit in commits)
+
+
+class UserinfoView(BasicView):
+
+    def __init__(self, ctx: commands.Context, timeout: Optional[int] = None, embeds: List[discord.Embed] = None):
+        super().__init__(ctx, timeout=timeout)
+        self.embeds = embeds or []
+
+    @discord.ui.button(label="Info", emoji=EMOJIS_FOR_COGS['info'], style=discord.ButtonStyle.blurple, disabled=True)
+    async def info(self, b: discord.ui.Button, interaction: discord.Interaction):
+        self.susu(b)
+        await interaction.message.edit(embed=self.embeds[0], view=self)
+
+    @discord.ui.button(label="Roles", emoji='<:role:890807676697710622>', style=discord.ButtonStyle.blurple)
+    async def roles(self, b: discord.ui.Button, interaction: discord.Interaction):
+        self.susu(b)
+        await interaction.message.edit(embed=self.embeds[1], view=self)
+
+    @discord.ui.button(label="Permissions", emoji='🛠️', style=discord.ButtonStyle.blurple)
+    async def permissions(self, b: discord.ui.Button, interaction: discord.Interaction):
+        self.susu(b)
+        await interaction.message.edit(embed=self.embeds[2], view=self)
+
+    def susu(self, b):
+        for i in self.children:
+            i.disabled = False
+        b.disabled = True
 
 
 class info(commands.Cog, description="Statistic related commands"):
@@ -182,55 +212,73 @@ Members: {len(role.members)}
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Get info about users!")
-    async def userinfo(self, ctx: commands.Context, user: Optional[Union[discord.Member, discord.User]] = None):
-        user = user or ctx.author
+    @user_command(name="Userinfo")
+    async def userinfo(self, ctx: Union[commands.Context, InteractionContext], user: Optional[Union[discord.Member, discord.User]] = None):
+        if isinstance(ctx, commands.Context):
+            user = user or ctx.author
+        else:
+            user = user or ctx.target
 
-        embed = discord.Embed(color=user.color)
-        embed.set_author(name=user, icon_url=user.display_avatar.url)
-        embed.add_field(
-            name="Basic Info",
+        _user = await self.client.fetch_user(user.id)  # to get the banner
+
+        embed = discord.Embed(
+            color=_user.accent_color or user.color or MAIN_COLOR,
+            description=f"{user.mention} {escape_markdown(str(user))} ({user.id})",
+            timestamp=datetime.datetime.utcnow()
+        ).set_author(name=user, icon_url=user.display_avatar.url
+        ).set_footer(text=self.client.user.name, icon_url=self.client.user.display_avatar.url
+        ).set_thumbnail(url=user.display_avatar.url
+        )
+        if _user.banner is not None:
+            embed.set_image(url=_user.banner.url)
+
+        embed1 = embed.copy()
+        c = str(int(user.created_at.astimezone(datetime.timezone.utc).timestamp()))
+        j = str(int(user.joined_at.astimezone(datetime.timezone.utc).timestamp())) if isinstance(user, discord.Member) else None
+        embed1.add_field(
+            name="Account Info:",
             value=f"""
-```yaml
-Username: {user}
-Nickname: {user.display_name}
-ID: {user.id}
-```
+**Username:** {escape_markdown(user.name)}
+**Nickname:** {escape_markdown(user.display_name)}
+**ID:** {user.id}
             """,
             inline=False
         )
-        embed.add_field(
-            name="Account Age Info",
+        embed1.add_field(
+            name="Age Info:",
             value=f"""
-```yaml
-Created At: {user.created_at.replace(tzinfo=None).strftime("%d/%m/%y | %H:%M:%S")}
-Joined At: {"Not in server" if isinstance(user, discord.User) else user.joined_at.replace(tzinfo=None).strftime("%d/%m/%y | %H:%M:%S")}
-```
+**Created At:** <t:{c}:F> <t:{c}:R>
+**Joined At:** {'<t:' + j + ':F> <t:' + j + ':R>' if j is not None else 'Not in the server.'}
+            """,
+            inline=False
+        )
+        embed1.add_field(
+            name="URLs:",
+            value=f"""
+**Avatar URL:** [Click Me]({user.display_avatar.url})
+**Guild Avatar URL:** [Click Me]({(user.guild_avatar.url if user.guild_avatar is not None else user.display_avatar.url) if isinstance(user, discord.Member) else user.display_avatar.url})
+**Banner URL:** {'[Click Me](' + _user.banner.url + ')' if _user.banner is not None else 'None'}
             """,
             inline=False
         )
 
-        roles = ""
+        embed2 = embed.copy()
+        r = ', '.join(role.mention for role in user.roles[1:][::-1]) if len(user.roles) > 1 else 'No Roles.' if isinstance(user, discord.Member) else 'Not in server.'
+        embed2.add_field(
+            name="Roles:",
+            value=r if len(r) <= 1024 else r[0:1006] + ' and more...',
+            inline=False
+        )
 
-        if isinstance(user, discord.Member):
-            for role in user.roles[::-1]:
-                if len(roles) > 500:
-                    roles += "and more roles..."
-                    break
-                if str(role) != "@everyone":
-                    roles += f"{role.mention}, "
-
-            if len(roles) == 0:
-                roles = "No roles."
-
-            embed.add_field(
-                name="Roles",
-                value=roles,
-                inline=False
-            )
-
-        embed.set_thumbnail(url=user.display_avatar.url)
-
-        await ctx.reply(embed=embed)
+        embed3 = embed.copy()
+        embed3.add_field(
+            name="Permissions:",
+            value=', '.join([perm.replace('_', ' ').title() for perm, value in iter(user.guild_permissions) if value]) if isinstance(user, discord.Member) else 'Not in server.',
+            inline=False
+        )
+        embeds = [embed1, embed2, embed3]
+        v = UserinfoView(ctx, None, embeds)
+        await ctx.reply(embed=embed1, view=v)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Get info about the server!")
