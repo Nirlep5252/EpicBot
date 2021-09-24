@@ -263,7 +263,7 @@ Members: {len(role.members)}
         )
 
         embed2 = embed.copy()
-        r = ', '.join(role.mention for role in user.roles[1:][::-1]) if len(user.roles) > 1 else 'No Roles.' if isinstance(user, discord.Member) else 'Not in server.'
+        r = (', '.join(role.mention for role in user.roles[1:][::-1]) if len(user.roles) > 1 else 'No Roles.') if isinstance(user, discord.Member) else 'Not in server.'
         embed2.add_field(
             name="Roles:",
             value=r if len(r) <= 1024 else r[0:1006] + ' and more...',
