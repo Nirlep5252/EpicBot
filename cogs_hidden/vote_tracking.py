@@ -25,7 +25,7 @@ from utils.bot import EpicBot
 class VoteTracking(commands.Cog):
     def __init__(self, client: EpicBot):
         self.client = client
-        self.vote_tracking_bot_id = 702134514637340702
+        self.vote_tracking_bot_id = 891172840181743697
         self.vote_scraping_channel_id = 851658500118413313
         self.vote_sending_channel_id = 776015595354325002
 
@@ -37,9 +37,11 @@ class VoteTracking(commands.Cog):
             return
         if len(message.embeds) != 1:
             return
+        embed = message.embeds[0]
+        desc = embed.description
         try:
-            voter_id = int(message.embeds[0].title)
-            votes = int(message.embeds[0].description)
+            voter_id = int(desc[2:20])
+            votes = "<work in progress>"
             channel = self.client.get_channel(self.vote_sending_channel_id)
             await channel.send(
                 f"Thank you <@{voter_id}> for voting me! UwU~ {random.choice(CUTE_EMOJIS)}\nYou have a total of **{votes}** votes now! {random.choice(CUTE_EMOJIS)}",
