@@ -104,7 +104,6 @@ class GlobalChat(commands.Cog):
             return
 
         g = await self.client.get_guild_config(message.guild.id)
-        p = await self.client.get_user_profile_(message.author.id)
         if not g['globalchat']:
             return
         if message.channel != self.client.get_channel(g['globalchat']):
@@ -120,7 +119,7 @@ class GlobalChat(commands.Cog):
 
         if message.edited_at is not None:
             return
-
+        p = await self.client.get_user_profile_(message.author.id)
         if not p['gc_rules_accepted']:
             await message.add_reaction('❌')
             bucket_ = self.confirmation_cooldown.get_bucket(message)
