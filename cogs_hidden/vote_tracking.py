@@ -163,7 +163,7 @@ Your votes help me a lot and in return I'll give you rewards like:
         ep = self.client.get_guild(EPICBOT_GUILD_ID)
         if ep is None:
             return
-        top_voter = ep.get_role(self.top_voter_role)
+        top_voter = ep.get_role(self.top_voter)
         top = {}
         top1 = 0
         top2 = 0
