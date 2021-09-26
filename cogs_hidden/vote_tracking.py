@@ -128,14 +128,32 @@ class VoteTracking(commands.Cog):
     async def send_reminder(self, user: discord.User, web: str) -> None:
         """Remindes the user to vote again."""
         try:
-            await user.send(f"Vote reminder!!!: https://{web}/bot/{self.client.user.id}/vote")
+            await user.send(f"""
+It's been 12 hours since you voted me!
+I'd appreciate if you voted me again!
+
+- https://{web}/bots/{self.client.user.id}/vote
+
+Thanks a lot for your support! {random.choice(CUTE_EMOJIS)} :kiss:
+            """)
         except discord.Forbidden:
             pass
 
     async def send_thank_you(self, user: discord.User, web: str, votes: int) -> None:
         """Sends a thank you message to the user."""
         try:
-            await user.send(f"Thank you for voting me on `{web}`! :kiss:")
+            await user.send(f"""
+Heya! :kiss:
+
+Thanks a lot for voting me on `{web}`!
+You have a total of **{votes}** votes now!
+
+Your votes help me a lot and in return I'll give you rewards like:
+- Special roles
+- Badges
+- Access to special commands
+- And kisses :kiss:
+            """)
         except discord.Forbidden:
             pass
 
