@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import operator
+from typing import Optional
 import discord
 import time
 
@@ -72,8 +73,9 @@ class user(commands.Cog, description="Commands related to the user!"):
 
     @commands.command(help="Check your total votes!")
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def votes(self, ctx: commands.Context, user: discord.User = None):
-        up = await self.client.get_user_profile_(ctx.author.id)
+    async def votes(self, ctx: commands.Context, user: Optional[discord.User] = None):
+        user = user or ctx.author
+        up = await self.client.get_user_profile_(user.id)
         vote_dict = up.get("votes", self.default_vote_dict)
         top_gg_time = f"<t:{vote_dict['last_voted'].get('top.gg')}:R>" if 'top.gg' in vote_dict['last_voted'] else "Not voted currently."
         bots_discordlabs_org_time = f"<t:{vote_dict['last_voted'].get('bots.discordlabs.org')}:R>" if 'bots.discordlabs.org' in vote_dict['last_voted'] else "Not voted currently."
@@ -86,7 +88,7 @@ class user(commands.Cog, description="Commands related to the user!"):
 - **[discordlabs.org](https://bots.discordlabs.org/bot/{self.client.user.id})**: - `{vote_dict["bots.discordlabs.org"]}` - {bots_discordlabs_org_time}
 - **Total:** `{total}`
             """
-        ).set_author(name=ctx.author, icon_url=ctx.author.display_avatar.url
+        ).set_author(name=user, icon_url=user.display_avatar.url
         ).set_thumbnail(url="https://cdn.discordapp.com/emojis/882239026688569434.png"
         ).set_footer(text=f"You have vote reminders {'✅ Enabled' if vote_dict['reminders'] else '❌ Disabled'}", icon_url=self.client.user.display_avatar.url)
         await ctx.reply(embed=embed)
