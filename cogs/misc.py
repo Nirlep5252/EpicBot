@@ -75,9 +75,13 @@ Database : {round((db_time2-db_time1)*1000)}ms
     async def vote(self, ctx):
         await ctx.message.reply(embed=discord.Embed(
             title="Vote EpicBot \💖",
-            description="Thank you so much!",
+            description=f"""
+You can vote for me on these links:
+
+- [top.gg](https://top.gg/bot/{self.client.user.id}/vote)
+- [bots.discordlabs.org](https://bots.discordlabs.org/bot/{self.client.user.id}/vote)
+            """,
             color=MAIN_COLOR,
-            url=f"{WEBSITE_LINK}/vote"
         ).set_footer(text="I love you!"))
 
     @commands.cooldown(1, 2, commands.BucketType.user)

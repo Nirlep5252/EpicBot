@@ -16,9 +16,12 @@ limitations under the License.
 
 import discord
 import random
+import time
 
-from discord.ext import commands
-from config import CUTE_EMOJIS
+from discord.ext import commands, tasks
+from config import CUTE_EMOJIS, EPICBOT_GUILD_ID
+from utils.ui import Paginator
+from utils.embed import success_embed
 from utils.bot import EpicBot
 
 
@@ -28,6 +31,38 @@ class VoteTracking(commands.Cog):
         self.vote_tracking_bot_id = 891172840181743697
         self.vote_scraping_channel_id = 851658500118413313
         self.vote_sending_channel_id = 776015595354325002
+        self.default_vote_dict = {
+            "top.gg": 0,
+            "bots.discordlabs.org": 0,
+            "reminders": False,
+            "last_voted": {}
+        }
+        self.roles = {
+            10: 780047658861199390,
+            20: 780047650556215296,
+            30: 780047640208998451,
+            40: 780047631442903091,
+            50: 780047621640683521
+        }
+        self.top_voter = 780047611105247252
+        self.voter_role = 764479085392297984
+        self.remove_voter_role.start()
+
+    @commands.command()
+    @commands.is_owner()
+    async def vote_lb(self, ctx: commands.Context):
+        """Shows the top 10 voters."""
+        all_vote_dicts = [e.copy() for e in self.client.user_profile_cache if "votes" in e]
+        sorted_voters = sorted(all_vote_dicts, key=lambda x: sum(list(x['votes'].values())[0:2]), reverse=True)
+        paginator = commands.Paginator(prefix='', suffix='', max_size=500)
+        for i, e in enumerate(sorted_voters):
+            paginator.add_line(f"`{i + 1}.` <@{e['_id']}> - `{sum(list(e['votes'].values())[0:2])}`")
+        embeds = [success_embed("Vote Leaderboard", page
+                    ).set_author(name=self.client.user, icon_url=self.client.user.display_avatar.url
+                    ).set_footer(text=f"{len(sorted_voters)} total voters", icon_url=self.client.user.display_avatar.url)
+                for page in paginator.pages]
+        view = Paginator(ctx, embeds) if len(embeds) > 1 else None
+        await ctx.reply(embed=embeds[0], view=view)
 
     @commands.Cog.listener("on_message")
     async def haha_vot_go_brr(self, message: discord.Message):
@@ -39,9 +74,18 @@ class VoteTracking(commands.Cog):
             return
         embed = message.embeds[0]
         desc = embed.description
+        web = 'top.gg' if 'top.gg' in desc else 'bots.discordlabs.org'
         try:
             voter_id = int(desc[2:20])
-            votes = "<work in progress>"
+            usr_profile = await self.client.get_user_profile_(voter_id)
+            vote_dict = usr_profile.get("votes", self.default_vote_dict)
+            votes = vote_dict[web]
+            votes += 1
+            vote_dict[web] = votes
+            last_voted = vote_dict['last_voted']
+            last_voted[web] = int(message.created_at.timestamp())
+            usr_profile["votes"] = vote_dict
+
             channel = self.client.get_channel(self.vote_sending_channel_id)
             await channel.send(
                 f"Thank you <@{voter_id}> for voting me! UwU~ {random.choice(CUTE_EMOJIS)}\nYou have a total of **{votes}** votes now! {random.choice(CUTE_EMOJIS)}",
@@ -52,8 +96,77 @@ class VoteTracking(commands.Cog):
                     replied_user=False
                 )
             )
-        except Exception:
-            return
+
+            member = channel.guild.get_member(voter_id)
+            if member is not None:
+                await self.update_roles(member, sum(list(vote_dict.values())[0:2]))
+            user = self.client.get_user(voter_id)
+            if user is not None:
+                await self.send_thank_you(user, web, votes)
+        except Exception as e:
+            print(e)
+
+    async def update_roles(self, member: discord.Member, votes: int, remove_voter_role: bool = False) -> None:
+        """Updates user roles based on current vote count."""
+        roles_to_add = []
+        roles_to_remove = []
+        voter_role = member.guild.get_role(self.voter_role)
+        if remove_voter_role:
+            roles_to_remove.append(voter_role)
+        else:
+            roles_to_add.append(voter_role)
+        for num, role_id in self.roles.items():
+            role = member.guild.get_role(role_id)
+            if role is not None:
+                if votes >= num:
+                    roles_to_add.append(role)
+                else:
+                    roles_to_remove.append(role)
+        await member.add_roles(*roles_to_add, reason='vot go br')
+        await member.remove_roles(*roles_to_remove, reason='vot go br')
+
+    async def send_reminder(self, user: discord.User, web: str) -> None:
+        """Remindes the user to vote again."""
+        try:
+            await user.send(f"Vote reminder!!!: https://{web}/bot/{self.client.user.id}/vote")
+        except discord.Forbidden:
+            pass
+
+    async def send_thank_you(self, user: discord.User, web: str, votes: int) -> None:
+        """Sends a thank you message to the user."""
+        try:
+            await user.send(f"Thank you for voting me on `{web}`! :kiss:")
+        except discord.Forbidden:
+            pass
+
+    @tasks.loop(seconds=5)
+    async def remove_voter_role(self):
+        ep = self.client.get_guild(EPICBOT_GUILD_ID)
+        for up in self.client.user_profile_cache:
+            vote_dict = up.get("votes")
+            if vote_dict is None:
+                continue
+            user = self.client.get_user(up['_id'])
+            if user is None:
+                continue
+            last_voted = vote_dict['last_voted']
+            to_pop = []
+            for web, timestamp in last_voted.items():
+                if timestamp + 43200 < int(time.time()):
+                    to_pop.append(web)
+                    if vote_dict['reminders']:
+                        await self.send_reminder(user, web)
+                    if ep is not None:
+                        member = ep.get_member(user.id)
+                        if member is not None:
+                            await self.update_roles(member, sum(list(vote_dict.values())[0:2]), True)
+            for python_is_weird in to_pop:
+                del last_voted[python_is_weird]
+            vote_dict['last_voted'] = last_voted
+            up['votes'] = vote_dict
+
+    def cog_unload(self) -> None:
+        self.remove_voter_role.stop()
 
 
 def setup(client):

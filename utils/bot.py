@@ -335,43 +335,11 @@ class EpicBot(commands.AutoShardedBot):
         if self.cache_loaded:
             cancer = []
             for h in self.user_profile_cache:
+                hh = h.copy()
+                hh.pop("_id")
                 hmm = UpdateOne(
                     {"_id": h["_id"]},
-                    {"$set": {
-                        "description": h['description'],
-                        "badges": h['badges'],
-                        "cmds_used": h['cmds_used'],
-                        "bugs_reported": h['bugs_reported'],
-                        "suggestions_submitted": h['suggestions_submitted'],
-                        "rating": h['rating'],
-                        "rank_card_template": h['rank_card_template'],
-
-                        "times_thanked": 0 if "times_thanked" not in h else h['times_thanked'],
-                        "times_simped": 0 if "times_simped" not in h else h['times_simped'],
-                        "snipe": True if "snipe" not in h else h['snipe'],
-
-                        "gc_nick": None if "gc_nick" not in h else h['gc_nick'],
-                        "gc_avatar": None if "gc_avatar" not in h else h['gc_avatar'],
-                        "gc_rules_accepted": False if "gc_rules_accepted" not in h else h['gc_rules_accepted'],
-
-                        "bites": 0 if "bites" not in h else h['bites'],
-                        "cuddles": 0 if "cuddles" not in h else h['cuddles'],
-                        "winks": 0 if "winks" not in h else h['winks'],
-                        "hugs": 0 if "hugs" not in h else h['hugs'],
-                        "kisses": 0 if "kisses" not in h else h['kisses'],
-                        "pats": 0 if "pats" not in h else h['pats'],
-                        "slaps": 0 if "slaps" not in h else h['slaps'],
-                        "tickles": 0 if "tickles" not in h else h['tickles'],
-                        "licks": 0 if "licks" not in h else h['licks'],
-                        "feeds": 0 if "feeds" not in h else h['feeds'],
-                        "facepalms": 0 if "facepalms" not in h else h['facepalms'],
-                        "blushes": 0 if "blushes" not in h else h['blushes'],
-                        "tail_wags": 0 if "tail_wags" not in h else h['tail_wags'],
-                        "cries": 0 if "cries" not in h else h['cries'],
-
-                        "married_to": None if "married_to" not in h else h['married_to'],
-                        "married_at": None if "married_at" not in h else h['married_at']
-                    }},
+                    {"$set": hh},
                     upsert=True
                 )
                 cancer.append(hmm)

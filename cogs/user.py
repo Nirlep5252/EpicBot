@@ -15,7 +15,6 @@ limitations under the License.
 """
 
 import operator
-from typing import Optional
 import discord
 import time
 
@@ -43,6 +42,12 @@ class user(commands.Cog, description="Commands related to the user!"):
         self.client = client
         self.rank_card_submission_channel = self.client.get_channel(RANK_CARD_SUBMIT_CHANNEL)
         self.report_channel = self.client.get_channel(USER_REPORT_CHANNEL)
+        self.default_vote_dict = {
+            "top.gg": 0,
+            "bots.discordlabs.org": 0,
+            "reminders": False,
+            "last_voted": {}
+        }
 
     @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.command(help="Check if a user has voted or not!")
@@ -64,6 +69,36 @@ class user(commands.Cog, description="Commands related to the user!"):
                 description = f"You haven't voted in the last **12** hours.\nClick **[here]({VOTE_LINK})** to vote!"
                 embed = error_embed(title, description)
             return await ctx.reply(embed=embed)
+
+    @commands.command(help="Check your total votes!")
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def votes(self, ctx: commands.Context, user: discord.User = None):
+        up = await self.client.get_user_profile_(ctx.author.id)
+        vote_dict = up.get("votes", self.default_vote_dict)
+        top_gg_time = f"<t:{vote_dict['last_voted'].get('top.gg')}:R>" if 'top.gg' in vote_dict['last_voted'] else "Not voted currently."
+        bots_discordlabs_org_time = f"<t:{vote_dict['last_voted'].get('bots.discordlabs.org')}:R>" if 'bots.discordlabs.org' in vote_dict['last_voted'] else "Not voted currently."
+
+        total = sum(list(vote_dict.values())[0:2])
+        embed = success_embed(
+            "Your Votes",
+            f"""
+- **[top.gg](https://top.gg/bot/{self.client.user.id})**: `{vote_dict["top.gg"]}` - {top_gg_time}
+- **[discordlabs.org](https://bots.discordlabs.org/bot/{self.client.user.id})**: - `{vote_dict["bots.discordlabs.org"]}` - {bots_discordlabs_org_time}
+- **Total:** `{total}`
+            """
+        ).set_author(name=ctx.author, icon_url=ctx.author.display_avatar.url
+        ).set_thumbnail(url="https://cdn.discordapp.com/emojis/882239026688569434.png"
+        ).set_footer(text=f"You have vote reminders {'✅ Enabled' if vote_dict['reminders'] else '❌ Disabled'}", icon_url=self.client.user.display_avatar.url)
+        await ctx.reply(embed=embed)
+
+    @commands.command()
+    @commands.cooldown(1, 15, commands.BucketType.user)
+    async def votereminder(self, ctx: commands.Context):
+        up = await self.client.get_user_profile_(ctx.author.id)
+        vote_dict = up.get("votes", self.default_vote_dict)
+        vote_dict["reminders"] = not vote_dict["reminders"]
+        up["votes"] = vote_dict
+        await ctx.reply(f"Vote reminders {'enabled 💋' if vote_dict['reminders'] else 'disabled'}.")
 
     @commands.cooldown(3, 30, commands.BucketType.user)
     @commands.command(help="Check how many invites you have!")
@@ -87,22 +122,6 @@ class user(commands.Cog, description="Commands related to the user!"):
             color=MAIN_COLOR
         ).set_author(name=user, icon_url=user.display_avatar.url)
         await ctx.reply(embed=embed)
-
-    @commands.command(help="Check who invited this member.")
-    @commands.cooldown(3, 30, commands.BucketType.user)
-    async def whoinvited(self, ctx: commands.Context, user: Optional[discord.Member] = None):
-        user = user or ctx.author
-        inviters = await self.client.get_inviter(user.id, ctx.guild.id)
-        inviter_id = 'Unknown' if str(ctx.guild.id) not in inviters else inviters[str(ctx.guild.id)]
-        if inviter_id == 'Unknown':
-            return await ctx.reply(embed=discord.Embed(
-                description=f"{user.mention} was invited by {inviter_id}\n\nThey either joined via a vanity URL.\nOr were invited before I was here.",
-                color=MAIN_COLOR
-            ).set_author(name=user, icon_url=user.display_avatar.url))
-        invites = await self.client.fetch_invites(inviter_id, ctx.guild.id)
-        return await ctx.reply(embed=discord.Embed(
-            description=f"{user.mention} was invited by <@{inviter_id}>.\nThey have **{invites}** invites."
-        ))
 
     @commands.cooldown(3, 30, commands.BucketType.user)
     @commands.command(aliases=['lb'], help="Check the leaderboard!")
@@ -157,7 +176,7 @@ class user(commands.Cog, description="Commands related to the user!"):
         elif option.lower() in ['levels', 'rank']:
             return await ctx.invoke(self.client.get_command('leveling_lb'))
         elif option.lower() in lb_options:
-            embed.description = "work in progress"
+            return await ctx.invoke(self.client.get_command('vote_lb'))
         else:
             embed.description = f"Invalid option! Please use `{prefix}leaderboard` to see the available options."
 
