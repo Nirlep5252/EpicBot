@@ -23,7 +23,7 @@ from handler import InteractionClient
 
 basicConfig(level=INFO)
 
-client = EpicBot(beta=True)
+client = EpicBot()
 InteractionClient(client)
 # If you have beta token and beta mongodb link setup
 # what you can do is just pass the kwarg beta as true eg: "client = EpicBot(beta=True)"
