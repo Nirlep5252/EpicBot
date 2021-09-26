@@ -7,3 +7,5 @@ test.py
 .env
 poetry.lock
 pyproject.toml
+assets/temp/rank.png
+assets/temp/mask_circle.png
