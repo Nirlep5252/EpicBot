@@ -47,6 +47,7 @@ class VoteTracking(commands.Cog):
         self.top_voter = 780047611105247252
         self.voter_role = 764479085392297984
         self.remove_voter_role.start()
+        self.update_top_voters.start()
 
     @commands.command()
     @commands.is_owner()
@@ -157,6 +158,37 @@ Your votes help me a lot and in return I'll give you rewards like:
         except discord.Forbidden:
             pass
 
+    @tasks.loop(minutes=1)
+    async def update_top_voters(self):
+        ep = self.client.get_guild(EPICBOT_GUILD_ID)
+        if ep is None:
+            return
+        top_voter = ep.get_role(self.top_voter_role)
+        top = {}
+        top1 = 0
+        top2 = 0
+        top3 = 0
+        for member in ep.members:
+            up = await self.client.get_user_profile_(member.id)
+            vote_dict = up.get("votes")
+            if vote_dict is None:
+                continue
+            total_votes = sum(list(vote_dict.values())[0:2])
+            if total_votes > top1:
+                top3 = top2
+                top2 = top1
+                top1 = total_votes
+                top[top1] = member
+            elif total_votes > top2:
+                top3 = top2
+                top2 = total_votes
+                top[top2] = member
+            elif total_votes > top3:
+                top3 = total_votes
+                top[top3] = member
+        for mem in top.values():
+            await mem.add_roles(top_voter, reason='top voter')
+
     @tasks.loop(seconds=5)
     async def remove_voter_role(self):
         ep = self.client.get_guild(EPICBOT_GUILD_ID)
@@ -185,6 +217,7 @@ Your votes help me a lot and in return I'll give you rewards like:
 
     def cog_unload(self) -> None:
         self.remove_voter_role.stop()
+        self.update_top_voters.stop()
 
 
 def setup(client):
