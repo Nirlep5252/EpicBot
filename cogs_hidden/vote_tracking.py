@@ -89,7 +89,7 @@ class VoteTracking(commands.Cog):
 
             channel = self.client.get_channel(self.vote_sending_channel_id)
             await channel.send(
-                f"Thank you <@{voter_id}> for voting me! UwU~ {random.choice(CUTE_EMOJIS)}\nYou have a total of **{votes}** votes now! {random.choice(CUTE_EMOJIS)}",
+                f"Thank you <@{voter_id}> for voting me! UwU~ {random.choice(CUTE_EMOJIS)}\nYou have a total of **{sum(list(vote_dict.values())[0:2])}** votes now! {random.choice(CUTE_EMOJIS)}",
                 allowed_mentions=discord.AllowedMentions(
                     users=True,
                     everyone=False,
