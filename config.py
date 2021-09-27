@@ -31,7 +31,7 @@ PREFIX = "e!"  # the default prefix for the bot
 OWNERS = [558861606063308822]  # the bot owners
 COOLDOWN_BYPASS = [558861606063308822, 344313283714613248, 679677267164921866]  # the users that bypass the cooldown
 EPICBOT_GUILD_ID = 746202728031584358  # the id of the epicbot guild
-PREMIUM_GUILDS = [746202728031584358, 749996055369875456]  # the ids of the premium guilds (it bypasses some cmd requirements)
+PREMIUM_GUILDS = [746202728031584358, 749996055369875456, 876751925859725332]  # the ids of the premium guilds (it bypasses some cmd requirements)
 
 # AFK KEYS
 
