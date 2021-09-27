@@ -168,10 +168,12 @@ Your votes help me a lot and in return I'll give you rewards like:
         top1 = 0
         top2 = 0
         top3 = 0
-        for member in ep.members:
-            up = await self.client.get_user_profile_(member.id)
+        for up in self.client.user_profile_cache:
             vote_dict = up.get("votes")
             if vote_dict is None:
+                continue
+            member = ep.get_member(up['_id'])
+            if member is None:
                 continue
             total_votes = sum(list(vote_dict.values())[0:2])
             if total_votes > top1:
