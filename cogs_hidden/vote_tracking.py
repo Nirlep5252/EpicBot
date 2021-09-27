@@ -158,7 +158,7 @@ Your votes help me a lot and in return I'll give you rewards like:
         except discord.Forbidden:
             pass
 
-    @tasks.loop(minutes=1)
+    @tasks.loop(minutes=30)
     async def update_top_voters(self):
         ep = self.client.get_guild(EPICBOT_GUILD_ID)
         if ep is None:
@@ -189,7 +189,7 @@ Your votes help me a lot and in return I'll give you rewards like:
         for mem in top.values():
             await mem.add_roles(top_voter, reason='top voter')
 
-    @tasks.loop(minutes=1)
+    @tasks.loop(minutes=5)
     async def remove_voter_role(self):
         ep = self.client.get_guild(EPICBOT_GUILD_ID)
         for up in self.client.user_profile_cache:
