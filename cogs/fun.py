@@ -32,6 +32,7 @@ from utils.custom_checks import not_opted_out
 from utils.random import email_fun, passwords, DMs, discord_servers
 from utils.constants import brain_images
 from utils.ui import Paginator
+from other import topics
 from owotext import OwO
 from dadjokes import Dadjoke
 from discord.utils import escape_markdown
@@ -672,6 +673,14 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
                 url=message.jump_url,
                 color=MAIN_COLOR
             ))
+
+    @commands.command(aliases=['topik', 'topicc'], help="Get a random topic.")
+    @commands.cooldown(2, 5, commands.BucketType.user)
+    async def topic(self, ctx: commands.Context):
+        return await ctx.reply(embed=success_embed(
+            "Random Topic",
+            random.choice(topics)
+        ))
 
     @commands.Cog.listener("on_message")
     async def chatbot_lmao(self, message: discord.Message):
