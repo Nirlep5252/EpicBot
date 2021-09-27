@@ -23,13 +23,34 @@ from discord.utils import escape_markdown
 from utils.custom_checks import bot_mods_only
 from utils.bot import EpicBot
 from config import (
-    EMOJIS, DB_UPDATE_INTERVAL, OWNERS
+    EMOJIS, DB_UPDATE_INTERVAL, OWNERS, EPICBOT_GUILD_ID
 )
 
 
 class Devsonly(commands.Cog):
     def __init__(self, client: EpicBot):
         self.client = client
+        self.forced_nicks = {}
+
+    @commands.is_owner()
+    @commands.command(help="ajajajjaaj")
+    async def forcenick(self, ctx: commands.Context, user: discord.Member, *, nick: str = None):
+        if nick is None:
+            if user.id in self.forced_nicks:
+                self.forced_nicks.pop(user.id)
+        else:
+            self.forced_nicks[user.id] = nick
+        await ctx.message.add_reaction('💋')
+
+    @commands.Cog.listener('on_member_update')
+    async def force_nick_update_lma(self, before: discord.Member, after: discord.Member):
+        if before.guild.id != EPICBOT_GUILD_ID:
+            return
+        if before.id not in self.forced_nicks:
+            return
+        if before.nick == after.nick:
+            return
+        await after.edit(nick=self.forced_nicks[before.id], reason="haha forcenick go br")
 
     @commands.is_owner()
     @commands.command(help="Change the bot's status")
