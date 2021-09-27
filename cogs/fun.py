@@ -40,7 +40,6 @@ from epicbot_images.effects import ascii
 from io import BytesIO
 
 uwu = OwO()
-dadjoke = Dadjoke()
 f_channels = {}
 drank_beer = {}
 beer_parties = {}
@@ -891,6 +890,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Funny, funny jokes!", aliases=['dadjoke'])
     async def joke(self, ctx):
+        dadjoke = Dadjoke()
         await ctx.reply(embed=success_embed("Haha!", dadjoke.joke))
 
     @commands.cooldown(1, 5, commands.BucketType.user)
