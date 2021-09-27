@@ -133,7 +133,7 @@ class VoteTracking(commands.Cog):
 It's been 12 hours since you voted me!
 I'd appreciate if you voted me again!
 
-- https://{web}/bots/{self.client.user.id}/vote
+- https://{web}/bot/{self.client.user.id}/vote
 
 Thanks a lot for your support! {random.choice(CUTE_EMOJIS)} :kiss:
             """)
