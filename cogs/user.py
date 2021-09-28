@@ -42,7 +42,6 @@ class user(commands.Cog, description="Commands related to the user!"):
     def __init__(self, client: EpicBot):
         self.client = client
         self.rank_card_submission_channel = self.client.get_channel(RANK_CARD_SUBMIT_CHANNEL)
-        self.report_channel = self.client.get_channel(USER_REPORT_CHANNEL)
         self.default_vote_dict = {
             "top.gg": 0,
             "bots.discordlabs.org": 0,
@@ -712,7 +711,8 @@ Make sure to upload image as an attachment.
         for file in ctx.message.attachments:
             files.append(await file.to_file())
 
-        await self.report_channel.send(
+        report_channel = self.client.get_channel(USER_REPORT_CHANNEL)
+        await report_channel.send(
             f"<@&{BOT_MOD_ROLE}>",
             embed=discord.Embed(
                 title="User Reported",
