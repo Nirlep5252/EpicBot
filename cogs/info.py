@@ -46,7 +46,7 @@ def format_commit(commit: pygit2.Commit) -> str:
         commit.commit_time).astimezone(commit_tz)
 
     offset = f'<t:{int(commit_time.astimezone(datetime.timezone.utc).timestamp())}:R>'
-    return f'[`{short_sha2}`](https://github.com/DeveloperJosh/MailHook/commit/{commit.hex}) {short} ({offset})'
+    return f'[`{short_sha2}`](https://github.com/Nirlep5252/EpicBot/commit/{commit.hex}) {short} ({offset})'
 
 
 def get_commits(count: int = 3):
