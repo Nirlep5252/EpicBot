@@ -232,7 +232,6 @@ For further problems you can join our **[Support Server]({SUPPORT_SERVER_LINK})*
     @customcommand.command(name='edit', aliases=['update'], help="Edit a custom command!")
     @commands.cooldown(5, 60, commands.BucketType.user)
     @commands.has_permissions(manage_guild=True)
-    @commands.bot_has_permissions(manage_messages=True)
     async def cc_edit(self, ctx: commands.Context, name: Lower = None):
         prefix = ctx.clean_prefix
         if name is None:
