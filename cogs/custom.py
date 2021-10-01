@@ -134,7 +134,6 @@ For further problems you can join our **[Support Server]({SUPPORT_SERVER_LINK})*
     @commands.cooldown(5, 60, commands.BucketType.user)
     @commands.max_concurrency(1, commands.BucketType.user)
     @commands.has_permissions(manage_guild=True)
-    @commands.bot_has_permissions(manage_messages=True)
     async def cc_create(self, ctx: commands.Context):
         cc_limit = 25
         prefix = ctx.clean_prefix
