@@ -86,4 +86,4 @@ Here are the steps that you can follow to sefhost EpicBot which would work with 
 - You must follow the license as stated [here](https://github.com/Nirlep5252/EpicBot/blob/main/LICENSE.md).
 - Provide full credits to both CONTRIBUTORS and the original creator.
 
-<h3 align="center"><a href="https://discord.com/oauth2/authorize?client_id=751100444188737617&scope=bot&permissions=2146958847">Invite EpicBot</a> | <a href="https://discord.gg/Zj7h8Fp">Discord Server</a> | <a href="https://epic-bot.com">Website</a></h3>
+<h3 align="center"><a href="https://discord.com/oauth2/authorize?client_id=751100444188737617&permissions=214695884&scope=bot%20applications.commands">Invite EpicBot</a> | <a href="https://discord.gg/Zj7h8Fp">Discord Server</a> | <a href="https://epic-bot.com">Website</a></h3>
