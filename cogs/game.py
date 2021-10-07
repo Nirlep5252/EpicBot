@@ -111,10 +111,9 @@ class games(commands.Cog, description="Play some fun games with me!"):
             else:
                 await ctx.send("**I win :robot:**")
 
-    @commands.command(aliases=['tnd'], help="Play truth and dare!")
+    @commands.command(aliases=['tnd', 'dare', 'truth', 'tod'], help="Play truth and dare!")
     @commands.cooldown(1, 30, commands.BucketType.user)
-    @commands.max_concurrency(1, commands.BucketType.user)
-    async def truth(self, ctx: commands.Context):
+    async def truthordare(self, ctx: commands.Context):
         view = TruthAndDareView(ctx)
         main_msg = await ctx.reply("Pick what u want to do?", view=view)
         await view.wait()
@@ -163,7 +162,7 @@ class games(commands.Cog, description="Play some fun games with me!"):
             if msg_check == 'pain':
                 return
             else:
-                await main_msg.edit(content="Oh, is that so? 😏 I didn't knew that. **Shame! Shame!**", view=None)
+                await main_msg.edit(content="Oh, is that so? 😏 I didn't know that. **Shame! Shame!**", view=None)
         elif view.value == 'dare':
             dare_is_more_and_always_painful = random.choice([
                 "Show the most embarrassing photo on your phone",
