@@ -89,11 +89,14 @@ class BumpReminder(commands.Cog):
 
                     if e['time'] is not None:
                         if round(e['time']) <= round(time_now):
-                            await self.client.get_channel(e['channel_id']).send(
-                                f"<@&{e['role']}>" if e['role'] is not None else f"<@{e['bumper']}>",
-                                embed=success_embed("It's Bump Time", "Please bump using `!d bump`."),
-                                allowed_mentions=self.peng
-                            )
+                            try:
+                                await self.client.get_channel(e['channel_id']).send(
+                                    f"<@&{e['role']}>" if e['role'] is not None else f"<@{e['bumper']}>",
+                                    embed=success_embed("It's Bump Time", "Please bump using `!d bump`."),
+                                    allowed_mentions=self.peng
+                                )
+                            except Exception:
+                                pass
                             e.update({"time": None})
                             role_id = e.get("reward")
                             if role_id is not None:
