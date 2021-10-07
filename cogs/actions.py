@@ -125,7 +125,7 @@ class actions(commands.Cog, description="Interact with someone, UwU!~"):
                     "UwU",
                     f"{user_mention} just got cuddled by **{escape_markdown(ctx.author.name)}**.\nThey have gotten `{'0' if p is None else p['cuddles']}` cuddles <:blushed_hug:864313215098159104>"
                 ],
-                "https://nekos.life/api/v2/img/cuddle",
+                "https://purrbot.site/api/img/sfw/cuddle/gif",
                 user
             )
         )
@@ -185,7 +185,7 @@ class actions(commands.Cog, description="Interact with someone, UwU!~"):
                     "aww hugs UwU",
                     f"this is so cute >< **{escape_markdown(ctx.author.name)}** just hugged {user_mention}\nThey have been hugged `{'0' if p is None else p['hugs']}` times OwO"
                 ],
-                "https://nekos.life/api/hug",
+                "https://purrbot.site/api/img/sfw/hug/gif",
                 user
             )
         )
@@ -215,7 +215,7 @@ class actions(commands.Cog, description="Interact with someone, UwU!~"):
                     "<a:kissr:808235262261723156><a:kissl:808235261708337182>",
                     f"**{escape_markdown(ctx.author.name)}** just kissed {user_mention}\nThey have been kissed `{'0' if p is None else p['kisses']}` times. :flushed:"
                 ],
-                "https://nekos.life/api/kiss",
+                "https://purrbot.site/api/img/sfw/kiss/gif",
                 user
             )
         )
@@ -245,7 +245,7 @@ class actions(commands.Cog, description="Interact with someone, UwU!~"):
                     "*cute pats*",
                     f"<a:uwuAYAYA:800611977247719424> **{escape_markdown(ctx.author.name)}** just patted {user_mention}\nThey have `{'0' if p is None else p['pats']}` pats! <a:pats:864314471090749471>"
                 ],
-                "https://nekos.life/api/pat",
+                "https://purrbot.site/api/img/sfw/pat/gif",
                 user
             )
         )
@@ -275,7 +275,7 @@ class actions(commands.Cog, description="Interact with someone, UwU!~"):
                     "Damn boi!",
                     f"{user_mention} just got slapped by **{escape_markdown(ctx.author.name)}**.\nThey have been slapped `{'0' if p is None else p['slaps']}` times!"
                 ],
-                "https://nekos.life/api/v2/img/slap",
+                "https://purrbot.site/api/img/sfw/slap/gif",
                 user
             )
         )
@@ -305,7 +305,7 @@ class actions(commands.Cog, description="Interact with someone, UwU!~"):
                     "Tickle, tickle!",
                     f"{user_mention} just got tickled by **{escape_markdown(ctx.author.name)}**.\nThey have been tickled `{'0' if p is None else p['tickles']}` times."
                 ],
-                "https://nekos.life/api/v2/img/tickle",
+                "https://purrbot.site/api/img/sfw/tickle/gif",
                 user
             )
         )
