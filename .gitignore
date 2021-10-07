@@ -5,6 +5,7 @@ __pycache__
 .metadata
 test.py
 .env
+.breakpoints
 poetry.lock
 pyproject.toml
 assets/temp/rank.png
