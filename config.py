@@ -25,7 +25,7 @@ BOT_TOKEN_BETA = os.environ.get("TOKEN_BETA")  # the token of the beta bot (opti
 
 MONGO_DB_URL = os.environ.get("MONGO")  # your mongodb database connection url string
 MONGO_DB_URL_BETA = os.environ.get("MONGO_BETA")  # database for the beta bot (optional)
-DB_UPDATE_INTERVAL = 60  # the interval at which the database is updated
+DB_UPDATE_INTERVAL = 300  # the interval at which the database is updated
 
 PREFIX = "e!"  # the default prefix for the bot
 OWNERS = [558861606063308822]  # the bot owners
