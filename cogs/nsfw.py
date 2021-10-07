@@ -64,7 +64,7 @@ class nsfw(commands.Cog, description="Oh boi..."):
         if user.bot:
             ctx.command.reset_cooldown(ctx)
             return await ctx.reply(embed=error_embed("Bruh!", "You can't cum inside bots!"))
-        embed = await self.get_image_from_api("https://nekos.life/api/v2/img/cum", "url")
+        embed = await self.get_image_from_api("https://purrbot.site/api/img/nsfw/cum/gif", "link")
         embed.title = f"Mmmm {EMOJIS['mmm']}"
         embed.description = f"**{escape_markdown(str(ctx.author.name))}** cummed inside **{escape_markdown(str(user.name))}**"
         await ctx.send(embed=embed)
@@ -107,7 +107,7 @@ class nsfw(commands.Cog, description="Oh boi..."):
     @commands.is_nsfw()
     @commands.command(help="Nekos but NSFW gifs...")
     async def nekogif(self, ctx: commands.Context):
-        embed = await self.get_image_from_api("https://nekos.life/api/v2/img/nsfw_neko_gif", "url")
+        embed = await self.get_image_from_api("https://purrbot.site/api/img/nsfw/neko/gif", "link")
         embed.title = "Gifs!"
         await ctx.send(embed=embed)
 
@@ -123,7 +123,7 @@ class nsfw(commands.Cog, description="Oh boi..."):
     @commands.is_nsfw()
     @commands.command(help="Blowjob...")
     async def blowjob(self, ctx: commands.Context):
-        embed = await self.get_image_from_api("https://nekos.life/api/v2/img/blowjob", "url")
+        embed = await self.get_image_from_api("https://purrbot.site/api/img/nsfw/blowjob/gif", "link")
         embed.title = "Yummy! 😋"
         await ctx.send(embed=embed)
 

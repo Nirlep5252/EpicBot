@@ -54,15 +54,15 @@ class config(commands.Cog, description="Configure your server with amazing EpicB
             'redpanda': 'https://some-random-api.ml/img/red_panda'
         }
         self.nsfw_posting_modules = {
-            'hentai': 'https://nekos.life/api/v2/img/hentai',
+            'hentai': 'https://shiro.gg/api/images/nsfw/hentai',
             'thighs': 'https://shiro.gg/api/images/nsfw/thighs',
             'boobs': 'https://nekos.life/api/v2/img/boobs',
             'pussy': 'https://nekos.life/api/v2/img/pussy',
-            'blowjob': 'https://nekos.life/api/v2/img/blowjob',
-            'nekogif': 'https://nekos.life/api/v2/img/nsfw_neko_gif',
-            'cum': 'https://nekos.life/api/v2/img/cum',
+            'blowjob': 'https://purrbot.site/api/img/nsfw/blowjob/gif',
+            'nekogif': 'https://purrbot.site/api/img/nsfw/neko/gif',
+            'cum': 'https://purrbot.site/api/img/nsfw/cum/gif',
             'spank': 'https://nekos.life/api/v2/img/spank',
-            'anal': 'https://nekos.life/api/v2/img/anal',
+            'anal': 'https://purrbot.site/api/img/nsfw/anal/gif',
             'trap': 'https://nekos.life/api/v2/img/trap'
         }
         self.good_commands = [
