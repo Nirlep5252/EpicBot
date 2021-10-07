@@ -29,7 +29,6 @@ class BumpReminder(commands.Cog):
         self.client = client
         self.auth_str = "bump done"
         self.disboard_id = 302050872383242240
-        self.error_channel = self.client.get_channel(ERROR_LOG_CHANNEL)
         self.peng = discord.AllowedMentions(
             everyone=False,
             roles=True,
@@ -106,7 +105,7 @@ class BumpReminder(commands.Cog):
                                     await member.remove_roles(role)
         except Exception:
             cancer_error = traceback.format_exc()
-            await self.error_channel.send(f"ERROR IN BUMP LOOP ```py\n{cancer_error}\n```")
+            await self.client.get_channel(ERROR_LOG_CHANNEL).send(f"ERROR IN BUMP LOOP ```py\n{cancer_error}\n```")
 
 
 def setup(client):

@@ -41,7 +41,6 @@ from utils.embed import success_embed, error_embed
 class user(commands.Cog, description="Commands related to the user!"):
     def __init__(self, client: EpicBot):
         self.client = client
-        self.rank_card_submission_channel = self.client.get_channel(RANK_CARD_SUBMIT_CHANNEL)
         self.default_vote_dict = {
             "top.gg": 0,
             "bots.discordlabs.org": 0,
@@ -288,7 +287,7 @@ Make sure to upload image as an attachment.
                     f"{EMOJIS['tick_no']} No rank card found!",
                     "Make sure to upload your rank card in the message!"
                 ))
-            await self.rank_card_submission_channel.send(
+            await self.client.get_channel(RANK_CARD_SUBMIT_CHANNEL).send(
                 "<@558861606063308822>",
                 embed=success_embed(
                     "📨  New rank card submitted!",
