@@ -289,7 +289,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         main_msg = await ctx.send(embed=time_to_fool_u, view=view)
         await view.wait()
         if not view.value:
-            bruh_i_got_scammed = discord.Embed(title="You Received a gift, but...", description="The Gift link has been either expired or has been revoked", color=INVISIBLE_COLOR)
+            bruh_i_got_scammed = discord.Embed(title="You Received a gift, but...", description="The Gift link has been either expired or has been revoked\n\n*[Disclaimer]({WEBSITE_LINK}/disclaimer)*", color=INVISIBLE_COLOR)
             bruh_i_got_scammed.set_thumbnail(url="https://media.discordapp.net/attachments/895163964361674752/895982514093555763/images_1_-_2021-10-08T160355.540.jpeg")
             return await main_msg.edit(embed=bruh_i_got_scammed, view=None)
         if view.value == 'claim':
