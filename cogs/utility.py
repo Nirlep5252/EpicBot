@@ -143,7 +143,7 @@ class InteractiveView(discord.ui.View):
         self.expr = self.expr[:-1]
         await interaction.message.edit(content=f"```\n{self.expr}\n```")
 
-    async def interaction_check(self, interaction: discord.Interaction): -> bool:
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.author.id == self.ctx.author.id:
             return True
         await interaction.response.send_message(f"This is {self.ctx.author.mention}'s calculator, not yours.", ephemeral=True)
