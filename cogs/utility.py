@@ -35,21 +35,21 @@ from utils.message import wait_for_msg
 
 class InteractiveView(discord.ui.View):
     def __init__(self):
-        super().__init__()
+        super().__init__(timeout=None)
         self.expr = ""
         self.calc = simpcalc.Calculate()
 
-    @discord.ui.button(style=discord.ButtonStyle.blurple, label="1️⃣", row=0)
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="1", row=0)
     async def one(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "1"
         await interaction.message.edit(content=f"```\n{self.expr}\n```")
 
-    @discord.ui.button(style=discord.ButtonStyle.blurple, label="2️⃣", row=0)
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="2", row=0)
     async def two(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "2"
         await interaction.message.edit(content=f"```\n{self.expr}\n```")
 
-    @discord.ui.button(style=discord.ButtonStyle.blurple, label="3️⃣", row=0)
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="3", row=0)
     async def three(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "3"
         await interaction.message.edit(content=f"```\n{self.expr}\n```")
@@ -59,17 +59,17 @@ class InteractiveView(discord.ui.View):
         self.expr += "+"
         await interaction.message.edit(content=f"```\n{self.expr}\n```")
 
-    @discord.ui.button(style=discord.ButtonStyle.blurple, label="4️⃣", row=1)
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="4", row=1)
     async def last(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "4"
         await interaction.message.edit(content=f"```\n{self.expr}\n```")
 
-    @discord.ui.button(style=discord.ButtonStyle.blurple, label="5️⃣", row=1)
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="5", row=1)
     async def five(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "5"
         await interaction.message.edit(content=f"```\n{self.expr}\n```")
 
-    @discord.ui.button(style=discord.ButtonStyle.blurple, label="6️⃣", row=1)
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="6", row=1)
     async def six(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "6"
         await interaction.message.edit(content=f"```\n{self.expr}\n```")
@@ -79,17 +79,17 @@ class InteractiveView(discord.ui.View):
             self.expr += "/"
             await interaction.message.edit(content=f"```\n{self.expr}\n```")
 
-    @discord.ui.button(style=discord.ButtonStyle.blurple, label="7️⃣", row=2)
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="7", row=2)
     async def seven(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "7"
         await interaction.message.edit(content=f"```\n{self.expr}\n```")
 
-    @discord.ui.button(style=discord.ButtonStyle.blurple, label="8️⃣", row=2)
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="8", row=2)
     async def eight(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "8"
         await interaction.message.edit(content=f"```\n{self.expr}\n```")
 
-    @discord.ui.button(style=discord.ButtonStyle.blurple, label="9️⃣", row=2)
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="9", row=2)
     async def nine(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "9"
         await interaction.message.edit(content=f"```\n{self.expr}\n```")
@@ -104,7 +104,7 @@ class InteractiveView(discord.ui.View):
         self.expr += "."
         await interaction.message.edit(content=f"```\n{self.expr}\n```")
 
-    @discord.ui.button(style=discord.ButtonStyle.blurple, label="0️⃣", row=3)
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="0", row=3)
     async def zero(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "0"
         await interaction.message.edit(content=f"```\n{self.expr}\n```")
