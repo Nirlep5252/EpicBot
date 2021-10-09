@@ -93,6 +93,20 @@ class PrivateCmds(commands.Cog):
     async def kitten(self, ctx: InteractionContext):
         await ctx.reply("Don't tell kitten 👀 but dogs are kinda cute uwu", ephemeral=True)
 
+    @slash_command(guild_ids=[783359069993435146], help="Just ask.")
+    async def ask(self, ctx: InteractionContext):
+        return await ctx.reply("""
+basically there are also 3 things you should consider before asking your questions
+- https://dontasktoask.com/
+Dont ask if you can ask your question, you will just waste your, and more importantly our time.
+
+- https://xyproblem.info/
+Make sure that the problem you are facing, is the problem you want answered.
+
+- https://www.nohello.com/
+Don't start with "hello", just ask your question.
+                """)
+
 
 def setup(client: EpicBot):
     client.add_cog(PrivateCmds(client))
