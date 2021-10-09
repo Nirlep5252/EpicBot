@@ -34,10 +34,11 @@ from utils.bot import EpicBot
 from utils.message import wait_for_msg
 
 class InteractiveView(discord.ui.View):
-    def __init__(self):
+    def __init__(self, ctx: commands.Context):
         super().__init__(timeout=None)
         self.expr = ""
         self.calc = simpcalc.Calculate()
+        self.ctx = ctx
 
     @discord.ui.button(style=discord.ButtonStyle.blurple, label="1", row=0)
     async def one(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -76,8 +77,8 @@ class InteractiveView(discord.ui.View):
 
     @discord.ui.button(style=discord.ButtonStyle.green, label="➗", row=1)
     async def divide(self, button: discord.ui.Button, interaction: discord.Interaction):
-            self.expr += "/"
-            await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        self.expr += "/"
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.blurple, label="7", row=2)
     async def seven(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -141,6 +142,12 @@ class InteractiveView(discord.ui.View):
     async def back(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr = self.expr[:-1]
         await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    async def interaction_check(self, interaction: discord.Interaction): -> bool:
+        if interaction.author.id == self.ctx.author.id:
+            return True
+        await interaction.response.send_message(f"This is {self.ctx.author.mention}'s calculator, not yours.", ephemeral=True)
+        return False
 
 
 class utility(commands.Cog, description="Commands that make your Discord experience nicer!"):
@@ -292,8 +299,8 @@ class utility(commands.Cog, description="Commands that make your Discord experie
 
     @commands.cooldown(3, 40, commands.BucketType.user)
     @commands.command(help="calculate what you want!", aliases = ['calc', 'math', 'maths'])
-    async def calculate(self, ctx):
-         view = InteractiveView()
+    async def calculate(self, ctx: commands.Context):
+         view = InteractiveView(ctx)
          await ctx.send("```py\n> ```",view=view)
 
     @commands.command(help="Run code and get results instantly! Credits: `FalseDev`")
