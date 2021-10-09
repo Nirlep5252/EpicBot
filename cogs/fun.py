@@ -74,19 +74,19 @@ class BeerView(discord.ui.View):
 
 class FreeNitroView(discord.ui.View):
     def __init__(self, ctx: commands.Context):
-        super().__init__(timeout=60)
+        super().__init__(timeout=None)
         self.ctx = ctx
         self.value = None
 
-    @discord.ui.button(label=f".                                  Claim                                 .", custom_id='claim', style=discord.ButtonStyle.green)
-    async def claim(self, button, interaction):
-        self.value = 'claim'
-        self.stop()
+    @discord.ui.button(label="Claim", custom_id='claim', style=discord.ButtonStyle.green)
+    async def claim(self, _, interaction: discord.Interaction):
+        await interaction.message.edit(content="https://imgur.com/NQinKJB", embed=None, view=None)
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id == self.ctx.author.id:
             return True
-        return await interaction.response.send_message("This isn't your command!", ephemeral=True)
+        await interaction.response.send_message("This isn't your command!", ephemeral=True)
+        return False
 
 class fun(commands.Cog, description="Wanna have some fun?"):
     def __init__(self, client: EpicBot):
@@ -281,19 +281,15 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         await m.edit(content="", embed=embed)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
-    @commands.command(help="Free Nitro!!!")
-    async def nitro(self, ctx):
+    @commands.command(aliases=['freenitro'], help="Free Nitro!!!")
+    async def nitro(self, ctx: commands.Context):
         view = FreeNitroView(ctx)
-        time_to_fool_u=discord.Embed(title="You've been gifted a subscription! ", description="You've been gifted Nitro for **1 Month!**\nExpires in **24 hours**", color=INVISIBLE_COLOR)
-        time_to_fool_u.set_thumbnail(url="https://media.discordapp.net/attachments/895163964361674752/895982514093555763/images_1_-_2021-10-08T160355.540.jpeg")
+        time_to_fool_u = discord.Embed(
+            title="You've been gifted a subscription!",
+            description=f"You've been gifted Nitro for **1 Month!**\nExpires in **24 hours**\n\n[**Disclaimer**]({WEBSITE_LINK}/disclaimer)",
+            color=INVISIBLE_COLOR
+        ).set_thumbnail(url="https://media.discordapp.net/attachments/895163964361674752/895982514093555763/images_1_-_2021-10-08T160355.540.jpeg")
         main_msg = await ctx.send(embed=time_to_fool_u, view=view)
-        await view.wait()
-        if not view.value:
-            bruh_i_got_scammed = discord.Embed(title="You Received a gift, but...", description="The Gift link has been either expired or has been revoked\n\n*[Disclaimer]({WEBSITE_LINK}/disclaimer)*", color=INVISIBLE_COLOR)
-            bruh_i_got_scammed.set_thumbnail(url="https://media.discordapp.net/attachments/895163964361674752/895982514093555763/images_1_-_2021-10-08T160355.540.jpeg")
-            return await main_msg.edit(embed=bruh_i_got_scammed, view=None)
-        if view.value == 'claim':
-            return await ctx.send("https://imgur.com/NQinKJB")
 
     @commands.Cog.listener(name="on_message_delete")
     async def snipe_event_lmao(self, message: discord.Message):
