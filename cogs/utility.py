@@ -22,6 +22,7 @@ import aiohttp
 import json
 import re
 
+from simpcalc import simpcalc
 from config import EMOJIS, MAIN_COLOR, UD_API_KEY, RED_COLOR, WEATHER_API_KEY
 from utils.embed import success_embed, error_embed, process_embeds_from_json
 from utils.time import convert
@@ -31,6 +32,115 @@ from discord.utils import escape_markdown
 from utils.ui import Confirm, Paginator
 from utils.bot import EpicBot
 from utils.message import wait_for_msg
+
+class InteractiveView(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.expr = ""
+        self.calc = simpcalc.Calculate()
+
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="1️⃣", row=0)
+    async def one(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.expr += "1"
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="2️⃣", row=0)
+    async def two(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.expr += "2"
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="3️⃣", row=0)
+    async def three(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.expr += "3"
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.green, label="➕", row=0)
+    async def plus(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.expr += "+"
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="4️⃣", row=1)
+    async def last(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.expr += "4"
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="5️⃣", row=1)
+    async def five(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.expr += "5"
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="6️⃣", row=1)
+    async def six(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.expr += "6"
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.green, label="➗", row=1)
+    async def divide(self, button: discord.ui.Button, interaction: discord.Interaction):
+            self.expr += "/"
+            await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="7️⃣", row=2)
+    async def seven(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.expr += "7"
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="8️⃣", row=2)
+    async def eight(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.expr += "8"
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="9️⃣", row=2)
+    async def nine(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.expr += "9"
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.green, label="✖️", row=2)
+    async def multiply(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.expr += "*"
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label=".", row=3)
+    async def dot(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.expr += "."
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.blurple, label="0️⃣", row=3)
+    async def zero(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.expr += "0"
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.green, label="=", row=3)
+    async def equal(self, button: discord.ui.Button, interaction: discord.Interaction):
+        try:
+            self.expr = await self.calc.calculate(self.expr)
+        except errors.BadArgument:
+            return await interaction.response.send_message("Um, looks like you provided a wrong expression....")
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.green, label="-", row=3)
+    async def minus(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.expr += "-"
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.green, label="(", row=4)
+    async def left_bracket(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.expr += "("
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.green, label=")", row=4)
+    async def right_bracket(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.expr += ")"
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.red, label="AC", row=4)
+    async def clear(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.expr = ""
+        await interaction.message.edit(content=f"```\n> {self.expr}\n```")
+
+    @discord.ui.button(style=discord.ButtonStyle.red, label="BACK", row=4)
+    async def back(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.expr = self.expr[:-1]
+        await interaction.message.edit(content=f"```\n{self.expr}\n```")
 
 
 class utility(commands.Cog, description="Commands that make your Discord experience nicer!"):
@@ -179,6 +289,12 @@ class utility(commands.Cog, description="Commands that make your Discord experie
                 )
             embed.set_footer(text=f"You can delete reminders using {prefix}delreminder <id>")
         await ctx.reply(embed=embed)
+
+    @commands.cooldown(3, 40, commands.BucketType.user)
+    @commands.command(help="calculate what you want!", aliases = ['calc', 'math', 'maths'])
+    async def calculate(self, ctx):
+         view = InteractiveView()
+         await ctx.send("```py\n> ```",view=view)
 
     @commands.command(help="Run code and get results instantly! Credits: `FalseDev`")
     @commands.cooldown(3, 30, commands.BucketType.user)
