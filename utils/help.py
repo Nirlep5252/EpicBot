@@ -81,7 +81,8 @@ async def get_bot_help(ctx: commands.Context, mapping: Mapping[Optional[commands
     ).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.display_avatar.url
     ).add_field(name="Links:", value=f"""
 [Dashboard]({WEBSITE_LINK}) | [Support]({SUPPORT_SERVER_LINK}) | [Invite]({WEBSITE_LINK}/invite) | [GitHub](https://github.com/Nirlep5252/EpicBot)
-    """, inline=False)
+    """, inline=False
+    ).set_thumbnail(url=ctx.bot.user.display_avatar.url)
 
 
 async def get_commands_list(ctx: commands.Context, mapping) -> discord.Embed:
