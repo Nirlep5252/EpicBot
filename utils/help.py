@@ -72,22 +72,23 @@ async def get_bot_help(ctx: commands.Context, mapping: Mapping[Optional[commands
     if ctx.channel.is_nsfw():
         all_cogs.append(ctx.bot.get_cog('nsfw'))
     return discord.Embed(
-        title="All the categories:",
-        description="\n".join(
+        title="Hey There!",
+        description="My name is **{ctx.bot.user.name}**! I am a multipurpose Discord bot that was designed to make your Discord life easier and cooler. It is also an **[open source project](https://github.com/Nirlep5252/EpicBot)** which other developers can contribute to and work on it together.\n\n**All The Available Categories Are in the following**:\n".join(
             [f"{EMOJIS_FOR_COGS[cog.qualified_name]} • **{cog.qualified_name.title()}** [ `{len(cog.get_commands())}` ]" for cog in all_cogs]),
         color=MAIN_COLOR,
         timestamp=datetime.datetime.utcnow()
     ).set_author(name=ctx.bot.user.name, icon_url=ctx.bot.user.display_avatar.url
     ).set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.display_avatar.url
     ).add_field(name="Links:", value=f"""
-[Dashboard]({WEBSITE_LINK}) | [Support]({SUPPORT_SERVER_LINK}) | [Invite]({WEBSITE_LINK}/invite)
-    """, inline=False)
+[Dashboard]({WEBSITE_LINK}) | [Support]({SUPPORT_SERVER_LINK}) | [Invite]({WEBSITE_LINK}/invite) | [GitHub](https://github.com/Nirlep5252/EpicBot)
+    """, inline=False
+    ).set_thumbnail(url=ctx.bot.user.display_avatar.url)
 
 
 async def get_commands_list(ctx: commands.Context, mapping) -> discord.Embed:
     embed = discord.Embed(
         title="All the commands:",
-        description=f"Please use `{ctx.clean_prefix}help <command>` for more info.",
+        description=f"Please use `{ctx.clean_prefix}help <command>` for more detailed information.",
         color=MAIN_COLOR,
         timestamp=datetime.datetime.utcnow()
     ).set_author(name=ctx.bot.user.name, icon_url=ctx.bot.user.display_avatar.url
@@ -105,7 +106,7 @@ async def get_commands_list(ctx: commands.Context, mapping) -> discord.Embed:
                 inline=False
             )
     embed.add_field(name="Links:", value=f"""
-[Dashboard]({WEBSITE_LINK}) | [Support]({SUPPORT_SERVER_LINK}) | [Invite]({WEBSITE_LINK}/invite)
+[Dashboard]({WEBSITE_LINK}) | [Support]({SUPPORT_SERVER_LINK}) | [Invite]({WEBSITE_LINK}/invite) | [GitHub](https://github.com/Nirlep5252/EpicBot)
     """, inline=False)
 
     return embed
@@ -136,7 +137,7 @@ class HelpMenu(discord.ui.View):
         embed = await get_bot_help(self.ctx, self.mapping)
         await interaction.message.edit(embed=embed, view=self)
 
-    @discord.ui.button(label="Command List", emoji="📃", style=discord.ButtonStyle.blurple)
+    @discord.ui.button(label="All Commands", emoji="📜", style=discord.ButtonStyle.blurple)
     async def commands_list(self, button: discord.ui.Button, interaction: discord.Interaction):
         for item in self.children:
             item.disabled = False
