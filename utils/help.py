@@ -145,7 +145,7 @@ class HelpMenu(discord.ui.View):
         embed = await get_commands_list(self.ctx, self.mapping)
         await interaction.message.edit(embed=embed, view=self)
 
-    @discord.ui.button(label="Delete Help Menu", emoji='🛑', style=discord.ButtonStyle.danger)
+    @discord.ui.button(label="Delete Menu", emoji='🛑', style=discord.ButtonStyle.danger)
     async def delete_menu(self, button: discord.ui.Button, interaction: discord.Interaction):
         await interaction.message.delete()
 
@@ -194,7 +194,7 @@ class EpicBotHelp(commands.HelpCommand):
         ).set_footer(text=f"Requested by: {self.context.author}", icon_url=self.context.author.display_avatar.url)
 
         embed.add_field(
-            name="Sub Commands:",
+            name="Subcommands:",
             value="\n".join([f"`{prefix}{cmd.qualified_name}{' ' + cmd.signature if cmd.signature else ''}` - {cmd.help}" for cmd in group.commands]),
             inline=False
         )
