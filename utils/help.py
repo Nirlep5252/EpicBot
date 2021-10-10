@@ -73,7 +73,7 @@ async def get_bot_help(ctx: commands.Context, mapping: Mapping[Optional[commands
         all_cogs.append(ctx.bot.get_cog('nsfw'))
     return discord.Embed(
         title="Hey There!",
-        description="My name is **{ctx.bot.user.name}**! I am a multipurpose Discord bot that was designed to make your Discord life easier and cooler. It is also an **[open source project](https://github.com/Nirlep5252/EpicBot)** which other developers can contribute to and work on it together.\n\n**All The Available Categories Are in the following**:\n".join(
+        description="\n".join(
             [f"{EMOJIS_FOR_COGS[cog.qualified_name]} • **{cog.qualified_name.title()}** [ `{len(cog.get_commands())}` ]" for cog in all_cogs]),
         color=MAIN_COLOR,
         timestamp=datetime.datetime.utcnow()
