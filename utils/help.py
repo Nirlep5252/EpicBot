@@ -73,7 +73,7 @@ async def get_bot_help(ctx: commands.Context, mapping: Mapping[Optional[commands
         all_cogs.append(ctx.bot.get_cog('nsfw'))
     return discord.Embed(
         title="Hey There!",
-        description="\n".join(
+        description="I'm a simple, multipurpose Discord bot built to make your Discord life enjoyable!\nHere are all my categories :D"+"\n".join(
             [f"{EMOJIS_FOR_COGS[cog.qualified_name]} • **{cog.qualified_name.title()}** [ `{len(cog.get_commands())}` ]" for cog in all_cogs]),
         color=MAIN_COLOR,
         timestamp=datetime.datetime.utcnow()
