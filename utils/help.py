@@ -187,7 +187,7 @@ class EpicBotHelp(commands.HelpCommand):
     async def send_group_help(self, group):
         prefix = self.context.clean_prefix
         embed = discord.Embed(
-            title=f"Group Commands Of `{group.qualified_name}`",
+            title=f"Group command help: `{group.qualified_name}`",
             description=group.description,
             color=MAIN_COLOR
         ).set_author(name=self.context.bot.user.name, icon_url=self.context.bot.user.avatar.url
