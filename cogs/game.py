@@ -14,21 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import discord.ui
+import discord
 import asyncio
-from config import MAIN_COLOR
 import random
 from discord.ext import commands
-from utils.message import wait_for_msg
 from games import tictactoe, wumpus, minesweeper, twenty
-from utils.bot import EpicBot
 from Discord_Games import aki_buttons
+from utils.bot import EpicBot
+from utils.message import wait_for_msg
+from utils.ui import BasicView
+from config import MAIN_COLOR
 
 
-class TruthAndDareView(discord.ui.View):
+class TruthAndDareView(BasicView):
     def __init__(self, ctx: commands.Context):
-        super().__init__(timeout=60)
-        self.ctx = ctx
+        super().__init__(ctx, timeout=60)
         self.value = None
 
     @discord.ui.button(label="Dare", custom_id='dare', style=discord.ButtonStyle.danger)
@@ -40,12 +40,6 @@ class TruthAndDareView(discord.ui.View):
     async def truth(self, button, interaction):
         self.value = 'truth'
         self.stop()
-
-    async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        if interaction.user.id != self.ctx.author.id:
-            await interaction.response.send_message("This isn't your command!", ephemeral=True)
-            return False
-        return True
 
 
 class games(commands.Cog, description="Play some fun games with me!"):
