@@ -42,9 +42,10 @@ class TruthAndDareView(discord.ui.View):
         self.stop()
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        if interaction.user.id == self.ctx.author.id:
-            return True
-        return await interaction.response.send_message("This isn't your command!", ephemeral=True)
+        if interaction.user.id != self.ctx.author.id:
+            await interaction.response.send_message("This isn't your command!", ephemeral=True)
+            return False
+        return True
 
 
 class games(commands.Cog, description="Play some fun games with me!"):
