@@ -104,7 +104,10 @@ class Automod(commands.Cog):
             guild_banned_words.remove(word)
         for w in guild_banned_words:
             if w in msg.content.lower():
-                await msg.delete()
+                try:
+                    await msg.delete()
+                except Exception:
+                    pass
                 await msg.channel.send(
                     f"{msg.author.mention}, Watch your language.",
                     delete_after=5,
@@ -113,7 +116,10 @@ class Automod(commands.Cog):
                 return True
         for w in m['words']:
             if w in msg.content.lower():
-                await msg.delete()
+                try:
+                    await msg.delete()
+                except Exception:
+                    pass
                 await msg.channel.send(
                     f"{msg.author.mention}, Watch your language.",
                     delete_after=5,
@@ -126,7 +132,10 @@ class Automod(commands.Cog):
         if len(msg.content) <= 7:
             return False
         if msg.content.isupper():
-            await msg.delete()
+            try:
+                await msg.delete()
+            except Exception:
+                pass
             await msg.channel.send(
                 f"{msg.author.mention}, Too many caps.",
                 delete_after=5,

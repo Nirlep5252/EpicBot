@@ -72,6 +72,7 @@ class BeerView(discord.ui.View):
         array.append(interaction.user.id)
         drank_beer.update({interaction.message.id: array})
 
+
 class FreeNitroView(discord.ui.View):
     def __init__(self, ctx: commands.Context):
         super().__init__(timeout=None)
@@ -87,6 +88,7 @@ class FreeNitroView(discord.ui.View):
             return True
         await interaction.response.send_message("This isn't your command!", ephemeral=True)
         return False
+
 
 class fun(commands.Cog, description="Wanna have some fun?"):
     def __init__(self, client: EpicBot):
@@ -168,7 +170,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         try:
             await msg.reply(f"**{amount}** {word} paid respect!")
             await msg.edit(view=None)
-        except discord.NotFound:
+        except discord.HTTPException:
             pass
         del f_channels[ctx.channel.id]
 
@@ -289,7 +291,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             description=f"You've been gifted Nitro for **1 Month!**\nExpires in **24 hours**\n\n[**Disclaimer**]({WEBSITE_LINK}/disclaimer)",
             color=INVISIBLE_COLOR
         ).set_thumbnail(url="https://media.discordapp.net/attachments/895163964361674752/895982514093555763/images_1_-_2021-10-08T160355.540.jpeg")
-        main_msg = await ctx.send(embed=time_to_fool_u, view=view)
+        await ctx.send(embed=time_to_fool_u, view=view)
 
     @commands.Cog.listener(name="on_message_delete")
     async def snipe_event_lmao(self, message: discord.Message):
