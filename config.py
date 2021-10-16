@@ -222,7 +222,7 @@ CREDITS_CONTRIBUTORS = {
     "Mr Potato": ["MrPotato374", "Staff, Supporter, Helper"],
     "ELEXR": ["ELEXR", "Supporter, Helper"],
     "Sengolda": ["Sengolda", "Helper"],
-    "QuantumGamerLive": ["Helper"],
+    "QuantumGamerLive": ["QuantumGamerLive", "Helper"],
     "TheUndeadBowman": ["TheUndeadBowman", "Staff, Supporter, Helper"],
     "CAT": ["KittyKart", "Supporter, Helper"],
     "Vishal": ["imkrvishal", "Helper"],
