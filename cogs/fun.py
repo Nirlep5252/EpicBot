@@ -23,7 +23,7 @@ import functools
 from discord.ext import commands
 from typing import Optional, Union, List, Tuple
 from config import (
-    DAGPI_KEY, EMOJIS, MAIN_COLOR, BIG_PP_GANG, NO_PP_GANG,
+    DAGPI_KEY, DEFAULT_BANNED_WORDS, EMOJIS, MAIN_COLOR, BIG_PP_GANG, NO_PP_GANG,
     RED_COLOR, ORANGE_COLOR, PINK_COLOR, CHAT_BID,
     CHAT_API_KEY, PINK_COLOR_2, THINKING_EMOJI_URLS, WEBSITE_LINK, INVISIBLE_COLOR
 )
@@ -863,7 +863,11 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
                 f"{EMOJIS['tick_no']} Invalid Usage!",
                 f"Please enter a message to reverse.\nCorrect Usage: `{prefix}reverse {example_text}`\nOutput: `{example_text[::-1]}`"
             ))
-        await ctx.send(message[::-1])
+        output = message[::-1]
+        for word in DEFAULT_BANNED_WORDS:
+            if word in output.lower():
+                return await ctx.reply("I will not reverse that.")
+        await ctx.send(output)
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(help="Convert your text into a mock")
@@ -960,6 +964,9 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         if message is None:
             ctx.command.reset_cooldown(ctx)
             return await ctx.message.reply(embed=error_embed("Bruh!", "Please enter something to say next time!"))
+        for word in DEFAULT_BANNED_WORDS:
+            if word in message.lower():
+                return await ctx.reply("I will not say that.")
         try:
             await ctx.message.delete()
         except Exception:
