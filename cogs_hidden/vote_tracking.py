@@ -53,15 +53,18 @@ class VoteTracking(commands.Cog):
     @commands.is_owner()
     async def vote_lb(self, ctx: commands.Context):
         """Shows the top 10 voters."""
-        all_vote_dicts = [e.copy() for e in self.client.user_profile_cache if "votes" in e]
-        sorted_voters = sorted(all_vote_dicts, key=lambda x: sum(list(x['votes'].values())[0:2]), reverse=True)
+        all_vote_dicts = [e.copy()
+                          for e in self.client.user_profile_cache if "votes" in e]
+        sorted_voters = sorted(all_vote_dicts, key=lambda x: sum(
+            list(x['votes'].values())[0:2]), reverse=True)
         paginator = commands.Paginator(prefix='', suffix='', max_size=500)
         for i, e in enumerate(sorted_voters):
-            paginator.add_line(f"`{i + 1}.` <@{e['_id']}> - `{sum(list(e['votes'].values())[0:2])}`")
+            paginator.add_line(
+                f"`{i + 1}.` <@{e['_id']}> - `{sum(list(e['votes'].values())[0:2])}`")
         embeds = [success_embed("Vote Leaderboard", page
-                    ).set_author(name=self.client.user, icon_url=self.client.user.display_avatar.url
-                    ).set_footer(text=f"{len(sorted_voters)} total voters", icon_url=self.client.user.display_avatar.url)
-                for page in paginator.pages]
+                                ).set_author(name=self.client.user, icon_url=self.client.user.display_avatar.url
+                                             ).set_footer(text=f"{len(sorted_voters)} total voters", icon_url=self.client.user.display_avatar.url)
+                  for page in paginator.pages]
         view = Paginator(ctx, embeds) if len(embeds) > 1 else None
         await ctx.reply(embed=embeds[0], view=view)
 
