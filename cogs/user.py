@@ -15,7 +15,8 @@ limitations under the License.
 """
 
 import operator
-from typing import Optional
+from typing import List, Optional
+from utils.converters import Lower
 import discord
 import time
 
@@ -34,7 +35,7 @@ from cogs_hidden.leveling import rank_card_templates
 from humanfriendly import format_timespan
 from utils.custom_checks import check_voter, check_supporter
 from utils.bot import EpicBot
-from utils.ui import Confirm
+from utils.ui import Confirm, Paginator
 from utils.embed import success_embed, error_embed
 
 
@@ -123,19 +124,25 @@ class user(commands.Cog, description="Commands related to the user!"):
         ).set_author(name=user, icon_url=user.display_avatar.url)
         await ctx.reply(embed=embed)
 
+    async def get_actions_leaderboard(self, action_type: str) -> List[dict]:
+        return sorted(self.client.user_profile_cache, key=lambda x: x.get(action_type, 0), reverse=True)
+
     @commands.cooldown(3, 30, commands.BucketType.user)
     @commands.command(aliases=['lb'], help="Check the leaderboard!")
-    async def leaderboard(self, ctx, option=None):
+    async def leaderboard(self, ctx, option: Lower = None):
         guild_config = await self.client.get_guild_config(ctx.guild.id)
         prefix = ctx.clean_prefix
         lb_options = ['invites', 'levels', 'messages', 'votes']
+        action_options = ['times_simped', 'times_thanked', 'bites', 'blushes', 'cries', 'cuddles', 'facepalms', 'feeds', 'hugs', 'kisses', 'licks', 'pats', 'slaps', 'tail_wags', 'tickles', 'winks']
         options_text = ""
         for e in lb_options:
             options_text += f"`{e}` "
+        for e in action_options:
+            options_text += f"`{e.replace('times_simped', 'simps').replace('times_thanked', 'thanks')}` "
         embed = discord.Embed(color=MAIN_COLOR)
         embed.title = "Leaderboard"
         if option is not None:
-            embed.title = "Leaderboard" if option.lower() not in lb_options else option.lower().title() + " Leaderboard"
+            embed.title = "Leaderboard" if option not in lb_options else option.title() + " Leaderboard"
         embed.set_thumbnail(url=self.client.user.display_avatar.url)
         embed.add_field(
             name=EMPTY_CHARACTER,
@@ -143,9 +150,13 @@ class user(commands.Cog, description="Commands related to the user!"):
             inline=False
         )
         main = ""
-        if option is None:
-            embed.description = f"Please select an option for the leaderboard.\n\nOptions: {options_text}"
-        elif option.lower() in ['invites']:
+        if option == "thanks":
+            option = "times_thanked"
+        if option == "simps":
+            option = "times_simped"
+        if option is None or option == "":
+            embed.description = f"Please select an option for the leaderboard.\n\n**Options:** {options_text}"
+        elif option in ['invites']:
             if guild_config['welcome']['channel_id'] is None:
                 return await ctx.reply(embed=error_embed(
                     f"{EMOJIS['tick_no']} Not enabled!",
@@ -160,7 +171,7 @@ class user(commands.Cog, description="Commands related to the user!"):
                         yes.update({e['_id']: e['guilds'][str(ctx.guild.id)]['real']})
             yes = dict(sorted(yes.items(), key=operator.itemgetter(1), reverse=True))
             if ctx.author.id in yes:
-                main += f"You are rank **#{list(yes).index(ctx.author.id) + 1}** in this server for {option.lower()}\n\n"
+                main += f"You are rank **#{list(yes).index(ctx.author.id) + 1}** in this server for {option}\n\n"
 
             i = 1
             for e in yes:
@@ -171,12 +182,28 @@ class user(commands.Cog, description="Commands related to the user!"):
             if len(yes) == 0:
                 main = "All members have **0** invites in this guild."
             embed.description = main
-        elif option.lower() in ['msgs', 'messages']:
+        elif option in ['msgs', 'messages']:
             return await ctx.invoke(self.client.get_command('messages_lb'))
-        elif option.lower() in ['levels', 'rank']:
+        elif option in ['levels', 'rank']:
             return await ctx.invoke(self.client.get_command('leveling_lb'))
-        elif option.lower() in lb_options:
+        elif option in ['votes']:
             return await ctx.invoke(self.client.get_command('vote_lb'))
+        elif option in action_options:
+            paginator = commands.Paginator(prefix="", suffix="", max_size=250)
+            actions = await self.get_actions_leaderboard(option)
+            if len(actions) == 0:
+                return await ctx.reply("No users found.")
+            for i, e in enumerate(actions):
+                amount = e.get(option, 0)
+                if amount > 0:
+                    paginator.add_line(f"`{i + 1}.` <@{e['_id']}> • `{amount}` {option.replace('times_thanked', 'thanks').replace('times_simped', 'simps')}")
+            embeds = [success_embed(f"{EMOJIS['tick_yes']} {option.replace('times_thanked', 'thanks').replace('times_simped', 'simps').title()} Leaderboard", page) for page in paginator.pages]
+            if len(embeds) == 0:
+                return await ctx.reply("No users found.")
+            if len(embeds) == 1:
+                return await ctx.reply(embed=embeds[0])
+            view = Paginator(ctx, embeds=embeds)
+            return await ctx.reply(embed=embeds[0], view=view)
         else:
             embed.description = f"Invalid option! Please use `{prefix}leaderboard` to see the available options."
 
