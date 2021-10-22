@@ -189,7 +189,7 @@ class user(commands.Cog, description="Commands related to the user!"):
         elif option in ['votes']:
             return await ctx.invoke(self.client.get_command('vote_lb'))
         elif option in action_options:
-            paginator = commands.Paginator(prefix="", suffix="", max_size=250)
+            paginator = commands.Paginator(prefix="", suffix="", max_size=500)
             actions = await self.get_actions_leaderboard(option)
             if len(actions) == 0:
                 return await ctx.reply("No users found.")
