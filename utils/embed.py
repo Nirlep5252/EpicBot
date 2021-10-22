@@ -83,32 +83,30 @@ async def replace_things_in_string_fancy_lemao(bot, array, string_):
         inviter_invites = 'Unknown' if inviter__ is None else await bot.fetch_invites(inviter_id_, guild.id)
 
     nice = {
-        "{user_name}": author.name,
-        "{user_nickname}": author.display_name,
+        "{user_name}": author.name.replace("\\", "\\\\").replace("\"", "\\\""),
+        "{user_nickname}": author.display_name.replace("\\", "\\\\").replace("\"", "\\\""),
         "{user_discrim}": str(author.discriminator),
-        "{user_tag}": author.name + '#' + str(author.discriminator),
+        "{user_tag}": (author.name + '#' + str(author.discriminator)).replace("\\", "\\\\").replace("\"", "\\\""),
         "{user_id}": author.id,
         "{user_mention}": author.mention,
         "{user_avatar}": author.display_avatar.url,
 
-        "{guild_name}": guild.name,
+        "{guild_name}": guild.name.replace("\\", "\\\\").replace("\"", "\\\""),
         "{guild_id}": guild.id,
         "{guild_membercount}": guild.member_count,
         "{guild_icon}": guild.icon.url if guild.icon is not None else 'https://cdn.discordapp.com/embed/avatars/1.png',
-        "{guild_owner_name}": guild.owner.name,
+        "{guild_owner_name}": guild.owner.name.replace("\\", "\\\\"),
         "{guild_owner_id}": guild.owner_id,
         "{guild_owner_mention}": guild.owner.mention,
 
         "{user_invites}": await bot.fetch_invites(author.id, guild.id),
-        "{inviter_name}": inviter_name,
+        "{inviter_name}": inviter_name.replace("\\", "\\\\").replace("\"", "\\\""),
         "{inviter_discrim}": inviter_discrim,
-        "{inviter_tag}": inviter_tag,
+        "{inviter_tag}": inviter_tag.replace("\\", "\\\\").replace("\"", "\\\""),
         "{inviter_id}": inviter_id_,
         "{inviter_mention}": inviter_mention,
         "{inviter_avatar}": inviter_avatar,
         "{inviter_invites}": inviter_invites,
-
-        "\\": "\\\\",
     }
 
     for i, j in nice.items():
