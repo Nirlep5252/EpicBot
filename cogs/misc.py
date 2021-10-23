@@ -80,6 +80,7 @@ You can vote for me on these links:
 
 - [top.gg](https://top.gg/bot/{self.client.user.id}/vote)
 - [bots.discordlabs.org](https://bots.discordlabs.org/bot/{self.client.user.id}/vote)
+- [discordbotlist.com](https://discordbotlist.com/bots/{self.client.user.id}/upvote)
             """,
             color=MAIN_COLOR,
         ).set_footer(text="I love you!"))

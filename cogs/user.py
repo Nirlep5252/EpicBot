@@ -78,13 +78,15 @@ class user(commands.Cog, description="Commands related to the user!"):
         vote_dict = up.get("votes", self.default_vote_dict)
         top_gg_time = f"<t:{vote_dict['last_voted'].get('top.gg')}:R>" if 'top.gg' in vote_dict['last_voted'] else "Not voted currently."
         bots_discordlabs_org_time = f"<t:{vote_dict['last_voted'].get('bots.discordlabs.org')}:R>" if 'bots.discordlabs.org' in vote_dict['last_voted'] else "Not voted currently."
+        discordbotlist_com_time = f"<t:{vote_dict['last_voted'].get('discordbotlist.com')}:R>" if 'discordbotlist.com' in vote_dict['last_voted'] else "Not voted currently."
 
-        total = sum(list(vote_dict.values())[0:2])
+        total = vote_dict.get("top.gg", 0) + vote_dict.get("bots.discordlabs.org", 0) + vote_dict.get("discordbotlist.com", 0)
         embed = success_embed(
             "Your Votes",
             f"""
 - **[top.gg](https://top.gg/bot/{self.client.user.id})**: `{vote_dict["top.gg"]}` - {top_gg_time}
 - **[discordlabs.org](https://bots.discordlabs.org/bot/{self.client.user.id})**: - `{vote_dict["bots.discordlabs.org"]}` - {bots_discordlabs_org_time}
+- **[discordbotlist.com](https://discordbotlist.com/bots/{self.client.user.id})**: - `{vote_dict.get("discordbotlist.com", 0)}` - {discordbotlist_com_time}
 - **Total:** `{total}`
             """
         ).set_author(name=user, icon_url=user.display_avatar.url

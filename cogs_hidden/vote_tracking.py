@@ -34,6 +34,7 @@ class VoteTracking(commands.Cog):
         self.default_vote_dict = {
             "top.gg": 0,
             "bots.discordlabs.org": 0,
+            "discordbotlist.com": 0,
             "reminders": False,
             "last_voted": {}
         }
@@ -55,12 +56,12 @@ class VoteTracking(commands.Cog):
         """Shows the top 10 voters."""
         all_vote_dicts = [e.copy()
                           for e in self.client.user_profile_cache if "votes" in e]
-        sorted_voters = sorted(all_vote_dicts, key=lambda x: sum(
-            list(x['votes'].values())[0:2]), reverse=True)
+        sorted_voters = sorted(all_vote_dicts, key=lambda x: x['votes'].get(
+            'top.gg', 0) + x['votes'].get('bots.discordlabs.org', 0) + x['votes'].get('discordbotlist.com', 0), reverse=True)
         paginator = commands.Paginator(prefix='', suffix='', max_size=500)
         for i, e in enumerate(sorted_voters):
             paginator.add_line(
-                f"`{i + 1}.` <@{e['_id']}> - `{sum(list(e['votes'].values())[0:2])}`")
+                f"`{i + 1}.` <@{e['_id']}> - `{e['votes'].get('top.gg', 0) + e['votes'].get('bots.discordlabs.org', 0) + e['votes'].get('discordbotlist.com', 0)}`")
         embeds = [success_embed("Vote Leaderboard", page
                                 ).set_author(name=self.client.user, icon_url=self.client.user.display_avatar.url
                                              ).set_footer(text=f"{len(sorted_voters)} total voters", icon_url=self.client.user.display_avatar.url)
@@ -78,12 +79,18 @@ class VoteTracking(commands.Cog):
             return
         embed = message.embeds[0]
         desc = embed.description
-        web = 'top.gg' if 'top.gg' in desc else 'bots.discordlabs.org'
+        web = ''
+        if 'top.gg' in desc:
+            web = 'top.gg'
+        elif 'bots.discordlabs.org' in desc:
+            web = 'bots.discordlabs.org'
+        else:
+            web = 'discordbotlist.com'
         try:
             voter_id = int(desc[2:20])
             usr_profile = await self.client.get_user_profile_(voter_id)
             vote_dict = usr_profile.get("votes", self.default_vote_dict)
-            votes = vote_dict[web]
+            votes = vote_dict.get(web, 0)
             votes += 1
             vote_dict[web] = votes
             last_voted = vote_dict['last_voted']
@@ -92,7 +99,7 @@ class VoteTracking(commands.Cog):
 
             channel = self.client.get_channel(self.vote_sending_channel_id)
             await channel.send(
-                f"Thank you <@{voter_id}> for voting me! UwU~ {random.choice(CUTE_EMOJIS)}\nYou have a total of **{sum(list(vote_dict.values())[0:2])}** votes now! {random.choice(CUTE_EMOJIS)}",
+                f"Thank you <@{voter_id}> for voting me! UwU~ {random.choice(CUTE_EMOJIS)}\nYou have a total of **{vote_dict.get('top.gg', 0) + vote_dict.get('bots.discordlabs.org', 0) + vote_dict.get('discordbotlist.com', 0)}** votes now! {random.choice(CUTE_EMOJIS)}",
                 allowed_mentions=discord.AllowedMentions(
                     users=True,
                     everyone=False,
@@ -103,7 +110,7 @@ class VoteTracking(commands.Cog):
 
             member = channel.guild.get_member(voter_id)
             if member is not None:
-                await self.update_roles(member, sum(list(vote_dict.values())[0:2]))
+                await self.update_roles(member, vote_dict.get("top.gg", 0) + vote_dict.get("bots.discordlabs.org", 0) + vote_dict.get("discordbotlist.com", 0))
             user = self.client.get_user(voter_id)
             if user is not None:
                 await self.send_thank_you(user, web, votes)
@@ -178,7 +185,8 @@ Your votes help me a lot and in return I'll give you rewards like:
             member = ep.get_member(up['_id'])
             if member is None:
                 continue
-            total_votes = sum(list(vote_dict.values())[0:2])
+            total_votes = vote_dict.get("top.gg", 0) + vote_dict.get(
+                "bots.discordlabs.org", 0) + vote_dict.get("discordbotlist.com", 0)
             if total_votes > top1:
                 top3 = top2
                 top2 = top1
@@ -214,7 +222,7 @@ Your votes help me a lot and in return I'll give you rewards like:
                     if ep is not None:
                         member = ep.get_member(user.id)
                         if member is not None:
-                            await self.update_roles(member, sum(list(vote_dict.values())[0:2]), True)
+                            await self.update_roles(member, vote_dict.get("top.gg", 0) + vote_dict.get("bots.discordlabs.org", 0) + vote_dict.get("discordbotlist.com", 0), True)
             for python_is_weird in to_pop:
                 del last_voted[python_is_weird]
             vote_dict['last_voted'] = last_voted
