@@ -171,7 +171,8 @@ EMOJIS = {
     'reaction': '<:add_reaction:873891867610210304> ',
     'cmd_arrow': '<:join_arrow:876313929402417172> ',
     'youtube': '<:YoutubeLogo:884650525117792316> ',
-    'cry_': '<a:cry_:887173073630015508> '
+    'cry_': '<a:cry_:887173073630015508> ',
+    'giveaway_': '<a:ablobgift:872106367622709258>'
 }
 EMOJIS_FOR_COGS = {
     'actions': '<a:hugs:839739273083224104>',
