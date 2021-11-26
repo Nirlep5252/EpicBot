@@ -120,7 +120,7 @@ class GlobalChat(commands.Cog):
         if message.edited_at is not None:
             return
         p = await self.client.get_user_profile_(message.author.id)
-        if not p['gc_rules_accepted']:
+        if not p.gc_rules_accepted:
             await message.add_reaction('❌')
             bucket_ = self.confirmation_cooldown.get_bucket(message)
             retry_after_ = bucket_.update_rate_limit()
@@ -138,7 +138,7 @@ class GlobalChat(commands.Cog):
                 return await msg__.edit(content="", embed=error_embed("Too late.", "You didn't respond in time."), view=None)
             if not v.value:
                 return await msg__.edit(content="", embed=discord.Embed(title=f"{EMOJIS['tick_no']} Cancelled.", color=RED_COLOR), view=None)
-            p.update({"gc_rules_accepted": True})
+            await self.client.update_user_profile_(message.author.id, gc_rules_accepted=True)
             return await msg__.edit(content="", embed=success_embed("Thank you.", "Enjoy chatting with people :D"), view=None)
 
         for g in self.client.serverconfig_cache:
@@ -153,8 +153,8 @@ class GlobalChat(commands.Cog):
                     await webhook.send(
                         message.content,
                         allowed_mentions=self.peng,
-                        username=str(message.author) if p['gc_nick'] is None or channel.id == 863375202284077066 else p['gc_nick'],
-                        avatar_url=message.author.display_avatar.url if p['gc_avatar'] is None or channel.id == 863375202284077066 else p['gc_avatar']
+                        username=str(message.author) if p.gc_nick is None or channel.id == 863375202284077066 else p.gc_nick,
+                        avatar_url=message.author.display_avatar.url if p.gc_avatar is None or channel.id == 863375202284077066 else p.gc_avatar
                     )
 
 

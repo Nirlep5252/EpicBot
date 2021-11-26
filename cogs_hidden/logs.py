@@ -32,8 +32,8 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener(name="on_command_completion")
     async def add_cmd_used_count_user_profile(self, ctx: commands.Context):
-        user_profile = await self.client.get_user_profile_(ctx.author.id)
-        user_profile.update({"cmds_used": user_profile['cmds_used'] + 1})
+        p = await self.client.get_user_profile_(ctx.author.id)
+        await self.client.update_user_profile_(ctx.author.id, cmds_used=p.cmds_used + 1)
 
     @commands.Cog.listener()
     async def on_command(self, ctx: commands.Context):
@@ -72,7 +72,7 @@ class Logs(commands.Cog):
             )
         if len(message.stickers) == 1:
             embed.set_image(url=message.stickers[0].url)
-        await self.client.get_channel(793482521076695070).send(embed=embed, files=files)
+        await self.client.get_channel(793482521076695070 if not self.client.beta else 913657200747114529).send(embed=embed, files=files)
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):

@@ -144,7 +144,8 @@ You can vote for me on these links:
             ))
 
         user_profile = await self.client.get_user_profile_(ctx.author.id)
-        user_profile.update({"suggestions_submitted": user_profile['suggestions_submitted'] + 1})
+        stuff = {"suggestions_submitted": user_profile.suggestions_submitted + 1}
+        await self.client.update_user_profile_(ctx.author.id, **stuff)
 
         files = []
         for file in ctx.message.attachments:
@@ -159,7 +160,7 @@ You can vote for me on these links:
         await msg.add_reaction('👎')
         await ctx.reply(embed=success_embed(
             f"{EMOJIS['tick_yes']} Suggestion submitted!",
-            f"Thank you for submitting the suggestion!\nYou have suggested a total of `{user_profile['suggestions_submitted']}` suggestions!"
+            f"Thank you for submitting the suggestion!\nYou have suggested a total of `{user_profile.suggestions_submitted + 1}` suggestions!"
         ))
 
     @commands.cooldown(2, 7200, commands.BucketType.user)
@@ -170,7 +171,8 @@ You can vote for me on these links:
             ctx.command.reset_cooldown(ctx)
             return await ctx.message.reply(embed=error_embed("Incorrect Usage", f"Please use it like this: `{prefix}bug <bug>`"))
         user_profile = await self.client.get_user_profile_(ctx.author.id)
-        user_profile.update({"bugs_reported": user_profile['bugs_reported'] + 1})
+        stuff = {"bugs_reported": user_profile.bugs_reported + 1}
+        await self.client.update_user_profile_(ctx.author.id, **stuff)
         embed = discord.Embed(
             title="Bug",
             description=f"""
@@ -185,7 +187,7 @@ You can vote for me on these links:
         await self.client.get_channel(BUG_REPORT_CHANNEL).send(embed=embed)
         await ctx.reply(embed=success_embed(
             f"{EMOJIS['tick_yes']} Bug submitted!",
-            f"Thank you for submitting the bug!\nYou have reported a total of `{user_profile['bugs_reported']}` bugs"
+            f"Thank you for submitting the bug!\nYou have reported a total of `{user_profile.bugs_reported + 1}` bugs"
         ))
 
 

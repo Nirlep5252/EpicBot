@@ -25,10 +25,11 @@ import traceback
 
 from config import (
     MONGO_DB_URL, MONGO_DB_URL_BETA, DEFAULT_AUTOMOD_CONFIG,
-    DB_UPDATE_INTERVAL, RED_COLOR, EMOJIS
+    DB_UPDATE_INTERVAL, OWNERS, RED_COLOR, EMOJIS
 )
 from discord.ext import commands, tasks
 from pymongo import UpdateOne
+from utils.classes import Profile
 from utils.embed import success_embed
 from utils.ui import TicketView, DropDownSelfRoleView, ButtonSelfRoleView
 from utils.help import EpicBotHelp
@@ -41,6 +42,7 @@ class EpicBot(commands.AutoShardedBot):
         intents = discord.Intents.default()
         intents.members = True
         super().__init__(
+            owner_ids=OWNERS,
             command_prefix=EpicBot.get_custom_prefix,
             intents=intents,
             case_insensitive=True,
@@ -48,7 +50,7 @@ class EpicBot(commands.AutoShardedBot):
             strip_after_prefix=True,
             help_command=EpicBotHelp(),
             cached_messages=10000,
-            activity=discord.Activity(type=discord.ActivityType.playing, name="e!help | epic-bot.com" if not beta else "nirlep is doing some weird shit rn"),
+            activity=discord.Activity(type=discord.ActivityType.playing, name="e!help | epic-bot.com" if not beta else "my dev is doing some weird shit rn"),
             shard_count=4 if not self.beta else 1  # remove this if your bot is under 1000 servers
         )
         cluster = motor.AsyncIOMotorClient(MONGO_DB_URL if not beta else MONGO_DB_URL_BETA)
@@ -62,7 +64,6 @@ class EpicBot(commands.AutoShardedBot):
         self.last_updated_serverconfig_db = 0
         self.last_updated_prefixes_db = 0
         self.last_updated_leveling_db = 0
-        self.last_updated_user_profile_db = 0
 
         self.db = cluster['EpicBot-V2']
 
@@ -86,7 +87,6 @@ class EpicBot(commands.AutoShardedBot):
         self.blacklisted_cache = []
         self.serverconfig_cache = []
         self.leveling_cache = []
-        self.user_profile_cache = []
 
         self.reminders = []
         self.alarms = []
@@ -94,7 +94,6 @@ class EpicBot(commands.AutoShardedBot):
         self.update_prefixes_db.start()
         self.update_serverconfig_db.start()
         self.update_leveling_db.start()
-        self.update_user_profile_db.start()
 
         if not self.cache_loaded:
             self.loop.run_until_complete(self.get_cache())
@@ -170,72 +169,14 @@ class EpicBot(commands.AutoShardedBot):
                 return e
         return await self.set_default_guild_config(guild_id)
 
-    async def set_default_user_profile(self, user_id):
-        e = {
-            "_id": user_id,
-            "description": "A very cool EpicBot user!",
-            "badges": ['normie'],
-            "cmds_used": 0,
-            "bugs_reported": 0,
-            "suggestions_submitted": 0,
-            "rating": 0,
-            "rank_card_template": "default",
+    async def get_user_profile_(self, user_id: int) -> Profile:
+        profile_dict = await self.user_profile_db.find_one({"_id": user_id})
+        if not profile_dict:
+            return Profile(user_id)
+        return Profile(**profile_dict)
 
-            "times_thanked": 0,
-            "times_simped": 0,
-            "snipe": True,
-
-            "gc_nick": None,
-            "gc_avatar": None,
-            "gc_rules_accepted": False,
-
-            "bites": 0,
-            "cuddles": 0,
-            "winks": 0,
-            "hugs": 0,
-            "kisses": 0,
-            "pats": 0,
-            "slaps": 0,
-            "tickles": 0,
-            "licks": 0,
-            "feeds": 0,
-            "facepalms": 0,
-            "blushes": 0,
-            "tail_wags": 0,
-            "cries": 0,
-
-            "married_to": None,
-            "married_at": None
-        }
-        self.user_profile_cache.append(e)
-        return await self.get_user_profile_(user_id)
-
-    async def get_user_profile_(self, user_id):
-        for e in self.user_profile_cache:
-            if e['_id'] == user_id:
-                if "times_thanked" not in e:
-                    e.update({"times_thanked": 0})
-                if "times_simped" not in e:
-                    e.update({"times_simped": 0})
-                if "snipe" not in e:
-                    e.update({"snipe": True})
-                if "gc_nick" not in e:
-                    e.update({"gc_nick": None})
-                if "gc_avatar" not in e:
-                    e.update({"gc_avatar": None})
-                if "gc_rules_accepted" not in e:
-                    e.update({"gc_rules_accepted": False})
-                if "married_to" not in e:
-                    e.update({"married_to": None})
-                if "married_at" not in e:
-                    e.update({"married_at": None})
-
-                bruh = ['bites', 'cuddles', 'winks', 'hugs', 'kisses', 'pats', 'slaps', 'tickles', 'licks', 'feeds', 'facepalms', 'blushes', 'tail_wags', 'cries']
-                for bru in bruh:
-                    if bru not in e:
-                        e.update({bru: 0})
-                return e
-        return await self.set_default_user_profile(user_id)
+    async def update_user_profile_(self, user_id: int, **options):
+        await self.user_profile_db.update_one({"_id": user_id}, {"$set": options}, upsert=True)
 
     async def update_guild_before_invites(self, guild_id):
         invites = await self.before_invites.find_one({"_id": guild_id})
@@ -331,23 +272,6 @@ class EpicBot(commands.AutoShardedBot):
         )
 
     @tasks.loop(seconds=DB_UPDATE_INTERVAL, reconnect=True)
-    async def update_user_profile_db(self):
-        if self.cache_loaded:
-            cancer = []
-            for h in self.user_profile_cache:
-                hh = h.copy()
-                hh.pop("_id")
-                hmm = UpdateOne(
-                    {"_id": h["_id"]},
-                    {"$set": hh},
-                    upsert=True
-                )
-                cancer.append(hmm)
-            if len(cancer) != 0:
-                await self.user_profile_db.bulk_write(cancer)
-            self.last_updated_user_profile_db = time.time()
-
-    @tasks.loop(seconds=DB_UPDATE_INTERVAL, reconnect=True)
     async def update_serverconfig_db(self):
         if self.cache_loaded:
             cancer = []
@@ -432,10 +356,6 @@ class EpicBot(commands.AutoShardedBot):
     async def before_update_leveling_db(self):
         await self.wait_until_ready()
 
-    @update_user_profile_db.before_loop
-    async def before_update_user_profile_db(self):
-        await self.wait_until_ready()
-
     async def get_cache(self):
         cursor = self.prefixes.find({})
         self.prefixes_cache = await cursor.to_list(length=None)
@@ -452,10 +372,6 @@ class EpicBot(commands.AutoShardedBot):
         cursor = self.leveling_db.find({})
         self.leveling_cache = await cursor.to_list(length=None)
         print(f"Leveling cache has been loaded. | {len(self.leveling_cache)} items")
-
-        cursor = self.user_profile_db.find({})
-        self.user_profile_cache = await cursor.to_list(length=None)
-        print(f"User profile cache has been loaded. | {len(self.user_profile_cache)} profiles")
 
     async def get_blacklisted_users(self):
         cursor = self.blacklisted.find({})

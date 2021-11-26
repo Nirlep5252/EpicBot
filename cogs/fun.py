@@ -298,7 +298,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         if message.author.bot:
             return
         user_profile = await self.client.get_user_profile_(message.author.id)
-        if not user_profile['snipe']:
+        if not user_profile.snipe:
             return
         msg_attachments = []
         for attachment in message.attachments:
@@ -328,7 +328,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
         if before.content == after.content and len(before.attachments) == 0:
             return
         user_profile = await self.client.get_user_profile_(before.author.id)
-        if not user_profile['snipe']:
+        if not user_profile.snipe:
             return
         msg_attachments = []
         for attachment in before.attachments:
@@ -358,7 +358,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             return
         if not before.author.bot:
             user_profile = await self.client.get_user_profile_(before.author.id)
-            if not user_profile['snipe']:
+            if not user_profile.snipe:
                 return
         self.embed_snipes.update({before.channel.id: {
             "before": before.embeds,
@@ -830,7 +830,8 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
             ))
 
         user_profile = await self.client.get_user_profile_(user.id)
-        user_profile.update({"times_simped": user_profile['times_simped'] + 1})
+        stuff = {"times_simped": user_profile.times_simped + 1}
+        await self.client.update_user_profile_(user.id, **stuff)
 
         embed = discord.Embed(
             title="Wow, what a simp!",
@@ -838,7 +839,7 @@ Another Example: `{prefix}shouldi Study OR Procrastinate`
 **{escape_markdown(ctx.author.name)}** is now simping for **{escape_markdown(user.name)}**.
                         """,
             color=PINK_COLOR_2
-        ).set_footer(text=f"They now have {user_profile['times_simped']} simp{'s' if user_profile['times_simped'] != 1 else ''}!"
+        ).set_footer(text=f"They now have {user_profile.times_simped + 1} simp{'s' if user_profile.times_simped != 1 else ''}!"
         ).set_thumbnail(url="https://cdn.discordapp.com/emojis/799530519557177374.png")
         await ctx.reply(embed=embed)
 

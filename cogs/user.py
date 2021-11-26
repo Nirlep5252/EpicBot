@@ -16,6 +16,7 @@ limitations under the License.
 
 import operator
 from typing import List, Optional
+from utils.classes import Profile
 from utils.converters import Lower
 import discord
 import time
@@ -75,7 +76,7 @@ class user(commands.Cog, description="Commands related to the user!"):
     async def votes(self, ctx: commands.Context, user: Optional[discord.User] = None):
         user = user or ctx.author
         up = await self.client.get_user_profile_(user.id)
-        vote_dict = up.get("votes", self.default_vote_dict)
+        vote_dict = up.votes
         top_gg_time = f"<t:{vote_dict['last_voted'].get('top.gg')}:R>" if 'top.gg' in vote_dict['last_voted'] else "Not voted currently."
         bots_discordlabs_org_time = f"<t:{vote_dict['last_voted'].get('bots.discordlabs.org')}:R>" if 'bots.discordlabs.org' in vote_dict['last_voted'] else "Not voted currently."
         discordbotlist_com_time = f"<t:{vote_dict['last_voted'].get('discordbotlist.com')}:R>" if 'discordbotlist.com' in vote_dict['last_voted'] else "Not voted currently."
@@ -98,10 +99,11 @@ class user(commands.Cog, description="Commands related to the user!"):
     @commands.cooldown(1, 15, commands.BucketType.user)
     async def votereminder(self, ctx: commands.Context):
         up = await self.client.get_user_profile_(ctx.author.id)
-        vote_dict = up.get("votes", self.default_vote_dict)
+        vote_dict = up.votes
         vote_dict["reminders"] = not vote_dict["reminders"]
-        up["votes"] = vote_dict
-        await ctx.reply(f"Vote reminders {'enabled 💋' if vote_dict['reminders'] else 'disabled'}.")
+        stuff = {"votes": vote_dict}
+        await self.client.update_user_profile_(ctx.author.id, **stuff)
+        await ctx.reply(f"Vote reminders are now {'enabled 💋' if vote_dict['reminders'] else 'disabled'}.")
 
     @commands.cooldown(3, 30, commands.BucketType.user)
     @commands.command(help="Check how many invites you have!")
@@ -127,7 +129,9 @@ class user(commands.Cog, description="Commands related to the user!"):
         await ctx.reply(embed=embed)
 
     async def get_actions_leaderboard(self, action_type: str) -> List[dict]:
-        return sorted(self.client.user_profile_cache, key=lambda x: x.get(action_type, 0), reverse=True)
+        cursor = self.client.user_profile_db.find({}).sort([(action_type, -1)]).limit(50)
+        final = await cursor.to_list(length=None)
+        return final
 
     @commands.cooldown(3, 30, commands.BucketType.user)
     @commands.command(aliases=['lb'], help="Check the leaderboard!")
@@ -229,7 +233,6 @@ class user(commands.Cog, description="Commands related to the user!"):
     @commands.cooldown(3, 20, commands.BucketType.user)
     async def rankcard(self, ctx: commands.Context, configuration=None, card=None, *, description=None):
         prefix = ctx.clean_prefix
-        user_profile = await self.client.get_user_profile_(ctx.author.id)
         if configuration is None:
             return await ctx.reply(embed=success_embed(
                 f"{EMOJIS['leveling']} Rank card settings",
@@ -253,7 +256,7 @@ class user(commands.Cog, description="Commands related to the user!"):
                     f"{EMOJIS['tick_no']} Invalid card template.",
                     f"Please use `{prefix}rankcard discover` to find valid templates!"
                 ))
-            user_profile.update({"rank_card_template": card.lower()})
+            await self.client.update_user_profile_(ctx.author.id, rank_card_template=card.lower())
             return await ctx.reply(embed=success_embed(
                 f"{EMOJIS['tick_yes']} Card template updated!",
                 f"Your rank card template has now been set to: `{card}`"
@@ -366,16 +369,18 @@ Make sure to upload image as an attachment.
             reason = reason[4:]
 
         user_profile = await self.client.get_user_profile_(user_.id)
-        user_profile.update({"times_thanked": user_profile['times_thanked'] + 1})
+        await self.client.update_user_profile(user_.id, times_thanked=user_profile.times_thanked + 1)
 
         return await ctx.reply(embed=success_embed(
             f"{EMOJIS['heawt']} Thank you!",
             f"Thank you {user_.mention} for {reason}"
-        ).set_footer(text=f"They have been thanked {user_profile['times_thanked']} times!"
+        ).set_footer(text=f"They have been thanked {user_profile.times_thanked + 1} times!"
         ).set_thumbnail(url="https://cdn.discordapp.com/emojis/856078862852161567.png?v=1"))
 
-    async def get_badges(self, user_id, user_profile):
+    async def get_badges(self, user_id: int, user_profile: Profile) -> list:
         guild = self.client.get_guild(EPICBOT_GUILD_ID)
+        if not guild:
+            return []
         member = guild.get_member(user_id)
         wew = []
         badge_roles = {
@@ -410,19 +415,19 @@ Make sure to upload image as an attachment.
             if int(member.joined_at.strftime("%Y")) < 2021:
                 wew.append("early_supporter")
 
-        if user_profile['bugs_reported'] >= 25:
+        if user_profile.bugs_reported >= 25:
             wew.append("bug_hunter")
-        if user_profile['bugs_reported'] >= 50:
+        if user_profile.bugs_reported >= 50:
             wew.append("elite_bug_hunter")
 
-        if user_profile['times_simped'] >= 25:
+        if user_profile.times_simped >= 25:
             wew.append("samsung_girl")
-        if user_profile['times_simped'] >= 50:
+        if user_profile.times_simped >= 50:
             wew.append("love_magnet")
 
-        if user_profile['times_thanked'] >= 25:
+        if user_profile.times_thanked >= 25:
             wew.append("helper")
-        if user_profile['times_thanked'] >= 50:
+        if user_profile.times_thanked >= 50:
             wew.append("savior")
         if user_id in BIG_PP_GANG:
             wew.append("Big_PP")
@@ -455,20 +460,20 @@ Make sure to upload image as an attachment.
             # )
 
             nice = f"""
-    {user_profile['description']}
+    {user_profile.description}
 
-    **{'Single 💔' if not user_profile['married_to'] else 'Married to <@'+str(user_profile['married_to'])+'> 💞'}**
-    {'**Married at:** <t:' + str(user_profile['married_at']) + ':D> <t:' + str(user_profile['married_at']) + ':R>' if user_profile['married_to'] else ''}
+    **{'Single 💔' if not user_profile.married_to else 'Married to <@'+str(user_profile.married_to)+'> 💞'}**
+    {'**Married at:** <t:' + str(user_profile.married_at) + ':D> <t:' + str(user_profile.married_at) + ':R>' if user_profile.married_to is not None else ''}
 
-    Commands Used: `{user_profile['cmds_used']}`
-    Bugs reported: `{user_profile['bugs_reported']}`
-    Suggestions given: `{user_profile['suggestions_submitted']}`
+    Commands Used: `{user_profile.cmds_used}`
+    Bugs reported: `{user_profile.bugs_reported}`
+    Suggestions given: `{user_profile.suggestions_submitted}`
 
-    Thanked by **{user_profile['times_thanked']}** user{'s' if user_profile['times_thanked'] != 1 else ''}!
-    Simped by **{user_profile['times_simped']}** simp{'s' if user_profile['times_simped'] != 1 else ''}!
+    Thanked by **{user_profile.times_thanked}** user{'s' if user_profile.times_thanked != 1 else ''}!
+    Simped by **{user_profile.times_simped}** simp{'s' if user_profile.times_simped != 1 else ''}!
 
-    Global chat nick: `{user_profile['gc_nick']}`
-    Global chat avatar: [`{'Click Me' if user_profile['gc_avatar'] is not None else 'None'}`]({user_profile['gc_avatar'] if user_profile['gc_avatar'] is not None else ''})
+    Global chat nick: `{user_profile.gc_nick}`
+    Global chat avatar: [`{'Click Me' if user_profile.gc_avatar is not None else 'None'}`]({user_profile.gc_avatar if user_profile.gc_avatar is not None else ''})
                     """
             badge_text = ""
             badge_text2 = ""
@@ -478,7 +483,7 @@ Make sure to upload image as an attachment.
 
             h = await self.get_badges(user_.id, user_profile)
 
-            for e in user_profile['badges']:
+            for e in user_profile.badges:
                 h.append(e)
 
             i = 1
@@ -522,7 +527,7 @@ Make sure to upload image as an attachment.
 
             embed.add_field(
                 name=EMPTY_CHARACTER,
-                value=f"Your current rankcard template is `{user_profile['rank_card_template']}`:",
+                value=f"Your current rankcard template is `{user_profile.rank_card_template}`:",
                 inline=False
             ).set_thumbnail(url=user_.display_avatar.url)
 
@@ -532,7 +537,6 @@ Make sure to upload image as an attachment.
     @commands.cooldown(3, 30, commands.BucketType.user)
     async def editprofile(self, ctx: commands.Context, thing=None, *, new_thing=None):
         prefix = ctx.clean_prefix
-        profile_ = await self.client.get_user_profile_(ctx.author.id)
         info_embed = success_embed(
             "📝  Edit profile",
             f"""
@@ -567,7 +571,7 @@ Make sure to upload image as an attachment.
                     impostor = discord.utils.get(self.client.users, name=you_little_shit[0], discriminator=you_little_shit[1])
                     if impostor is not None:
                         return await ctx.reply("Stop trying to impersonate people.")
-            profile_.update({"gc_nick": new_thing})
+            await self.client.update_user_profile_(ctx.author.id, gc_nick=new_thing)
             return await ctx.reply(f"You global chat nickname has been updated to `{new_thing}`")
 
         if thing.lower() in ['bio', 'description']:
@@ -578,7 +582,7 @@ Make sure to upload image as an attachment.
             for word in DEFAULT_BANNED_WORDS:
                 if word in new_thing.lower():
                     return await ctx.reply(embed=error_embed(f"{EMOJIS['tick_no']} No Bad Words!", "Your bio cannot contain bad words."))
-            profile_.update({"description": new_thing})
+            await self.client.update_user_profile_(ctx.author.id, description=new_thing)
             return await ctx.reply("Your bio has been updated.")
 
         if thing.lower() in ['avatar', 'pfp', 'av']:
@@ -593,15 +597,15 @@ Make sure to upload image as an attachment.
             files = []
             files.append(await ctx.message.attachments[0].to_file())
             msg = await self.client.get_channel(864000707798761513).send(f"{ctx.author.mention} {ctx.author.id}", files=files)
-            profile_.update({"gc_avatar": msg.attachments[0].url})
+            await self.client.update_user_profile_(ctx.author.id, gc_avatar=msg.attachments[0].url)
             return await ctx.reply("Your global chat avatar has been updated.")
 
         if thing.lower() in ['resetnick']:
-            profile_.update({"gc_nick": None})
+            await self.client.update_user_profile_(ctx.author.id, gc_nick=None)
             return await ctx.reply("Your global chat nickname has been reset.")
 
         if thing.lower() in ['resetavatar', 'resetav', 'resetpfp']:
-            profile_.update({"gc_avatar": None})
+            await self.client.update_user_profile_(ctx.author.id, gc_avatar=None)
             return await ctx.reply("Your global chat avatar has been reset.")
 
         return await ctx.reply(embed=info_embed)
@@ -619,12 +623,12 @@ Make sure to upload image as an attachment.
             return await ctx.reply("Imagine marrying yourself... Why are you so lonely...")
         user_profile = await self.client.get_user_profile_(ctx.author.id)
         victim_profile = await self.client.get_user_profile_(user.id)
-        if user_profile['married_to']:
+        if user_profile.married_to is not None:
             ctx.command.reset_cooldown(ctx)
-            return await ctx.reply(f"{EMOJIS['tick_no']}You are already married to: <@{user_profile['married_to']}>\nDon't cheat on them >:(")
-        if victim_profile['married_to']:
+            return await ctx.reply(f"{EMOJIS['tick_no']}You are already married to: <@{user_profile.married_to}>\nDon't cheat on them >:(")
+        if victim_profile.married_to:
             ctx.command.reset_cooldown(ctx)
-            return await ctx.reply(f"{EMOJIS['tick_no']}{user.mention} is already married to: <@{victim_profile['married_to']}>")
+            return await ctx.reply(f"{EMOJIS['tick_no']}{user.mention} is already married to: <@{victim_profile.married_to}>")
 
         view = Confirm(context=ctx, user=user)
         msg = await ctx.channel.send(
@@ -661,8 +665,8 @@ Make sure to upload image as an attachment.
                 ).set_author(name=f"{ctx.author.name} 💔 {user.name}", icon_url=ctx.author.display_avatar.url),
                 view=None
             )
-        user_profile.update({"married_to": user.id, "married_at": round(time.time())})
-        victim_profile.update({"married_to": ctx.author.id, "married_at": round(time.time())})
+        await self.client.update_user_profile_(ctx.author.id, married_to=user.id, married_at=round(time.time()))
+        await self.client.update_user_profile_(user.id, married_to=ctx.author.id, married_at=round(time.time()))
         return await msg.edit(
             content="WOOOO!!!",
             embed=discord.Embed(
@@ -678,13 +682,13 @@ Make sure to upload image as an attachment.
     @commands.cooldown(3, 30, commands.BucketType.user)
     async def divorce(self, ctx: commands.Context):
         user_profile = await self.client.get_user_profile_(ctx.author.id)
-        if not user_profile['married_to']:
+        if not user_profile.married_to:
             ctx.command.reset_cooldown(ctx)
             return await ctx.reply(f"{EMOJIS['tick_no']}You are not married to anyone.")
         view = Confirm(context=ctx)
         msg = await ctx.reply(embed=discord.Embed(
             title="<a:cute_cry:868791322574745600>",
-            description=f"Do you really want to divorce <@{user_profile['married_to']}> :(",
+            description=f"Do you really want to divorce <@{user_profile.married_to}> :(",
             color=RED_COLOR
         ),
             view=view)
@@ -693,10 +697,9 @@ Make sure to upload image as an attachment.
             return await msg.edit(content="You didn't answer in time.", embed=None, view=None)
         if not view.value:
             return await msg.edit(content="Ok, I have cancelled the command.", embed=None, view=None)
-        victim_profile = await self.client.get_user_profile_(user_profile['married_to'])
-        time_ = user_profile['married_at']
-        user_profile.update({"married_to": None, "married_at": None})
-        victim_profile.update({"married_to": None, "married_at": None})
+        time_ = user_profile.married_at
+        await self.client.update_user_profile_(ctx.author.id, married_to=None, married_at=None)
+        await self.client.update_user_profile_(user_profile.married_to, married_to=None, married_at=None)
         return await msg.edit(
             embed=discord.Embed(
                 title="<a:cute_cry:868791322574745600>",
@@ -763,11 +766,10 @@ Make sure to upload image as an attachment.
     async def opt_out(self, ctx):
         user_profile = await self.client.get_user_profile_(ctx.author.id)
 
-        snipe = user_profile['snipe']
-        user_profile.update({"snipe": False if snipe else True})
+        snipe = user_profile.snipe
+        await self.client.update_user_profile_(ctx.author.id, snipe=not snipe)
 
         pain = "\n\nYou also won't be able to use the snipe commands."
-
         await ctx.reply(embed=success_embed(
             f"{EMOJIS['tick_yes']} Snipe toggled!",
             f"Your messages will {'no longer' if snipe else 'now'} be logged!{pain if snipe else ''}"

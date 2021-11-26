@@ -456,7 +456,7 @@ class Leveling(commands.Cog):
                 "Bots do not have any rank."
             ))
         user_profile = await self.client.get_user_profile_(user.id)
-        template = user_profile['rank_card_template']
+        template = user_profile.rank_card_template
 
         await self.process_rank_card(template, user)
 

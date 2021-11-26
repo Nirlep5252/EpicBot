@@ -21,6 +21,8 @@ from config import TOP_GG_TOKEN, BOT_MOD_ROLE, EPICBOT_GUILD_ID, SUPPORTER_ROLE,
 
 import aiohttp
 
+from utils.classes import Profile
+
 
 class NotVoted(commands.CheckFailure):
     pass
@@ -92,8 +94,8 @@ def bot_mods_only():
 
 def not_opted_out():
     async def predicate(ctx: commands.Context):
-        user_profile = await ctx.bot.get_user_profile_(ctx.author.id)
-        if not user_profile['snipe']:
+        user_profile: Profile = await ctx.bot.get_user_profile_(ctx.author.id)
+        if not user_profile.snipe:
             raise OptedOut('h')
         else:
             return True
