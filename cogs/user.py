@@ -369,7 +369,7 @@ Make sure to upload image as an attachment.
             reason = reason[4:]
 
         user_profile = await self.client.get_user_profile_(user_.id)
-        await self.client.update_user_profile(user_.id, times_thanked=user_profile.times_thanked + 1)
+        await self.client.update_user_profile_(user_.id, times_thanked=user_profile.times_thanked + 1)
 
         return await ctx.reply(embed=success_embed(
             f"{EMOJIS['heawt']} Thank you!",
