@@ -17,7 +17,8 @@ async def play(ctx, bot):
 	await ctx.send(
 		"Starting game...\nIf a reaction is not received every 5 minutes, the game will time out."
 	)
-	message = await ctx.send(f"Score: **{score}**```{print_board(board)}```")
+	embed = discord.Embed(title=f"Score: **{score}**", description=f"```py\n{print_board(board)}\n```")
+	message = await ctx.send(embed=embed)
 	await message.add_reaction("\u2B05")
 	await message.add_reaction("\u27A1")
 	await message.add_reaction("\u2B06")
@@ -37,7 +38,7 @@ async def play(ctx, bot):
 				"reaction_add", check=check, timeout=300.0
 			)
 		except asyncio.TimeoutError:
-			await ctx.send("Ending game")
+			await ctx.send("Ending Game...")
 			await message.delete()
 			return
 		else:
@@ -65,7 +66,8 @@ async def play(ctx, bot):
 				await message.delete()
 				return
 			board = nb
-			await message.edit(content=f"Score: **{score}**```{print_board(board)}```")
+			embed = discord.Embed(title=f"Score: **{score}**", description=f"```py\n{print_board(board)}\n```")
+			await message.edit(embed=embed)
 
 def print_board(board):
 	col_width = max(len(str(word)) for row in board for word in row) + 2  # padding
