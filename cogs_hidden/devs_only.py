@@ -102,7 +102,6 @@ Please select a database next time:
 Prefix DB: {round(time.time() - self.client.last_updated_prefixes_db)} seconds ago
 Serverconfig DB: {round(time.time() - self.client.last_updated_serverconfig_db)} seconds ago
 Leveling DB: {round(time.time() - self.client.last_updated_leveling_db)} seconds ago
-User profile DB: {round(time.time() - self.client.last_updated_user_profile_db)} seconds ago
 ```
             """
         ).set_footer(text=f"Database is updated every {DB_UPDATE_INTERVAL} seconds."))
