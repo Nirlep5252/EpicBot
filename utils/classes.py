@@ -14,7 +14,7 @@ class Profile:
     bugs_reported: int = 0
     suggestions_submitted: int = 0
     rank_card_template: str = "default"
-    snipe: bool = "true"
+    snipe: bool = True
     votes: Dict[str, Union[int, dict]] = field(default_factory=lambda: {"top.gg": 0, "bots.discordlabs.org": 0, "discordbotlist.com": 0, "reminders": False, "last_voted": {}})
 
     # globalchat stuff
