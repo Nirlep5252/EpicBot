@@ -62,7 +62,8 @@ class Confirm(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction):
         if interaction.user != self.user:
-            return await interaction.response.send_message("You cannot interact in other's commands.", ephemeral=True)
+            await interaction.response.send_message("You cannot interact in other's commands.", ephemeral=True)
+            return False
         return True
 
 
