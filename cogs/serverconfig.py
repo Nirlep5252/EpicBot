@@ -275,10 +275,6 @@ The server currently has **{len(role_menus)}** role menu{'s' if len(role_menus) 
                         f"{EMOJIS['tick_no']} Error!",
                         f"Looks like no roles were found in your message.\nOr all the roles were above my top role.\nYou can join our **[Support Server]({SUPPORT_SERVER_LINK})** for help."
                     ))
-                await main_msg.edit(content="", embed=success_embed(
-                    f"{len(roles)} Roles found!",
-                    f"I have found **{len(roles)}** in your message.\n\n{' '.join(role.mention for role in roles)}\n\nNow you need to react to this message with the corresponding emojis for the rolemenu to be complete!"
-                ), view=None)
                 final_output = await prepare_emojis_and_roles(ctx, roles, main_msg)
                 if final_output is None:
                     return
