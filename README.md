@@ -2,7 +2,7 @@
 
 ## Info
 
-EpicBot is a simple, multipurpose Discord bot.
+EpicBot is a simple, multipurpose Discord bot. (yet another rewrite)
 
 ## Links
 
