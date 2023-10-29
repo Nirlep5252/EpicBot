@@ -2,3 +2,4 @@ TODO.md
 .env
 .idea
 .vscode
+__pycache__
