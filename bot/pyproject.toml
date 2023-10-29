@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "epicbot-v3"
+version = "3.0.0-beta"
+description = "A simple, multipurpose Discord bot."
+authors = ["Nirlep5252 <nirlep5252@proton.me>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+discord-py = "^2.3.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
