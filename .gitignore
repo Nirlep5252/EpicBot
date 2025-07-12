@@ -1,0 +1,10 @@
+.venv
+
+.env
+.env.local
+.env.prod
+.env.dev
+
+__pycache__
+.ruff_cache
+.mypy_cache

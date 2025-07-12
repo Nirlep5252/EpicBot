@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: epicbot_postgres
+    environment:
+      POSTGRES_DB: epicbot
+      POSTGRES_USER: epicbot
+      POSTGRES_PASSWORD: epicbot_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
