@@ -71,3 +71,24 @@ class GuildManager:
             "SELECT COUNT(*) FROM guild_prefixes WHERE guild_id = $1", guild_id
         )
         return count or 0
+
+    async def is_default_prefix_enabled(self, guild_id: int) -> bool:
+        """Check if the default prefix '!' is enabled for a guild."""
+        enabled = await self.db.fetchval(
+            "SELECT default_prefix_enabled FROM guilds WHERE id = $1", guild_id
+        )
+        return enabled if enabled is not None else True
+
+    async def set_default_prefix_enabled(self, guild_id: int, enabled: bool) -> None:
+        """Enable or disable the default prefix '!' for a guild."""
+        await self.db.execute(
+            """
+            INSERT INTO guilds (id, name, default_prefix_enabled, created_at, updated_at)
+            VALUES ($1, 'Unknown', $2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            ON CONFLICT (id) DO UPDATE SET
+                default_prefix_enabled = EXCLUDED.default_prefix_enabled,
+                updated_at = CURRENT_TIMESTAMP
+            """,
+            guild_id,
+            enabled,
+        )

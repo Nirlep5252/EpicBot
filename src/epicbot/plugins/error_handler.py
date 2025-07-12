@@ -52,7 +52,6 @@ class ErrorHandler(commands.Cog):
         ):
             return
 
-
         # Create embed for error response
         embed = discord.Embed(color=discord.Color.red())
 

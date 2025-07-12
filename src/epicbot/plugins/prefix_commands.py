@@ -9,6 +9,64 @@ if TYPE_CHECKING:
     from epicbot.core.bot import EpicBot
 
 
+class ConfirmDefaultPrefixRemovalView(discord.ui.View):
+    """Confirmation view for removing the default prefix when no custom prefixes exist."""
+
+    def __init__(self, bot: "EpicBot", guild_id: int):
+        super().__init__(timeout=60.0)  # 1 minute timeout
+        self.bot = bot
+        self.guild_id = guild_id
+
+    @discord.ui.button(
+        label="Yes, disable it", style=discord.ButtonStyle.red, emoji="⚠️"
+    )
+    async def confirm_disable(
+        self, interaction: discord.Interaction, _button: discord.ui.Button
+    ):
+        """Confirm disabling the default prefix."""
+        # Disable default prefix
+        await self.bot.guild_manager.set_default_prefix_enabled(self.guild_id, False)
+
+        embed = discord.Embed(
+            title="✅ Default Prefix Disabled",
+            description="The default prefix `!` has been disabled for this server.\n"
+            "Bot mentions will still work.",
+            color=discord.Color.green(),
+        )
+
+        # Disable all buttons after interaction
+        for item in self.children:
+            if hasattr(item, "disabled"):
+                item.disabled = True
+
+        await interaction.response.edit_message(embed=embed, view=self)
+
+    @discord.ui.button(label="No, keep it", style=discord.ButtonStyle.green, emoji="✅")
+    async def cancel_disable(
+        self, interaction: discord.Interaction, _button: discord.ui.Button
+    ):
+        """Cancel disabling the default prefix."""
+        embed = discord.Embed(
+            title="✅ Cancelled",
+            description="The default prefix `!` will remain enabled for this server.",
+            color=discord.Color.blue(),
+        )
+
+        # Disable all buttons after interaction
+        for item in self.children:
+            if hasattr(item, "disabled"):
+                item.disabled = True
+
+        await interaction.response.edit_message(embed=embed, view=self)
+
+    async def on_timeout(self):
+        """Called when the view times out."""
+        # Disable all buttons when timeout occurs
+        for item in self.children:
+            if hasattr(item, "disabled"):
+                item.disabled = True
+
+
 class Plugin(BasePlugin):
     """Prefix management commands for guild administrators."""
 
@@ -46,17 +104,30 @@ class PrefixCommands(commands.Cog):
 
         # Get current prefixes
         prefixes = await self.bot.guild_manager.get_guild_prefixes(ctx.guild.id)
+        default_enabled = await self.bot.guild_manager.is_default_prefix_enabled(
+            ctx.guild.id
+        )
 
         embed = discord.Embed(
             title="🏷️ Server Prefixes",
             color=discord.Color.blue(),
         )
 
-        if not prefixes:
-            embed.description = "No custom prefixes set. Using default prefix: `!`"
+        prefix_parts = []
+
+        if prefixes:
+            custom_list = "\n".join(f"• `{prefix}`" for prefix in prefixes)
+            prefix_parts.append(f"**Custom prefixes:**\n{custom_list}")
+
+        if default_enabled:
+            prefix_parts.append("**Default prefix:** `!`")
+
+        if not prefix_parts:
+            embed.description = (
+                "⚠️ **No prefixes enabled!** Only bot mentions will work."
+            )
         else:
-            prefix_list = "\n".join(f"• `{prefix}`" for prefix in prefixes)
-            embed.description = f"**Custom prefixes:**\n{prefix_list}"
+            embed.description = "\n\n".join(prefix_parts)
 
         embed.add_field(
             name="Always Available",
@@ -77,8 +148,38 @@ class PrefixCommands(commands.Cog):
     @commands.has_permissions(manage_guild=True)
     @commands.guild_only()
     async def add_prefix(self, ctx: commands.Context, prefix: str) -> None:
-        """Add a custom prefix for this server."""
+        """Add a custom prefix for this server. Use '!' to enable the default prefix."""
         if ctx.guild is None:
+            return
+
+        # Handle special case for default prefix
+        if prefix == "!":
+            await self.bot.guild_manager.ensure_guild_exists(
+                ctx.guild.id, ctx.guild.name
+            )
+
+            # Check if default prefix is already enabled
+            default_enabled = await self.bot.guild_manager.is_default_prefix_enabled(
+                ctx.guild.id
+            )
+            if default_enabled:
+                embed = discord.Embed(
+                    title="💡 Already Enabled",
+                    description="The default prefix `!` is already enabled for this server.",
+                    color=discord.Color.blue(),
+                )
+                await ctx.send(embed=embed)
+                return
+
+            # Enable default prefix
+            await self.bot.guild_manager.set_default_prefix_enabled(ctx.guild.id, True)
+
+            embed = discord.Embed(
+                title="✅ Default Prefix Enabled",
+                description="The default prefix `!` has been enabled for this server.",
+                color=discord.Color.green(),
+            )
+            await ctx.send(embed=embed)
             return
 
         # Validate prefix
@@ -136,8 +237,61 @@ class PrefixCommands(commands.Cog):
     @commands.has_permissions(manage_guild=True)
     @commands.guild_only()
     async def remove_prefix(self, ctx: commands.Context, prefix: str) -> None:
-        """Remove a custom prefix from this server."""
+        """Remove a custom prefix from this server. Use '!' to disable the default prefix."""
         if ctx.guild is None:
+            return
+
+        # Handle special case for default prefix
+        if prefix == "!":
+            await self.bot.guild_manager.ensure_guild_exists(
+                ctx.guild.id, ctx.guild.name
+            )
+
+            # Check if default prefix is already disabled
+            default_enabled = await self.bot.guild_manager.is_default_prefix_enabled(
+                ctx.guild.id
+            )
+            if not default_enabled:
+                embed = discord.Embed(
+                    title="💡 Already Disabled",
+                    description="The default prefix `!` is already disabled for this server.",
+                    color=discord.Color.blue(),
+                )
+                await ctx.send(embed=embed)
+                return
+
+            # Check if there are any custom prefixes or warn about only having mentions
+            custom_prefixes = await self.bot.guild_manager.get_guild_prefixes(
+                ctx.guild.id
+            )
+            if not custom_prefixes:
+                embed = discord.Embed(
+                    title="⚠️ Warning",
+                    description="Disabling the default prefix without custom prefixes means only bot mentions will work!\n\n"
+                    "Consider adding a custom prefix first with `/prefix add <prefix>`",
+                    color=discord.Color.orange(),
+                )
+                embed.add_field(
+                    name="Are you sure?",
+                    value="Choose below to confirm or cancel this action.",
+                    inline=False,
+                )
+
+                # Create confirmation view with buttons
+                view = ConfirmDefaultPrefixRemovalView(self.bot, ctx.guild.id)
+                await ctx.send(embed=embed, view=view)
+                return
+
+            # Disable default prefix directly if custom prefixes exist
+            await self.bot.guild_manager.set_default_prefix_enabled(ctx.guild.id, False)
+
+            embed = discord.Embed(
+                title="✅ Default Prefix Disabled",
+                description="The default prefix `!` has been disabled for this server.\n"
+                "Bot mentions will still work.",
+                color=discord.Color.green(),
+            )
+            await ctx.send(embed=embed)
             return
 
         # Ensure guild exists

@@ -47,8 +47,12 @@ class EpicBot(commands.Bot):
             )
             if guild_prefixes:
                 prefixes.extend(guild_prefixes)
-            else:
-                # No custom prefixes set, use default
+
+            # Check if default prefix is enabled for this guild
+            default_enabled = await self.guild_manager.is_default_prefix_enabled(
+                message.guild.id
+            )
+            if default_enabled:
                 prefixes.append("!")
         except Exception as e:
             self.logger.error(
