@@ -28,7 +28,12 @@ class PluginManager:
 
     async def load_default_plugins(self) -> None:
         """Load core default plugins."""
-        default_plugins = ["core_commands", "plugin_manager_commands"]
+        default_plugins = [
+            "error_handler",
+            "core_commands",
+            "plugin_manager_commands",
+            "prefix_commands",
+        ]
 
         for plugin_name in default_plugins:
             try:

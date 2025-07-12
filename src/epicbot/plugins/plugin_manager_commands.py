@@ -29,16 +29,10 @@ class PluginManagerCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(name="plugin", invoke_without_command=True)  # type: ignore[arg-type]
-    @commands.has_permissions(administrator=True)
-    async def plugin(self, ctx: commands.Context) -> None:
-        """Plugin management commands."""
-        await ctx.send_help(ctx.command)
-
-    @plugin.command(name="list")  # type: ignore[arg-type]
-    @commands.has_permissions(administrator=True)
+    @commands.hybrid_command(name="plugins")
+    @commands.is_owner()
     async def list_plugins(self, ctx: commands.Context) -> None:
-        """List all loaded plugins."""
+        """List all loaded plugins. (Bot owner only)"""
         loaded_plugins = self.bot.plugin_manager.get_loaded_plugins()
 
         if not loaded_plugins:
@@ -67,10 +61,10 @@ class PluginManagerCommands(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @plugin.command(name="load")  # type: ignore[arg-type]
-    @commands.has_permissions(administrator=True)
+    @commands.hybrid_command(name="load_plugin")
+    @commands.is_owner()
     async def load_plugin(self, ctx: commands.Context, plugin_name: str) -> None:
-        """Load a plugin by name."""
+        """Load a plugin by name. (Bot owner only)"""
         success = await self.bot.plugin_manager.load_plugin(plugin_name)
 
         if success:
@@ -88,10 +82,10 @@ class PluginManagerCommands(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @plugin.command(name="unload")  # type: ignore[arg-type]
-    @commands.has_permissions(administrator=True)
+    @commands.hybrid_command(name="unload_plugin")
+    @commands.is_owner()
     async def unload_plugin(self, ctx: commands.Context, plugin_name: str) -> None:
-        """Unload a plugin by name."""
+        """Unload a plugin by name. (Bot owner only)"""
         if plugin_name in ["core_commands", "plugin_manager_commands"]:
             embed = discord.Embed(
                 title="❌ Cannot Unload",
@@ -118,10 +112,10 @@ class PluginManagerCommands(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @plugin.command(name="reload")  # type: ignore[arg-type]
-    @commands.has_permissions(administrator=True)
+    @commands.hybrid_command(name="reload_plugin")
+    @commands.is_owner()
     async def reload_plugin(self, ctx: commands.Context, plugin_name: str) -> None:
-        """Reload a plugin by name."""
+        """Reload a plugin by name. (Bot owner only)"""
         success = await self.bot.plugin_manager.reload_plugin(plugin_name)
 
         if success:

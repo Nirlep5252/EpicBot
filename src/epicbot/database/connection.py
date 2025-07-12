@@ -4,6 +4,7 @@ from typing import Any
 import asyncpg
 
 from epicbot.core.config import Config
+from epicbot.database.migrator import DatabaseMigrator
 
 
 class DatabaseManager:
@@ -13,6 +14,7 @@ class DatabaseManager:
         self.config = config or Config()
         self.logger = logging.getLogger(__name__)
         self.pool: asyncpg.Pool | None = None
+        self.migrator = DatabaseMigrator(self.config)
 
     async def initialize(self) -> None:
         """Initialize database connection pool."""
@@ -24,7 +26,7 @@ class DatabaseManager:
             )
 
             self.logger.info("Database connection pool created successfully")
-            await self._create_tables()
+            await self._run_migrations()
 
         except Exception as error:
             self.logger.error(f"Failed to initialize database: {error}")
@@ -36,41 +38,13 @@ class DatabaseManager:
             await self.pool.close()
             self.logger.info("Database connection pool closed")
 
-    async def _create_tables(self) -> None:
-        """Create necessary database tables."""
-        if self.pool is None:
-            raise RuntimeError("Database pool not initialized")
-        async with self.pool.acquire() as connection:
-            await connection.execute("""
-                CREATE TABLE IF NOT EXISTS guilds (
-                    id BIGINT PRIMARY KEY,
-                    name TEXT NOT NULL,
-                    prefix TEXT DEFAULT '!',
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-
-            await connection.execute("""
-                CREATE TABLE IF NOT EXISTS guild_plugins (
-                    guild_id BIGINT REFERENCES guilds(id) ON DELETE CASCADE,
-                    plugin_name TEXT NOT NULL,
-                    enabled BOOLEAN DEFAULT TRUE,
-                    config JSONB DEFAULT '{}',
-                    installed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    PRIMARY KEY (guild_id, plugin_name)
-                )
-            """)
-
-            await connection.execute("""
-                CREATE TABLE IF NOT EXISTS users (
-                    id BIGINT PRIMARY KEY,
-                    username TEXT NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-
-            self.logger.info("Database tables created/verified successfully")
+    async def _run_migrations(self) -> None:
+        """Run database migrations."""
+        self.logger.info("Running database migrations...")
+        success = await self.migrator.run_migrations()
+        if not success:
+            raise RuntimeError("Database migrations failed")
+        self.logger.info("Database migrations completed successfully")
 
     async def execute(self, query: str, *args: Any) -> str:
         """Execute a query and return the result."""

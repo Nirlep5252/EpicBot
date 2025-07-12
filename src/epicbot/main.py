@@ -7,9 +7,6 @@ from dotenv import load_dotenv
 
 from epicbot.core.bot import EpicBot
 from epicbot.core.config import Config
-from epicbot.database.connection import DatabaseManager
-
-
 
 
 async def main() -> None:
@@ -27,7 +24,6 @@ async def main() -> None:
     logger.info("Starting EpicBot...")
 
     bot = None
-    db_manager = None
 
     def signal_handler(sig, frame):
         """Handle shutdown signals gracefully."""
@@ -39,10 +35,9 @@ async def main() -> None:
     signal.signal(signal.SIGTERM, signal_handler)
 
     try:
-        db_manager = DatabaseManager()
-        await db_manager.initialize()
-
+        # Initialize database through bot initialization
         bot = EpicBot(config=config)
+        await bot.db_manager.initialize()
         await bot.start(config.discord_token)
 
     except KeyboardInterrupt:
@@ -56,9 +51,9 @@ async def main() -> None:
             logger.info("Closing bot connection...")
             await bot.close()
 
-        if db_manager and db_manager.pool:
+        if bot and bot.db_manager and bot.db_manager.pool:
             logger.info("Closing database connection...")
-            await db_manager.close()
+            await bot.db_manager.close()
 
         logger.info("Shutdown complete")
 
